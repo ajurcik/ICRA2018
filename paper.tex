@@ -1,4 +1,5 @@
-\documentclass[usletter, 10pt, conference]{ieeeconf}      % for icra
+%\documentclass[a4paper, 10pt]{IEEEtran}      % for icra/RAL final
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf} % initial submission to RAL/ICRA
 
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -35,15 +36,12 @@ Technick\'a 2, 166 27 Prague, Czech Republic,
 Faculty of Informatics,   Masaryk University, 
 Botanick\'a 68a, 602~00 Brno, Czech Republic,\\
 The presented work has been supported by the Czech Science Foundation (GA{\v C}R) under research project No. 17-07690S.
-Access to computing and storage facilities owned by parties and projects contributing to the National Grid Infrastructure MetaCentrum, provided under the programme "Projects of Large Infrastructure for Research, Development, and Innovations" (LM2010005), is greatly appreciated.}
-}
+Access to computing and storage facilities owned by parties and projects contributing to the National Grid Infrastructure MetaCentrum, provided under the programme "Projects of Large Infrastructure for Research, Development, and Innovations" (LM2010005), is greatly appreciated.}}
 
 
 %D. Bedn\'{a}\v{r}:
 %Faculty of Science, Masaryk University, Kamenice 5, 625 00 Brno, Czech Republic\\
 
-
-%\makeindex
 
 \def\qrand{q_{rand}}
 \def\qstart{q_{start}}
@@ -101,14 +99,14 @@ Access to computing and storage facilities owned by parties and projects contrib
 \begin{document}
 
 \maketitle
-%\thispagestyle{empty}
-%\pagestyle{empty}
+\thispagestyle{empty}
+\pagestyle{empty}
 
 %\frontmatter          % for the preliminaries
 
 
 \begin{abstract}
-Chemical interactions of proteins and other molecules takes place in actives sites that are usually deeply burid inside the proteins.
+Chemical interactions of proteins and other molecules take place in actives sites that are usually deeply burid inside the proteins.
 Motion planning can be used to analyze accessibility of tunnels by small molecules (ligands), which can help chemists to ..
 The ligands are not rigid structures, but they are rather flexible.
 In this paper, we present sampling-based motion planinng method to compute trajectories of the ligands inside know protein tunnels.
@@ -145,6 +143,38 @@ Protein 1CQW & Active site & Detected tunnels \\ %& Example of a  \\
 }
 \end{figure}
 
+The idea of sampling-based motion planning is to randomly sample the configuration space of the robot and connect the collision-free samples
+into a graph structure (roadmap).
+A path in the roadmap then corresponds to a motion in the workspace.
+The two most used sampling-based techniques are Probabilistic Roadmaps (PRM)~\cite{kavrakiForPP} and Rapidly Exploring Random Trees (RRT)~\cite{lavalleRRT}.
+Originally, both samples utilize uniform distribution to sample the configuration space.
+As the random samples are classify as free or non-free using collision detection, the sampling-based methods can found paths for roobts of various shapes. 
+Another important advantage of the sampling-based planners is that they can cope with robots with many degrees of freedom (DOF).
+The well known issues is the narrow passage problem and the sensitiviy to distance metric in the configuration space.
+
+A narrow passage is a small region in the configuration space whose removal changes connectivity of the space.
+As the volume of the narrow passage is significantly smaller than then volume of the whole configuration space, it is difficult to 
+sample it dense enough using uniform ditribution.
+Consequently, many iterations are needed in order to put enough samples into it, which increases the computation time.
+
+A proper distance metric in the configuration space is necessary in order to determine which samples should be connected together (in the case of PRM), or which node of the tree should be expanded (in the case of RRT).
+Generally, it is not easy to combine the rotational and translational components of the configuration space.
+Moreover, the selection of the metric is also influence by the shape of the objects (robots).
+
+Sampling-based motion planners has been intensively studied in robotics, but they have been applied also in other research fields.
+In bio-chemistry, the planners have been used to study
+loop motions~\cite{cortes2004geometric},
+%protein folding~\cite{amato2002using,raveh2009rapid,novinskaya2015improving,songPFintro},
+protein folding~\cite{raveh2009rapid,novinskaya2015improving},
+or for tunnel detection~\cite{vonasek2017tunnel}.
+
+%or protein folding combined with ligand diffusion~\cite{cortes2010simulating}.
+%rrt for molecular: \cite{al2012motion}
+%survey \cite{gipson2012computational}
+%Sampling-based planners have been used in various applications in robotics~\cite{elbanhawi2014sampling} and also  %,latombe1999motion} and also
+%Solutions for tunnel detection using sampling-based methods however have not been discussed yet.
+%Besides robotics, sampling-based planners have been used also in applications in bio-i
+
 Understanding of interactions between proteins and other small molecules is crucial in many research fields, including drug design and protein engineering. 
 These interactions are highly influenced by the ability to transport the small molecule, called ligand, to the protein active site.
 The active site can be considered as a deeply buried inner cavity with the ability to interact with the incoming ligand.
@@ -163,13 +193,13 @@ Ligands are typically of non-spherical shape, therefore it is difficult to estim
 The decision based only on spherical tunnels requires previous expertise in the domain and yet it may be imprecise.
 
 To provide biochemists  a better insight into the behavior of non-spherical ligands, it is necessary to compute the trajectories of the ligand considering its shape and possibly also its conformation changes.
-This can be solved using motion planning, where the ligand is considered as a robot moving amongst protein's atoms.
+This can be formulated as the path planning problem where the ligand is considered as a robot moving amongst protein's atoms.
 Sampling-based motion planning methods are suitable candidates for this task, as they can consider non-spherical shape of the ligand as well as the conformational changes.
 
 Proteins are dense structures which limits movements of the ligand insider the tunnels, which leads to the narrow passage problem.
 To cope with this problem, we propose to utilize the principle of guided sampling~\cite{vonasek2009rrt,denny2016dynamic}.
 The random samples are not generated from the whole configuration space, but mainly around the tunnel.
-To enable ligand movements in narrow tunnels, a scaled-down version of the ligand is used, similarly, e.g., to~\cite{cortes2005path}.
+The dilatation of the ligand free space can be achieved by shrinking the atom radii, similarly, e.g., to~\cite{cortes2005path}.
 %We propose to analyze the traversability of the ligands in the tunnels using motion planning.
 The flexibility of the ligand is modeled using a predefined set of typical conformations.
 %It helps to keep also potential solutions which do not fit to the geometric restrains but can be still feasible because of the physico-chemical properties.
@@ -183,6 +213,12 @@ The flexibility of the ligand is modeled using a predefined set of typical confo
 %We further propose visualization techniques for presenting the results to biochemists.
 %Therefore, methods for visualization of the results  are discussed.
 
+energetic constraints are translated into geometric ones by considering a steric model of the molecules and applying collision detection
+\cite{deAngulo2005biocd}
+
+First the biredge test is applied to identify regions aeround narrow passages, optimization-based retraction operatoin sleectively only at those regions
+
+selective rrt~\cite{lee2012srrrt}
 
 \section{Related Work}
 
@@ -247,7 +283,6 @@ The algorithm terminates if the tree approaches the goal configuration close eno
 
 %rrt for molecular: \cite{al2012motion}
 %survey \cite{gipson2012computational}
-%In our previous works, we proposed to employ RRT also for the purp
 %Solutions for tunnel detection using sampling-based methods however have not been discussed yet.
 %Sampling-based planners have been used in various applications in robotics~\cite{elbanhawi2014sampling} and also  %,latombe1999motion} and also
 % to study proteins, e.g. in  
@@ -257,8 +292,57 @@ The algorithm terminates if the tree approaches the goal configuration close eno
 %or protein folding combined with ligand diffusion~\cite{cortes2010simulating}.
 
 
-%Two main issues need to be addressed: the increased dimension of the configuration space and the narrow passage problem.
-%A well known issue of sampling-based planners is the narrow passage problem~\cite{hannaWIS}.
+The well known issue of sampling-based motion planners is the narrow passage problem. 
+Many approaches have been proposed to improve performance in the presence of narrow passages.
+The performance of PRM-based methods can be improved by filtering out samples that are not located insider narrow passages.
+For example, in~\cite{hsuBridge}, a random sample is classified as..
+
+In the Gaussian sampling strategy~\cite{overmarsGauss}, the samples are generated more frequently around obstacles.
+A random configuration $q_1\in\C$ is generated uniformly and another random configuration
+$q_2\in\C$ is drawn around using Normal distribution $N(q_1,\sigma^2)$.
+If both $q_1$ and $q_2$ are free or both are non-free, they are not added to the roadmap. 
+If only one of these configurations is free, then the free one is added to the roadmap. 
+The disadvantage of this strategy is the necessity to choose suitable value of the parameter $\sigma^2$, which depends
+on the used map and the shape of the robot.
+The Bridge-Test sampling~\cite{hsuBridge} employs the Gaussian strategy to generate two samples in order to compute their midpoint.
+%The Gaussian strategy was improved in the Bridge-Test~\cite{hsuBridge}. % to generate samples inside a narrow passage.
+%Two random configurations $q,q'\in\C$ are generated in same way as in the Gaussian strategy.
+%The midpoint $p$ on a segment $q,q'$ is constructed.
+If the midpoint is collision-free and both end configurations are non-free, the midpoint lies in a narrow passage, and it is added to the roadmap.
+Both Gaussian and Bridge-Test strategies have to be combined with the uniform sampling in order to ensure sampling of free-regions~\cite{sun2005narrow}.
+Despite the simplicity of these two modifications, they were proven to significantly improve performance of PRM~\cite{hsuOnProb,geraertsRA,geraertsPRMA,wang10adaptive}.
+
+
+
+Another techniques to sample the narrow passages dense enough is to retract the random samples towards regions that are believed
+to be located in narrow passages.
+In the Retraction-based RRT~\cite{zhangRetraction}, the random sample $\qrand$ is connected to the tree if the line segment $\qnear,\qrand$ is collision-free, otherwise, the retraction-step is performed.
+The task of the retraction step is to find a contact configuration  that minimizes the distance to $\qrand$.
+It is necessary to use an apporpriated distance metric in the configuration space.
+Generally, it is hard to combine the translational and rotational components in the configuration space.
+
+In~\cite{zhangRetraction}, the DISP metric~\cite{zhang2008fast}.
+
+The contact configuration $q$ is found on the line and its neighborhood is searched to find another contact configuration $q'$ such that 
+$\varrho(q',\qrand) < \varrho(q,\qrand)$.
+The retraction is terminated after several steps or if no new contact configuration can be found.
+The configuration trees built by RRT--Retraction can therefore contain more nodes than is the number of planning iterations,
+as the tree can be expanded by upto n contact configurations in each iteration.
+
+\cite{zhangRetraction}
+
+\cite{amatoOBRRT}
+
+dilatation
+\cite{hsu06multilevel}
+
+
+\cite{saha2005finding}
+
+DISP metric 
+\cite{zhang2008fast}
+
+
 
 Motion planning for flexible ligands in protein tunnels brings two main issues: 
 the ligand flexibility increases the dimension of the configuration space, and the necessity to plan in protein tunnels
