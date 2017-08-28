@@ -106,7 +106,18 @@ Access to computing and storage facilities owned by parties and projects contrib
 
 
 \begin{abstract}
+Sampling-based motion planners can compute trajectories for many-DOF (Degrees Of Freedom) robots (objects) of various shapes, which finds
+applicatoins even beyond robotics, e.g. for studing accesible pathways of proteins in computational bio-chemistry.
 Chemical interactions of proteins and other molecules take place in actives sites that are usually deeply burid inside the proteins.
+The active site are accesible throu one or more tunnels (pathways), which have been traditionally computed using Voronoi diagrams.
+The Voronoi-based tunnel computation is however not suitable for ligands of arbitrary shapes.
+In this paper, we propose to analyze the accessibility of the active sites using motion planning.
+The require to cope with the narrow passage problem, as the proteins are dense structures which limits possible movements of the ligands.
+To cope with the narrow passage issue, we propose to guide the search in the corresponding configuration space using the Voronoi-based tunnels.
+We propose to imitate the ligands flexibility by utilizing a library of known (typical) conformations, which significantly decreases 
+the dimension of the configuration space.
+We propose to measure distances between the configurations using a metric that considers also the shape of the ligand.
+Old:
 Motion planning can be used to analyze accessibility of tunnels by small molecules (ligands), which can help chemists to ..
 The ligands are not rigid structures, but they are rather flexible.
 In this paper, we present sampling-based motion planinng method to compute trajectories of the ligands inside know protein tunnels.
