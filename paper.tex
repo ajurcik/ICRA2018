@@ -174,10 +174,9 @@ The knowledge about the existence of the tunnels and their properties (e.g., the
 is important to understand interactions between proteins and other molecules (ligands).
 To get the ligand to the active site, there has to be a transportation path connecting the protein outer environment with the active site.
 These paths, called tunnels, have to be wide enough and the physico-chemical properties of the surrounding amino acids have to be compatible with the ligand (Fig.~\ref{fig::motiv}).
-
 %These interactions are highly influenced by the ability to transport the small molecule, called ligand, to the protein active site.
 %The active site can be considered as a deeply buried inner cavity with the ability to interact with the incoming ligand.
-Traditionally, tunnels are detected using Voronoi diagrams~\cite{yaffe2008,caver3} assuming 
+The tunnels are usually detected using Voronoi diagrams~\cite{yaffe2008,caver3} assuming 
 a spherical ligand (probe) and they are represented as a sequence of spheres.
 However, ligands typically have non-spherical shape and it is therefore difficult to estimate their traversability through
 the Voronoi-based tunnels.
@@ -206,7 +205,7 @@ Moreover, the selection of the metric is also influence by the shape of the obje
 To cope with these issues, we propose to guide the sampling of the configuration space using the Voronoi-baed tunnels.
 The random samples are not generated from the whole configuration space, but mainly around the tunnel.
 To increse movements of the ligands in the narrow tunnels, the free-space is dilated by 
-shrinking the atom radii, similarly, e.g., to~\cite{cortes2005path,hsuMultiLevel}.
+shrinking the atom radii, similarly, e.g., to~\cite{cortes2005path,hsu06multilevel}.
 The ligand can be considered as a multi-link kinematic chain and by chaning the torsion angles, the flexibility can be modeled~\cite{songPFpath,cortes2005path}.
 This however increases the dimension of the configuration space.
 Instead, we model the flexibility using a fixed set of known conformations.
@@ -231,7 +230,7 @@ First the biredge test is applied to identify regions aeround narrow passages, o
 
 selective rrt~\cite{lee2012srrrt}
 
-Free-space dilation is an effective aproach for narrow passage sampling~\cite{hsuMultiLevel}. 
+Free-space dilation is an effective aproach for narrow passage sampling~\cite{hsu06multilevel}. 
 It is necessary to define proper method for dilating and determin the amount of dilation.
 
 \section{Related Work}
@@ -260,24 +259,25 @@ VD-based methods are memory less demanding and also faster than the grid-based m
 The tunnels detected by the above mentioned approaches are evaluated using basic characteristics like bottleneck, length, curvature, and a list of surrounding
 residues, which are later used to estimate the interaction possibilities.
 The biggest disadvantage of both grid-based and VD-based methods is that the shape of the ligand is not taken into account during the tunnel detection and it is therefore not easy to estimate if (and how) a ligand might traverse the tunnels.
+In order to determine if a ligand can pass the tunnel, it is necessary to compute a trajectory considering the shape of the ligand.
+This can be formulated as a motion planning problem in a high-dimensional configuration space and solved using sampling-based planners.
+
 %The protein tunnels computed for spherical probes contain valuable information about the protein void space.
 %Based on the biochemical properties, the chemists can decide if a given tunnel is relevant and can be possibly used by a ligand to exit the protein.
 %The biochemically relevant tunnels can be then analyzed separately.
 
-In order to determine if a ligand can pass the tunnel, it is necessary to compute a trajectory considering the shape of the ligand.
-This can be formulated as a motion planning problem in a high-dimensional configuration space.
-The configuration space $\C$ is formed by all possible configurations of the ligand in the tunnel, i.e., considering its rotation, translation, and possibly also other degrees of freedom responsible for the conformation changes.
-The dimension of the configuration space is given by the degrees of freedom (DOF) of the ligand, i.e., 6D for a rigid ligand and 6D + $n$ for a flexible
-ligand with $n$ DOFs.
-Sampling-based motion planning methods can be used to search this high-dimensional configuration space~\cite{Lav06}.
-The idea of sampling-based motion planning is to randomly sample $\C$ and classify the samples as free or non-free using collision detection.
-The free samples are stored in a roadmap (a graph structure), in which a path can be searched using standard graph-search methods.
+%The configuration space $\C$ is formed by all possible configurations of the ligand in the tunnel, i.e., considering its rotation, translation, and possibly also other degrees of freedom responsible for the conformation changes.
+%The dimension of the configuration space is given by the degrees of freedom (DOF) of the ligand, i.e., 6D for a rigid ligand and 6D + $n$ for a flexible
+%ligand with $n$ DOFs.
+%Sampling-based motion planning methods can be used to search this high-dimensional configuration space~\cite{Lav06}.
+%The idea of sampling-based motion planning is to randomly sample $\C$ and classify the samples as free or non-free using collision detection.
+%The free samples are stored in a roadmap (a graph structure), in which a path can be searched using standard graph-search methods.
 
-Sampling-based motion planning methods are suitable for computing the trajectories of the ligand as they 
-can cope with many-DOF robots (objects) of arbitrary shapes.
-The flexibility of ligands (or even proteins) can be modeled using a multi-link kinematic chain, where torsional angles
-can change~\cite{songPFpath}.
-This is useful, e.g., in the protein folding studies~\cite{al2012motion,gipson2012computational,amato2002using,raveh2009rapid} or analysis of loop motions~\cite{cortes2004geometric}.
+%Sampling-based motion planning methods are suitable for computing the trajectories of the ligand as they 
+%can cope with many-DOF robots (objects) of arbitrary shapes.
+%The flexibility of ligands (or even proteins) can be modeled using a multi-link kinematic chain, where torsional angles
+%can change~\cite{songPFpath}.
+%This is useful, e.g., in the protein folding studies~\cite{al2012motion,gipson2012computational,amato2002using,raveh2009rapid} or analysis of loop motions~\cite{cortes2004geometric}.
 %This is useful, e.g., in the protein folding studies~\cite{al2012motion,gipson2012computational,amato2002using,raveh2009rapid,novinskaya2015improving,songPFintro} or analysis of loop motions~\cite{cortes2004geometric}.
 %Sampling-based methods have also been used for 
 % tunnel detection~\cite{vonasek2016application,vonasek2017tunnel} and
@@ -291,7 +291,6 @@ In each iteration of RRT, a random configuration $\qrand \in \C$ is generated an
 A new configuration $\qnew$ is constructed on the line connecting $\qnear$ and $\qrand$ in the distance $\varepsilon$ from $\qnear$.
 If $\qnew$ is collision-free, it is added to the tree.
 The algorithm terminates if the tree approaches the goal configuration close enough.
-%RRT is a suitable candidate for computing the trajectories of flexible ligands due to its ability to cope with many-DOF systems.
 
 %rrt for molecular: \cite{al2012motion}
 %survey \cite{gipson2012computational}
@@ -303,28 +302,32 @@ The algorithm terminates if the tree approaches the goal configuration close eno
 %protein folding~\cite{raveh2009rapid,novinskaya2015improving},
 %or protein folding combined with ligand diffusion~\cite{cortes2010simulating}.
 
+Sampling-based planners can provide poor performance in the presence of narrow passages, as many iterations
+are required in order to sample the narrow passages dense enough.
+PRM-based techniques solve the problem by increasing probablity of sampling in regions close to obstacles~\cite{hsuBridge,overmarsGauss}.
+These regions can be estimated e.g. based on amount of collision-free samples around a given sample~\cite{overmarsGauss} or e.g. based
+on workspace information represented by medial axis~\cite{amatoOBRRT,amato2002using}.
 
-The well known issue of sampling-based motion planners is the narrow passage problem. 
-Many approaches have been proposed to improve performance in the presence of narrow passages.
-The performance of PRM-based methods can be improved by filtering out samples that are not located insider narrow passages.
-For example, in~\cite{hsuBridge}, a random sample is classified as..
-
-In the Gaussian sampling strategy~\cite{overmarsGauss}, the samples are generated more frequently around obstacles.
-A random configuration $q_1\in\C$ is generated uniformly and another random configuration
-$q_2\in\C$ is drawn around using Normal distribution $N(q_1,\sigma^2)$.
-If both $q_1$ and $q_2$ are free or both are non-free, they are not added to the roadmap. 
-If only one of these configurations is free, then the free one is added to the roadmap. 
-The disadvantage of this strategy is the necessity to choose suitable value of the parameter $\sigma^2$, which depends
-on the used map and the shape of the robot.
-The Bridge-Test sampling~\cite{hsuBridge} employs the Gaussian strategy to generate two samples in order to compute their midpoint.
+%For example, in~\cite{hsuBridge}, a random sample is classified as..
+%In the Gaussian sampling strategy~\cite{overmarsGauss}, the samples are generated more frequently around obstacles.
+%A random configuration $q_1\in\C$ is generated uniformly and another random configuration
+%$q_2\in\C$ is drawn around using Normal distribution $N(q_1,\sigma^2)$.
+%If both $q_1$ and $q_2$ are free or both are non-free, they are not added to the roadmap. 
+%If only one of these configurations is free, then the free one is added to the roadmap. 
+%The disadvantage of this strategy is the necessity to choose suitable value of the parameter $\sigma^2$, which depends
+%on the used map and the shape of the robot.
+%The Bridge-Test sampling~\cite{hsuBridge} employs the Gaussian strategy to generate two samples in order to compute their midpoint.
 %The Gaussian strategy was improved in the Bridge-Test~\cite{hsuBridge}. % to generate samples inside a narrow passage.
 %Two random configurations $q,q'\in\C$ are generated in same way as in the Gaussian strategy.
 %The midpoint $p$ on a segment $q,q'$ is constructed.
-If the midpoint is collision-free and both end configurations are non-free, the midpoint lies in a narrow passage, and it is added to the roadmap.
-Both Gaussian and Bridge-Test strategies have to be combined with the uniform sampling in order to ensure sampling of free-regions~\cite{sun2005narrow}.
-Despite the simplicity of these two modifications, they were proven to significantly improve performance of PRM~\cite{hsuOnProb,geraertsRA,geraertsPRMA,wang10adaptive}.
+%If the midpoint is collision-free and both end configurations are non-free, the midpoint lies in a narrow passage, and it is added to the roadmap.
+%Both Gaussian and Bridge-Test strategies have to be combined with the uniform sampling in order to ensure sampling of free-regions~\cite{sun2005narrow}.
+%Despite the simplicity of these two modifications, they were proven to significantly improve performance of PRM~\cite{hsuOnProb,geraertsRA,geraertsPRMA,wang10adaptive}.
 
-
+RRT-based planners cannot cope with the narrow passage problem simply by increasing the probability of sampling in them, as the
+growth of the configuration tree may be toward the random samples may be blocked by an obstacle~\cite{vonasekphd}.
+Instead, the random samples has to be generated in the dififcult regions only if the tree can approach them.
+This is the main idea of the guided sampling~\cite{vonasek2009rrt,denny2014marrt,denny2016dynamic}.
 
 Another techniques to sample the narrow passages dense enough is to retract the random samples towards regions that are believed
 to be located in narrow passages.
@@ -333,27 +336,13 @@ The task of the retraction step is to find a contact configuration  that minimiz
 It is necessary to use an apporpriated distance metric in the configuration space.
 Generally, it is hard to combine the translational and rotational components in the configuration space.
 
-In~\cite{zhangRetraction}, the DISP metric~\cite{zhang2008fast}.
-
-The contact configuration $q$ is found on the line and its neighborhood is searched to find another contact configuration $q'$ such that 
-$\varrho(q',\qrand) < \varrho(q,\qrand)$.
-The retraction is terminated after several steps or if no new contact configuration can be found.
-The configuration trees built by RRT--Retraction can therefore contain more nodes than is the number of planning iterations,
-as the tree can be expanded by upto n contact configurations in each iteration.
-
-\cite{zhangRetraction}
-
-\cite{amatoOBRRT}
-
-dilatation
-\cite{hsu06multilevel}
+%In~\cite{zhangRetraction}, the DISP metric~\cite{zhang2008fast}.
 
 
 \cite{saha2005finding}
 
 DISP metric 
 \cite{zhang2008fast}
-
 
 
 Motion planning for flexible ligands in protein tunnels brings two main issues: 
@@ -435,6 +424,10 @@ Library of conformations are used also in different types of calculations, e.g.~
 %This technique is similar to generation of samples near the medial exist of the environment
 %medial axis~\cite{wilmarthMAPRM,foskey01hybrid,guibas1999probabilistic,hoff2000interactive,yang2004adapting,amatoOBRRT}.
 %or by guiding the growth of the tree around a general path in the workspace~\cite{vonasek2009rrt,denny2014marrt}.
+
+
+
+
 
 \section{Traversability of Tunnels}
 
