@@ -106,24 +106,17 @@ Access to computing and storage facilities owned by parties and projects contrib
 
 
 \begin{abstract}
-Sampling-based motion planners can compute trajectories for many-DOF (Degrees Of Freedom) robots (objects) of various shapes, which finds
-applicatoins even beyond robotics, e.g. for studing accesible pathways of proteins in computational bio-chemistry.
-Chemical interactions of proteins and other molecules take place in actives sites that are usually deeply burid inside the proteins.
+Chemical interactions of proteins and other molecules (ligands) take place in actives sites that are usually deeply burid inside the proteins.
 The active site are accesible throu one or more tunnels (pathways), which have been traditionally computed using Voronoi diagrams.
-The Voronoi-based tunnel computation is however not suitable for ligands of arbitrary shapes.
-In this paper, we propose to analyze the accessibility of the active sites using motion planning.
-The require to cope with the narrow passage problem, as the proteins are dense structures which limits possible movements of the ligands.
-To cope with the narrow passage issue, we propose to guide the search in the corresponding configuration space using the Voronoi-based tunnels.
-We propose to imitate the ligands flexibility by utilizing a library of known (typical) conformations, which significantly decreases 
-the dimension of the configuration space.
-We propose to measure distances between the configurations using a metric that considers also the shape of the ligand.
-Old:
-Motion planning can be used to analyze accessibility of tunnels by small molecules (ligands), which can help chemists to ..
-The ligands are not rigid structures, but they are rather flexible.
-In this paper, we present sampling-based motion planinng method to compute trajectories of the ligands inside know protein tunnels.
-The tunnels are represented by a set of spheres and they are used to focus sampling of the configuration space.
-To decrease the number of degrees of freedom, the ligand flexibility is modeled by a set of predefined conformations.
-We propose a new metric to measrue distances between the configurations which considers the shape of the ligands.
+The Voronoi-based tunnel computation is however not suitable for ligands of arbitrary shapes neither for flexible
+ligands, which can changes their conformation.
+In this paper, we propose to analyze the accessibility of the active sites using sampling-based motion planning.
+Thing brings three challenges: how to find path in a dense protein structures, where the tunnels behave like narrow passages,
+how to model the conformation changes of the ligands, and how to measure distance in the related configuration space.
+To cope with the narrow passage problem, we generate the random samples areound a Voronoi-based tunnel and we shrink
+tha atomic radii of the ligand.
+The flexibility of the ligand is modeled using a fixed set of known conformations.
+The distance between the configurations is measured using the nearest distance between two atoms.
 \end{abstract}
 
 
@@ -159,22 +152,13 @@ into a graph structure (roadmap).
 A path in the roadmap then corresponds to a motion in the workspace.
 The two most used sampling-based techniques are Probabilistic Roadmaps (PRM)~\cite{kavrakiForPP} and Rapidly Exploring Random Trees (RRT)~\cite{lavalleRRT}.
 Originally, both samples utilize uniform distribution to sample the configuration space.
-As the random samples are classify as free or non-free using collision detection, the sampling-based methods can found paths for roobts of various shapes. 
+As the random samples are classify as free or non-free using collision detection, the sampling-based methods can found paths for robots of various shapes. 
 Another important advantage of the sampling-based planners is that they can cope with robots with many degrees of freedom (DOF).
-The well known issues is the narrow passage problem and the sensitiviy to distance metric in the configuration space.
-
-A narrow passage is a small region in the configuration space whose removal changes connectivity of the space.
-As the volume of the narrow passage is significantly smaller than then volume of the whole configuration space, it is difficult to 
-sample it dense enough using uniform ditribution.
-Consequently, many iterations are needed in order to put enough samples into it, which increases the computation time.
-
-A proper distance metric in the configuration space is necessary in order to determine which samples should be connected together (in the case of PRM), or which node of the tree should be expanded (in the case of RRT).
-Generally, it is not easy to combine the rotational and translational components of the configuration space.
-Moreover, the selection of the metric is also influence by the shape of the objects (robots).
-
-Sampling-based motion planners has been intensively studied in robotics, but they have been applied also in other research fields.
-In bio-chemistry, the planners have been used to study
-loop motions~\cite{cortes2004geometric},
+Thanks to these features, sampling-based planners has been utilized in wide range of applications in robotics, but also in 
+other research domain, namely in bio-chemistry 
+%Sampling-based motion planners has been intensively studied in robotics, but they have been applied also in other research fields.
+%In bio-chemistry, the planners have been used to study
+to study loop motions~\cite{cortes2004geometric},
 %protein folding~\cite{amato2002using,raveh2009rapid,novinskaya2015improving,songPFintro},
 protein folding~\cite{raveh2009rapid,novinskaya2015improving},
 or for tunnel detection~\cite{vonasek2017tunnel}.
@@ -184,35 +168,51 @@ or for tunnel detection~\cite{vonasek2017tunnel}.
 %survey \cite{gipson2012computational}
 %Sampling-based planners have been used in various applications in robotics~\cite{elbanhawi2014sampling} and also  %,latombe1999motion} and also
 %Solutions for tunnel detection using sampling-based methods however have not been discussed yet.
-%Besides robotics, sampling-based planners have been used also in applications in bio-i
-
-Understanding of interactions between proteins and other small molecules is crucial in many research fields, including drug design and protein engineering. 
-These interactions are highly influenced by the ability to transport the small molecule, called ligand, to the protein active site.
-The active site can be considered as a deeply buried inner cavity with the ability to interact with the incoming ligand.
+%Understanding of interactions between proteins and other small molecules is crucial in many research fields, including drug design and protein engineering. 
+The problem of tunnel detection is to find a tunnel (pathways) leading to a specific place (called active site) inside the protein.
+The knowledge about the existence of the tunnels and their properties (e.g., their bottlenect and chemical properties around the tunnel),
+is important to understand interactions between proteins and other molecules (ligands).
 To get the ligand to the active site, there has to be a transportation path connecting the protein outer environment with the active site.
 These paths, called tunnels, have to be wide enough and the physico-chemical properties of the surrounding amino acids have to be compatible with the ligand (Fig.~\ref{fig::motiv}).
 
+%These interactions are highly influenced by the ability to transport the small molecule, called ligand, to the protein active site.
+%The active site can be considered as a deeply buried inner cavity with the ability to interact with the incoming ligand.
 Traditionally, tunnels are detected using Voronoi diagrams~\cite{yaffe2008,caver3} assuming 
 a spherical ligand (probe) and they are represented as a sequence of spheres.
-Biochemists decide if a tunnel can be used to transport a given ligand mainly based on the tunnel length and bottleneck (i.e., the radius of the smallest sphere that forms the tunnel).
-This is used for example in protein engineering, where the task is to change selected properties of a protein, e.g., its stability under different outer conditions~\cite{Koudelakova2013}. % or its activity of the protein towards other molecules~\cite{Pavlova2009}.
+However, ligands typically have non-spherical shape and it is therefore difficult to estimate their traversability through
+the Voronoi-based tunnels.
+
+%Biochemists decide if a tunnel can be used to transport a given ligand mainly based on the tunnel length and bottleneck (i.e., the radius of the smallest sphere that forms the tunnel).
+%This is used for example in protein engineering, where the task is to change selected properties of a protein, e.g., its stability under different outer conditions~\cite{Koudelakova2013}. % or its activity of the protein towards other molecules~\cite{Pavlova2009}.
 %The design of suitable ligands causing the desired changes can be speeded up by detecting and analyzing the tunnels leading to the active sites.
 %This can be achieved by detecting and studying so called tunnels in proteins which can serve as the transportation paths for the 
 %ligand from the outside environment to the active site or vice versa. 
-Whereas the tunnel computation is already a well established research field, the simulation of ligand transportation through the detected tunnels is rather new.
-Ligands are typically of non-spherical shape, therefore it is difficult to estimate their traversability through tunnels computed for a spherical probe.
-The decision based only on spherical tunnels requires previous expertise in the domain and yet it may be imprecise.
+%Whereas the tunnel computation is already a well established research field, the simulation of ligand transportation through the detected tunnels is rather new.
+%Ligands are typically of non-spherical shape, therefore it is difficult to estimate their traversability through tunnels computed for a spherical probe.
+%The decision based only on spherical tunnels requires previous expertise in the domain and yet it may be imprecise.
 
 To provide biochemists  a better insight into the behavior of non-spherical ligands, it is necessary to compute the trajectories of the ligand considering its shape and possibly also its conformation changes.
 This can be formulated as the path planning problem where the ligand is considered as a robot moving amongst protein's atoms.
-Sampling-based motion planning methods are suitable candidates for this task, as they can consider non-spherical shape of the ligand as well as the conformational changes.
+Sampling-based planners are suitable candidates to solve this problem due to their ability to cope with many-DOF problems and objects with arbitrary shapes.
 
-Proteins are dense structures which limits movements of the ligand insider the tunnels, which leads to the narrow passage problem.
-To cope with this problem, we propose to utilize the principle of guided sampling~\cite{vonasek2009rrt,denny2016dynamic}.
+The well known issues of the sampling-based planners are the narrow passage problem and the sensitiviy to distance metric in the configuration space.
+A narrow passage is a small region in the configuration space whose removal changes the connectivity of the space.
+Due to their low volumes, the probability of sampling the narrow passages is low.
+Consequently, many iterations are needed in order to put enough samples into the passages, which increases the computation time.
+A proper distance metric in the configuration space is necessary in order to determine which samples should be connected together (in the case of PRM), or which node of the tree should be expanded (in the case of RRT).
+Generally, it is not easy to combine the rotational and translational components of the configuration space.
+Moreover, the selection of the metric is also influence by the shape of the objects (robots).
+
+To cope with these issues, we propose to guide the sampling of the configuration space using the Voronoi-baed tunnels.
 The random samples are not generated from the whole configuration space, but mainly around the tunnel.
-The dilatation of the ligand free space can be achieved by shrinking the atom radii, similarly, e.g., to~\cite{cortes2005path}.
-%We propose to analyze the traversability of the ligands in the tunnels using motion planning.
-The flexibility of the ligand is modeled using a predefined set of typical conformations.
+To increse movements of the ligands in the narrow tunnels, the free-space is dilated by 
+shrinking the atom radii, similarly, e.g., to~\cite{cortes2005path,hsuMultiLevel}.
+The ligand can be considered as a multi-link kinematic chain and by chaning the torsion angles, the flexibility can be modeled~\cite{songPFpath,cortes2005path}.
+This however increases the dimension of the configuration space.
+Instead, we model the flexibility using a fixed set of known conformations.
+
+%Proteins are dense structures which limits movements of the ligand insider the tunnels, which leads to the narrow passage problem.
+%To cope with this problem, we propose to utilize the principle of guided sampling~\cite{vonasek2009rrt,denny2016dynamic}.
 %It helps to keep also potential solutions which do not fit to the geometric restrains but can be still feasible because of the physico-chemical properties.
 %This strategy helps to overcome the limitations of the conformational discretation introduced by the rotamer approximation.
 
@@ -231,12 +231,14 @@ First the biredge test is applied to identify regions aeround narrow passages, o
 
 selective rrt~\cite{lee2012srrrt}
 
+Free-space dilation is an effective aproach for narrow passage sampling~\cite{hsuMultiLevel}. 
+It is necessary to define proper method for dilating and determin the amount of dilation.
+
 \section{Related Work}
 
-
-The analysis of protein structure aiming to reveal the tunnels has been supported by different computational software tools which take the geometry of the protein as an input and explore the inner void space (e.g., CAVER 1.0~\cite{petrek2006caver} or MOLE~\cite{Petrek20071357}). 
+%The analysis of protein structure aiming to reveal the tunnels has been supported by different computational software tools which take the geometry of the protein as an input and explore the inner void space (e.g., CAVER 1.0~\cite{petrek2006caver} or MOLE~\cite{Petrek20071357}). 
 Early methods for tunnel detection utilized a discretized 3D grid, where each cell is considered as occupied or free depending
-on the presence of atoms of the protein.
+on the presence of atoms of the protein~\cite{petrek2006caver,Petrek20071357}.
 Tunnels can be then searched using standard graph-search methods, like Dijkstra's algorithm.
 Besides, the grid can be used to identify other relevant properties like 
 pockets, cavities, or channels~\cite{sehnal2013mole,petrek2006caver}.
@@ -244,7 +246,6 @@ pockets, cavities, or channels~\cite{sehnal2013mole,petrek2006caver}.
 The obvious disadvantage of the grid-based methods is the high memory demand and their dependency on the grid resolution.
 %Due to the high memory consumption, these methods are not suitable for tunnel detection in dynamic proteins and therefore they
 %are used primarily for analysis of static molecules or individual snapshots of molecular dynamics.
-
 Currently the most widely used approach to tunnel detection is based on ordinary Voronoi diagrams (VD) or Weighted Voronoi Diagrams (WVD). %~\cite{caver3,yaffe2008}.
 The ordinary VD is computed on points representing centers of all atoms, without considering the radii of atoms.
 %This may lead to detection of tunnels with incorrect bottlenecks. % i.e., incorrect radius of a smallest probe that can traverse the tunnels.
