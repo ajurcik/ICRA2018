@@ -325,7 +325,10 @@ based only on the features of the workspace~\cite{hannaWIS}.
 
 RRT-based planners cannot cope with the narrow passage problem simply by increasing the probability of sampling in them, as the
 growth of the configuration tree may be toward the random samples may be blocked by obstacles~\cite{vonasekphd}.
-Instead, the random samples has to be generated in the difficult regions only if the tree can approach them.
+DD-RRT~\cite{yershovaDDRRT} limits the selection of nodes for expansion to a small ball. 
+The radius of a ball is defaulty infinity, but if the node cannot be expanded, it is set to a predefied (small) value.
+This small radius can be adapted according to the success rate of the expansion in ADD-RRT~\cite{jailletADRRT}.
+To attract the tree towards a region, the random samples have to be generate there only if the tree can expand to the region.
 This is the main idea of the guided sampling~\cite{vonasek2009rrt,denny2014marrt,denny2016dynamic}, where a the configurations
 space is sampled with higher probability around a given list of configurations.
 These guiding configurations can be computed e.g. as a path in the workspace.
@@ -711,10 +714,11 @@ In most of the frames, two tunnels were detected.
 
 %Both tested ligands have more than 10 atoms and therefore they cannot fit into the tunnel of with 0.9~\AA, so
 %the radii of ligands were scaled down. 
-Four different scaling-down factors were used: $\smin=\{0.4,0.5,0.6,0.7\}$.
+Four different scaling-down factors were used: $\smin=\{0.5,0.6,0.7,0.8\}$.
 For each scale, 20 collision-free initial configurations were found in the $\RI=2$\AA\ radius around the first sphere of the tunnel (outside the protein).
 For each ligand, each minimal scale $\smin$ and each initial configuration, 10 trajectories were computed using the proposed planner.
 The parameters of the planner were: $\Imax=10,000$, $m=50$, $\gb=0.9$, $\dt=1.5$\AA, $\rv=2$~\AA.
+
 For each initial configuration, the success rate is computed as the ratio of trajectories that reached the end of the tunnel (to the distance 
  $\rv=2$~\AA or less) over 100 trials.
 
@@ -738,33 +742,19 @@ For each initial configuration, the success rate is computed as the ratio of tra
 %
 
 
+The results are shown in Tab.~\ref{tab::main}.
+
+
 \begin{table}
 \centering
-\caption{\label{tab::rrt}
-    Runtime and success ratio for ligand $\LA$ (left) and $\LB$ (right).
-}
-{
+\caption{\label{tab::main}Traversability of the tunnels}
 \small
 \renewcommand{\tabcolsep}{1pt}
-\input table.003.tex
-\hskip 4pt   
-\input table.004.tex
+{\small
+\input graph.tex
 }
 \end{table}
 
-
-
-
-
-Trajectories for $\LA$ in all detected tunnels were classified as successful if they reached the last sphere of the tunnel
-to distance $\dt=2$~\AA and they were considered unsuccessful otherwise.
-The throughput computed from the trajectories shows that the tunnels are difficult not only around bottlenecks, but
-also in other places.
-The comparison of the classic bottleneck (i.e., measured by the radius of spherical probe) and throughput is depicted in Fig.~\ref{fig::tunnel2}a.
-The trajectories for $\smin=0.4$ are depicted in Fig.~\ref{fig::tunnel2}b and for $\smin=0.5$ in Fig.~\ref{fig::tunnel2}c.
-The successful trajectories for $\smin=0.4$ reveal that the end of the tunnel No. 3 can be approached by two different pathways (one in the tunnel and another one outside the tunnel).
-The detail is depicted in Fig.~\ref{fig::detail}.
-Despite the low bottleneck of this tunnel, the ligand may reach its end using the alternative pathway. 
 
 
 
@@ -958,6 +948,32 @@ The number of trajectories in each cluster is represented by the width of the po
 }
 \end{figure}
 
+
+
+\begin{table}
+\centering
+\caption{\label{tab::rrt}
+    Runtime and success ratio for ligand $\LA$ (left) and $\LB$ (right).
+}
+{
+\small
+\renewcommand{\tabcolsep}{1pt}
+\input table.003.tex
+\hskip 4pt   
+\input table.004.tex
+}
+\end{table}
+
+
+Trajectories for $\LA$ in all detected tunnels were classified as successful if they reached the last sphere of the tunnel
+to distance $\dt=2$~\AA and they were considered unsuccessful otherwise.
+The throughput computed from the trajectories shows that the tunnels are difficult not only around bottlenecks, but
+also in other places.
+The comparison of the classic bottleneck (i.e., measured by the radius of spherical probe) and throughput is depicted in Fig.~\ref{fig::tunnel2}a.
+The trajectories for $\smin=0.4$ are depicted in Fig.~\ref{fig::tunnel2}b and for $\smin=0.5$ in Fig.~\ref{fig::tunnel2}c.
+The successful trajectories for $\smin=0.4$ reveal that the end of the tunnel No. 3 can be approached by two different pathways (one in the tunnel and another one outside the tunnel).
+The detail is depicted in Fig.~\ref{fig::detail}.
+Despite the low bottleneck of this tunnel, the ligand may reach its end using the alternative pathway. 
 
 
 
