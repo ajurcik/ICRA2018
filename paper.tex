@@ -115,11 +115,15 @@ The active sites are accessible through one or more pathways (called tunnels).
 The knowledge about a tunnel (e.g. it's bottleneck or physico-chemical properties) can help chemists to estimate possible interactions
 between the protein and the ligand.
 The tunnels have been traditionally computed using Voronoi diagrams, which is suitable only for small, spherical and rigid ligands.
-We propose to analyze the accessibility of the active sites using sampling-based motion planning.
-This requires to cope with narrow passages and to model the flexibility of the ligands.
+Sampling-based motion planning can be used to analyze the traversability of the tunnels for non-spherical and flexible ligands.
+Motion planning inside protein structures leads to the narrow passage problem while considering flexible ligands increasing
+the degrees of freedom, and consequently the dimension of the configuration space.
+Moreover, as the flexible ligands have various shapes, the selection of a proper metric in the configuration space is crucial.
+In this paper, we propose a modification to the Rapidly Exploring Random Tree planner.
 To cope with the narrow passage problem, we generate the random samples around a Voronoi-based tunnel and we shrink
 the atomic radii of the ligand.
-The flexibility of the ligand is modeled using a fixed set of known conformations.
+The flexibility of the ligand is modeled using a fixed set of known conformations, so the dimension of the configuration space is not increased.
+The proposed method has been evaluated in a virtual screening scenario.
 \end{abstract}
 
 
@@ -201,7 +205,7 @@ Due to its low volumes, the probability of sampling the narrow passages is low.
 
 Consequently, many iterations are needed in order to put enough samples into the passages, which increases the computation time.
 A proper distance metric in the configuration space is necessary in order to determine which samples should be connected together (in the case of PRM), or which node of the tree should be expanded (in the case of RRT).
-Generally, it is not easy to combine the rotational and translational components of the configuration space.
+Generally, it is not easy to combine the rotational and transnational components of the configuration space.
 Moreover, the selection of the metric is also influence by the shape of the objects (robots).
 
 To cope with these issues, we propose to guide the sampling of the configuration space using the Voronoi-based tunnels.
@@ -330,7 +334,7 @@ based only on the features of the workspace~\cite{hannaWIS}.
 RRT-based planners cannot cope with the narrow passage problem simply by increasing the probability of sampling in them, as the
 growth of the configuration tree may be toward the random samples may be blocked by obstacles~\cite{vonasekphd}.
 DD-RRT~\cite{yershovaDDRRT} limits the selection of nodes for expansion to a small ball. 
-The radius of a ball is defaulty infinity, but if the node cannot be expanded, it is set to a predefied (small) value.
+The radius of a ball is default infinity, but if the node cannot be expanded, it is set to a predefined (small) value.
 This small radius can be adapted according to the success rate of the expansion in ADD-RRT~\cite{jailletADRRT}.
 To attract the tree towards a region, the random samples have to be generate there only if the tree can expand to the region.
 This is the main idea of the guided sampling~\cite{vonasek2009rrt,denny2014marrt,denny2016dynamic}, where a the configurations
@@ -721,12 +725,43 @@ In most of the frames, two tunnels were detected.
 Four different scaling-down factors were used: $\smin=\{0.5,0.6,0.7,0.8\}$.
 For each scale, 20 collision-free initial configurations were found in the $\RI=2$\AA\ radius around the first sphere of the tunnel (outside the protein).
 For each ligand, each minimal scale $\smin$ and each initial configuration, 10 trajectories were computed using the proposed planner.
-The parameters of the planner were: $\Imax=10,000$, $m=50$, $\gb=0.9$, $\dt=1.5$\AA, $\rv=2$~\AA.
 
 For each initial configuration, the success rate is computed as the ratio of trajectories that reached the end of the tunnel (to the distance 
  $\rv=2$~\AA or less) over 100 trials.
 
-\def\tmpa{0.13\textwidth}
+The proposed algorithm (Alg.~\ref{alg::main} and Alg.~\ref{alg::expand}), denoted as \RA\ in the rest of the paper, was run
+with the parameters $\Imax=10,000$, $m=50$, $\gb=0.9$, $\dt=1.5$\AA, $\rv=2$~\AA.
+This method was compared to RRT-Retraction~\cite{zhangRetraction} which is denoted as \RB\ in the rest of the text.
+TODO parametry.
+
+Both methods utilized the same data structures for nearest-neighbor search and collision detection.
+Parameters of the methods were chosen in order to use similar (in the term of order) number of collision-detection queries.
+
+\subsection{Traversability of one atom}
+
+The aim of the first experiment is to measure performance of both planner in the simplest scenario: finding path for one sphere towards the active site.
+The radius of the sphere is $1.7$~\AA. 
+
+The results are shown in Tab.~\ref{tab::one} which shows percentage of MD frames where the sphere traversed the whole tunnel 
+(i.e., when it reached the active site).
+As the bottlenecks of the tunnels in each frame is known, we can compute the percentage of frames that have the bottleneck larger
+than the tested sphere radius.
+The first line in the Tab.~\ref{tab::one} therefore show the maximum percentage of traversable frames, while the second
+line (denote Planners) shows how both planners performed in this scenario.
+We can conclude, that the performance of both methods is similar in the case of first tunnel.
+In the case of the second tunnel, \RA\ was able to find trajectory in more frames than \RB.
+
+\begin{table}
+\centering
+\caption{\label{tab::one}Traversability for one-atome}
+\small
+\renewcommand{\tabcolsep}{3.5pt}
+{\small
+\input graphProbe.tex
+}
+\end{table}
+
+
 
 %\begin{figure}
 %\centering
@@ -745,6 +780,9 @@ For each initial configuration, the success rate is computed as the ratio of tra
 %\end{figure}
 %
 
+\subsection{Traversability of ligands}
+
+The aim of the second experiment is to determine which ligands are 
 
 The results are shown in Tab.~\ref{tab::main}.
 
@@ -759,19 +797,27 @@ The results are shown in Tab.~\ref{tab::main}.
 }
 \end{table}
 
-\begin{table}
-\centering
-\caption{\label{tab::main}Traversability for one-atome}
-\small
-\renewcommand{\tabcolsep}{1pt}
-{\small
-\input graphProbe.tex
-}
-\end{table}
+\subsection{Influence of conformation selection}
 
+The proposed planner utilizes a set of predefined ligand's conformations.
+As each of them is tested in the expansion step, this number of influences both runtime and the success rate.
+By using more conformations, there is a bigger chance that at least one of them can expand the tree towards the random sample $\qrand$.
+However, using large number of conformations also increase the time complexity of the planner.
+Therefore, it is important so select a `good' set of conformations.
+Depending on the ligand, some conformations are more packed i.e., the atoms in that conformations are close to each other, but 
+conformations where the atoms form a longer molecule are also possible.
 
+From motion planning point of view, both types of conformations are useful.
+The `longer' conformations can better fit in a narrow passage, but their rotation inside the narrow passage is problematic.
+On the other hand, the `packed' conformations cannot fit the narrow passage, but they can more likely rotate.
 
-
+In the third experiment, we tested how the selection of conformations influences the ability of the planners to find a solution.
+Two strategies were used to select the conformations.
+In the first strategy, denoted as Packed, $n$ `packed' conformations are selected from the available set of conformations.
+The second strategy, denoted as Various, selects $n$ conformations as follows.
+For each conformation, the geometric center is calculated and the deviation of the distances of the atoms from the center is calculated.
+The conformations are sorted according to this deviation and then $n$ conformations are selected from this sorted list uniformly (i.e., the
+        conformation number $1$, then $1+n$, etc.).
 
 
 \section{Discussion}
