@@ -94,6 +94,10 @@ Access to computing and storage facilities owned by parties and projects contrib
 \def\LA{L_1}
 \def\LB{L_2}
 
+\def\RA{A$_{1}$}
+\def\RB{A$_{2}$}
+
+
 % ==================================================================================
 
 \begin{document}
@@ -668,7 +672,7 @@ The examples of the color mapping are shown in Fig.~\ref{fig:properties}.
 The accessibility (Fig.~\ref{fig:properties}a) shows that more than the half of the tunnel is not accessible (red part of the tunnel).
 The throughput shows (Fig.~\ref{fig:properties}b) that the only difficult is the part around the bottleneck (red color in Fig.~\ref{fig:properties}b), and the second half of the tunnel is also traversable.
 
-\begin{figure}[h]
+\begin{figure*}[h]
 \centering
 \begin{tabular}{ccc}
 \includegraphics[width=0.3\textwidth]{fig/accessibility} &
@@ -684,7 +688,7 @@ The throughput shows (Fig.~\ref{fig:properties}b) that the only difficult is the
 (c) Ligand scale --- the average scale of the ligand was \tylde 50\% in orange parts, \tylde 60\% in yellow parts, \tylde 80\% in yellow to green parts and \tylde 100\% in green parts.
 \label{fig:properties}
 }
-\end{figure}
+\end{figure*}
 
 
 
@@ -749,11 +753,22 @@ The results are shown in Tab.~\ref{tab::main}.
 \centering
 \caption{\label{tab::main}Traversability of the tunnels}
 \small
-\renewcommand{\tabcolsep}{1pt}
+\renewcommand{\tabcolsep}{3pt}
 {\small
 \input graph.tex
 }
 \end{table}
+
+\begin{table}
+\centering
+\caption{\label{tab::main}Traversability for one-atome}
+\small
+\renewcommand{\tabcolsep}{1pt}
+{\small
+\input graphProbe.tex
+}
+\end{table}
+
 
 
 
