@@ -141,14 +141,17 @@ The proposed method has been evaluated in a virtual screening scenario.
 \includegraphics[width=0.15\textwidth]{fig/motiv1} &
 \includegraphics[width=0.17\textwidth]{fig/motiv2lab} &
 \includegraphics[width=0.16\textwidth]{fig/motiv3}  \\
+Protein 1CQW & Active site & Detected tunnels \\ %& Example of a  \\
+             &            & (orange)         \\  %& trajectory
+\multicolumn{3}{c}{%
+\includegraphics[width=0.16\textwidth]{fig/renderDCP} 
+\includegraphics[width=0.16\textwidth]{fig/render37t}} \\ 
 %\hbox{
 %\vbox{
 %\hbox{\includegraphics[width=0.25\textwidth]{fig/ta-1} }
 %\hbox{\includegraphics[width=0.25\textwidth]{fig/ta-433}}
 %} 
 %}
-Protein 1CQW & Active site & Detected tunnels \\ %& Example of a  \\
-             &            & (orange)          %& trajectory
 \end{tabular}
 }
 \caption{\label{fig::motiv}
@@ -159,9 +162,10 @@ Protein 1CQW & Active site & Detected tunnels \\ %& Example of a  \\
 The idea of sampling-based motion planning is to randomly sample the configuration space of the robot and connect the collision-free samples
 into a graph structure (roadmap).
 A path in the roadmap then corresponds to a motion in the workspace.
-The random samples are classified as free or non-free using black-box collision detection which allows the sampling-based methods to find paths for robots of various shapes. 
-The sampling-based planners is that they can cope with robots with many degrees of freedom (DOF).
+%The random samples are classified as free or non-free using black-box collision detection which allows the sampling-based methods to find paths for robots of various shapes. 
+%The sampling-based planners can cope with robots with many degrees of freedom (DOF).
 The two most used sampling-based techniques are Probabilistic Roadmaps (PRM)~\cite{kavrakiForPP} and Rapidly Exploring Random Trees (RRT)~\cite{lavalleRRT}.
+The sampling-based planners can cope with many-DOF (Degrees of Freedom) robots of arbitrary shape and therefore they have been used for motion planning of varous robotic systems.
 Besides many applications in robotics, sampling-based planners have been used e.g. in bio-chemistry 
 %Sampling-based motion planners has been intensively studied in robotics, but they have been applied also in other research fields.
 %In bio-chemistry, the planners have been used to study
@@ -171,7 +175,7 @@ or for protein folding~\cite{raveh2009rapid,novinskaya2015improving}.
 %or for tunnel detection~\cite{vonasek2017tunnel}.
 
 One of the problems in protein engineering is the tunnel detection, where the task is to find a tunnel (pathway) 
-leading to a specific place (called active site) inside the protein (MAME CITACI?)
+leading to a specific place (called active site) inside the protein~\cite{gora2013gates}.
 %or protein folding combined with ligand diffusion~\cite{cortes2010simulating}.
 %rrt for molecular: \cite{al2012motion}
 %survey \cite{gipson2012computational}

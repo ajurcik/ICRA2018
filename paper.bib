@@ -5696,7 +5696,6 @@ file={#apporaches_for_heuristically_biasing_rrt_growth.pdf}
     title = {Workspace Importance Sampling for {Probabilistic Roadmap Planning}},
     booktitle={International Conference on Intelligent Robots and Systems (IROS)},
     volume={2},
-    pages={1618--1623},
     year = {2004},
     pozn={
 #nova samplovaci strategie pro PRM
@@ -7684,18 +7683,8 @@ file={#apporaches_for_heuristically_biasing_rrt_growth.pdf}
 @INPROCEEDINGS{yershovaDDRRT, 
 	title={Dynamic-Domain {R}{R}{T}s: Efficient Exploration by Controlling the Sampling Domain}, 
 	author={Yershova, A. and Jaillet, L. and Simeon, T. and LaValle, S. M.}, 
-	booktitle={IEEE ICRA},
-	booktitle2={IEEE International Conference on Robotics and Automation (ICRA)},
+	booktitle={IEEE International Conference on Robotics and Automation (ICRA)},
 	year={2005}, 
-	pages2={3856--3861}, 
-    pozn={analyza chovani rrt v uzkych pruchodech. definuji dva typy vrcholu ve stromu:
-	a. frontiers, jejich voroneho region roste s tim, jak roste konfiguracni prostor - tj. to jsou konnfigurace na hranici
-	stromu, a 
-    b. boundary, kde lezi u prekazek. Pruser je, kdyz frontier je boundary, protoze je casto vybiran pro expanzi, ale
-    z neho expanze nemuze bejt. Nahrvyhou dynamic-domain rrt: kazdy vrchol ma navic promennou R, ktera urcuje jeho radius.
-    pri hledani vrcholu pro expanzi se generujou nahodny samply a hledaj k nim nejblizsi sousedi tak dlouho, az je
-    radius nejblizsiho souseda vetsi nez vzdalenost mezi qrand a jeho qnear. Pak se zkusi connect. pokud to jde,
-    nastavi se radius qnnew na nekonecno, v opacnem pripade se nastavi radius qnear na R, kde R je preddefinovana konstanta.i}	
 }
 
 
@@ -17171,7 +17160,6 @@ year = {2013},
    Volume="79",
    Number="3",
    Pages="830--838",
-   Month="Mar"
 }
 
 
@@ -17198,6 +17186,20 @@ year = {2013},
     booktitle = "Robotics: Science and Systems III",
     publisher = "MIT Press Journals",
  }
+
+
+@article{gora2013gates,
+    author = {Gora, A. and Brezovsk\'{y}, J. and Damborsk\'{y}, J.},
+    title = {{Gates of Enzymes}},
+    doi = {10.1021/cr300384w},
+    journal = {Chem. Rev.},
+    number = {8},
+    pages = {5871--5923},
+    publisher = {American Chemical Society},
+    url = {http://dx.doi.org/10.1021/cr300384w},
+    volume = {113},
+    year = {2013}
+}
 
 
 
