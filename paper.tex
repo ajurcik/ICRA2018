@@ -1,6 +1,5 @@
 %\documentclass[a4paper, 10pt]{IEEEtran}      % for icra/RAL final
-\documentclass[letterpaper, 10 pt, conference]{ieeeconf} % initial submission to RAL/ICRA
-
+\documentclass[usletter, 10pt, conference]{ieeeconf} % initial submission to RAL/ICRA
 \usepackage{graphicx}
 \usepackage{booktabs}
 %\usepackage{amsmath}
@@ -8,12 +7,13 @@
 \usepackage{subfig}
 \usepackage[ruled,lined]{algorithm2e}
 \usepackage{multirow}
+\usepackage{flushend}
 %\usepackage[bookmarks=false]{hyperref}
 %\usepackage{setspace}
 \pdfminorversion=4
 
-%\IEEEoverridecommandlockouts                              % This command is only
-%\overrideIEEEmargins
+\IEEEoverridecommandlockouts                              % This command is only
+\overrideIEEEmargins
 
 
 \newcommand{\red}[1]{\textcolor{red}{#1}}
@@ -33,10 +33,12 @@
 Technick\'a 2, 166 27 Prague, Czech Republic,
 {\tt vonasek@labe.felk.cvut.cz}}
 \thanks{$^{2}$        
-Faculty of Informatics,   Masaryk University, 
-Botanick\'a 68a, 602~00 Brno, Czech Republic,\\
-The presented work has been supported by the Czech Science Foundation (GA{\v C}R) under research project No. 17-07690S.
-Access to computing and storage facilities owned by parties and projects contributing to the National Grid Infrastructure MetaCentrum, provided under the programme "Projects of Large Infrastructure for Research, Development, and Innovations" (LM2010005), is greatly appreciated.}}
+Faculty of Informatics,   Masaryk University, Botanick\'a 68a, 602~00 Brno, Czech Republic,
+%The presented work has been supported by the Czech Science Foundation (GA{\v C}R) under research project No. 17-07690S.
+%Access to computing and storage facilities owned by parties and projects contributing to the National Grid Infrastructure MetaCentrum, provided under the programme "Projects of Large Infrastructure for Research, Development, and Innovations" (LM2010005), is greatly appreciated.
+%}%
+}
+}
 
 
 %D. Bedn\'{a}\v{r}:
@@ -108,9 +110,6 @@ Access to computing and storage facilities owned by parties and projects contrib
 \thispagestyle{empty}
 \pagestyle{empty}
 
-%\frontmatter          % for the preliminaries
-
-
 \begin{abstract}
 Chemical interactions of proteins and other molecules (ligands) take place in actives sites that are usually deeply buried inside the proteins.
 The active sites are accessible through one or more pathways (called tunnels).
@@ -119,8 +118,7 @@ between the protein and the ligand.
 Voronoi-diagrams are usually used to detect the tunnels, but this is useful only for estimate traversability of small spherical ligands.
 Computing motions of non-spherical ligands including their possible conformation changes (i.e., when atoms of the ligand move relatively to each other) leads to motion planning in high-dimensional configuration space, which can be solved using sampling-based planning methods.
 Such a planning problem necessarily includes narrow passages, as the movements of ligands are limited by many protein atoms.
-Moreover, considering flexible ligands increase the degrees of freedom, and consequently the dimension of the configuration space.
-%Moreover, as the flexible ligands have various shapes, the selection of a proper metric in the configuration space is crucial.
+Considering flexible ligands increases the degrees of freedom, and consequently the dimension of the configuration space.
 In this paper, we propose a modification to the Rapidly Exploring Random Tree planner for the purpose of trajectory computations of ligands along protein tunnels.
 To cope with the narrow passage problem, we generate the random samples around a Voronoi-based tunnel and we shrink
 the atomic radii of the ligand.
@@ -132,7 +130,7 @@ The proposed method has been evaluated in a virtual screening scenario.
 \section{Introduction \& Motivation}
 
 
-\begin{figure}[b]
+\begin{figure}[t]
 \centering
 {\footnotesize
 \renewcommand{\arraystretch}{0.1}
@@ -145,7 +143,7 @@ Protein 1CQW & Active site & Detected tunnels \\ %& Example of a  \\
              &            & (orange)         \\  %& trajectory
 \multicolumn{3}{c}{%
 \includegraphics[width=0.16\textwidth]{fig/renderDCP} 
-\includegraphics[width=0.16\textwidth]{fig/render37t}} \\ 
+\includegraphics[width=0.14\textwidth]{fig/render37t}} \\ 
 %\hbox{
 %\vbox{
 %\hbox{\includegraphics[width=0.25\textwidth]{fig/ta-1} }
@@ -202,13 +200,8 @@ However, as the ligands typically non-spherical and flexible,  it is difficult t
 %The decision based only on spherical tunnels requires previous expertise in the domain and yet it may be imprecise.
 
 To provide biochemists  a better insight into the behavior of non-spherical ligands, it is necessary to compute the trajectories of the ligand considering its shape and also conformation changes (flexible ligands).
-The computation of trajectories for such ligands can be formulated as a motion planning problem.
-RRT is a suitable candidate to solve this problem due to its ability to cope with many-DOF robots of arbitrary shapes.
-This motion planning however requires to cope with the narrow passage problem, as the proteins are dense structures and the
-movements of the ligands are limited.
-The flexible ligands can be modeled as a multi-link kinematic chain~\cite{songPFpath,cortes2005path}, but it significantly
-increases the number of DOFs and consequently the dimension of the configuration space.
-Moreover, by considering flexible ligands, their shape differ in each conformation, which makes the selection of a suitable metric difficult.
+This can be formulated as a motion planning problem.
+It is necessary to cope with the narrow passage problem, as the proteins are dense structures and the movements of the ligands are limited, and to efficiently model the flexible ligands.
 
 In this paper, we propose a modification to RRT to cope with these issues.
 In the proposed method, the random samples are not generated from the whole configuration space, but the sampling is guided using
@@ -367,14 +360,19 @@ the robot~\cite{hsuOnProb} or the obstacles~\cite{bayazitIRC}.
 
 The shrinking technique has been used also in~\cite{cortes2010simulating}, where exit pathways for a small flexible molecule are
 computed using a RRT-based method.
+The flexible ligands is modeled as a kinematic chain, which increases dimension of the configuration space.
 To cope with many-DOF ligands, the RRT-ML variant~\cite{cortes2007mlrrt} is employed as the basic planner.
 RRT-ML expands the tree primarily using those DOF that are essential for achieving motion of the ligand (i.e., rotation
 and translation) and it employs the other DOFs (i.e., that are responsible for conformation changes) if they hinder the growth of the tree.
 
-TODO NEKAM PRESUNU/SMAZU: 
-A proper distance metric in the configuration space is necessary in order to determine which samples should be connected together (in the case of PRM), or which node of the tree should be expanded (in the case of RRT).
-Generally, it is not easy to combine the rotational and transnational components of the configuration space.
-Moreover, the selection of the metric is also influence by the shape of the objects (robots).
+%TODO NEKAM PRESUNU/SMAZU: 
+%A proper distance metric in the configuration space is necessary in order to determine which samples should be connected together (in the case of PRM), or which node of the tree should be expanded (in the case of RRT).
+%Generally, it is not easy to combine the rotational and transnational components of the configuration space.
+%Moreover, the selection of the metric is also influence by the shape of the objects (robots).
+%The flexible ligands can be modeled as a multi-link kinematic chain~\cite{songPFpath,cortes2005path}, but it significantly
+%increases the number of DOFs and consequently the dimension of the configuration space.
+%Moreover, by considering flexible ligands, their shape differ in each conformation, which makes the selection of a suitable metric difficult.
+
 
 
 \section{Proposed method}
