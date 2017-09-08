@@ -13,6 +13,6 @@ clean:
 	rm -rf $(PDF) 
 
 copy: all
-#	cp *.eps ../../fig	
-#	cp *.pdf ../../fig	
-	@for i in $(PDF) $(EPS) ; do ln -s -f ../support/eps/$$i ../../fig; done
+	cp *.eps ../../fig	
+	cp *.pdf ../../fig	
+#	@for i in $(PDF) $(EPS) ; do ln -s -f ../support/eps/$$i ../../fig; done
