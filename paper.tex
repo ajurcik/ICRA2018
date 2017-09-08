@@ -617,8 +617,14 @@ To minimize the distance between $\qrand$ and the ligand, the shape of the ligan
 Therefore, we propose to measure the distance as the smallest 3D Euclidean distance between atoms placed at $\qrand$ and a configuration
 $q$ being tested.
 This metric is denoted $\da(\cdot,\cdot)$ on line~\ref{alg::expand:a} in Alg.~\ref{alg::expand}.
-This metric supports retraction of the ligand towards $\qrand$.
 As the expansion routine attempts to find such sample that minimizes this distance to $\qrand$, it supports retraction of the ligand towards $\qrand$.
+The fast evaluation of this metric with complexity $O(\log n)$, where $n$ is the number of atoms of the ligand, can be achieved using KD-trees.
+For each conformation $\l \in L$ of the ligand, a KD-tree is build for the ligand at configuration $q=(0,0,0,0,0,0,l,\smax)$
+(i.e., for ligand with no translation and no rotation).
+To find a nearest atom to $\qrand$ for a ligand at the configuration $q=(x,y,z,r_x,r_y,r_z,l,s)$, the translation vector $T=(x,y,z)$ and
+rotation matrix $R$ given by $r_x$, $r_y$ and $r_z$ are computed.
+Then, $\qrand$ is translated to $\qrand' = R^{-1}(\qrand-T)$ and the KD-tree search is used to find nearest point towards $\qrand'$, which
+is also the nearest neighbor of the ligand at $q$ to $\qrand$.
 
 
 \begin{algorithm}[h]
@@ -671,6 +677,23 @@ The path $P=(q_i), q_i \in \C$ is represented as a sequence of collision-free co
 The path is found in the tree even if the tree does not approach $\qgoal$ close enough.
 Considering also these non-feasible solutions is necessary to evaluate difficult areas of the tunnels, e.g. bottlenecks.
 The utilization of all computed paths for evaluation of tunnel difficulty is described in the next section.
+
+\subsection{Selection of conformations for motion planing}
+\label{sec::strat}
+
+The proposed planner utilizes a set of predefined ligand's conformations.
+As each of them is tested in the expansion step, this number of influences both runtime and the success rate.
+By using more conformations, there is a bigger chance that at least one of them can expand the tree towards the random sample $\qrand$.
+However, using large number of conformations also increase the time complexity of the planner.
+Therefore, it is important so select a `good' set of conformations.
+Depending on the ligand, some conformations are more packed i.e., the atoms in that conformations are close to each other, but 
+conformations where the atoms form a longer molecule are also possible.
+
+From motion planning point of view, both types of conformations are useful.
+The `longer' conformations can better fit in a narrow passage, while the `packed' conformations can be better rotated at place.
+To select the suitable conformations, a simple technique is proposed.  
+For each conformation, the geometric center is calculated and the deviation of the distances of the atoms from the center is calculated.
+The conformations are sorted according to this deviation and then the desired number of conformations are selected from this sorted list uniformly.
 
 
 
@@ -807,6 +830,36 @@ m01 & m01 & m37 & m37 \\
 %\end{figure}
 %
 
+\subsection{Influence of conformation selection}
+
+The aim of this experiment is to verify the procedure to select ligand conformations for the motion planning.
+The experiment was performed with the ligand DCP, for which $1300$ conformations where available and for the ligand
+M040 with $7560$ available conformations.
+Two strategies were tested: the strategy described in Sec.~\ref{sec::strat} (denoted `S') and a strategy,
+that prefers smaller conformations (denoted `P').
+In the second method, deviation of the atomic distance from the geometric center are computed and the conformations
+with the lowest deviations are selected.
+The results are summarized in Tab.~\ref{tabl::selection}, which shows the percentage number of frames that are traversable by the tested ligand.
+For each tested ligand, 5 and 50 conformations from the available pool of conformations were selected using the strategies.
+In the case of both tested ligands and 50 selected conformations, the `S' strategy leads to higher traversability rate than the `P' strategy.
+For the ligand DCP, a higher traversability rates was achieved when 50 conformations are selected.
+This experiments shows that selecting 50 conformations using the `S' strategy (Sec.~\ref{sec::strat}) leads to better results
+than using less number of conformations or when preferring the packed conformations.
+
+\begin{table}
+\centering
+\caption{\label{tab::selection}Traversability of the tunnels depending on conformation selection}
+\small
+\renewcommand{\tabcolsep}{3pt}
+{\small
+\input graphSel.tex
+}
+\end{table}
+
+
+
+
+
 \subsection{Traversability of ligands}
 
 The aim of the second experiment is to determine which ligands are 
@@ -823,28 +876,6 @@ The results are shown in Tab.~\ref{tab::main}.
 \input graph.tex
 }
 \end{table}
-
-\subsection{Influence of conformation selection}
-
-The proposed planner utilizes a set of predefined ligand's conformations.
-As each of them is tested in the expansion step, this number of influences both runtime and the success rate.
-By using more conformations, there is a bigger chance that at least one of them can expand the tree towards the random sample $\qrand$.
-However, using large number of conformations also increase the time complexity of the planner.
-Therefore, it is important so select a `good' set of conformations.
-Depending on the ligand, some conformations are more packed i.e., the atoms in that conformations are close to each other, but 
-conformations where the atoms form a longer molecule are also possible.
-
-From motion planning point of view, both types of conformations are useful.
-The `longer' conformations can better fit in a narrow passage, but their rotation inside the narrow passage is problematic.
-On the other hand, the `packed' conformations cannot fit the narrow passage, but they can more likely rotate.
-
-In the third experiment, we tested how the selection of conformations influences the ability of the planners to find a solution.
-Two strategies were used to select the conformations.
-In the first strategy, denoted as Packed, $n$ `packed' conformations are selected from the available set of conformations.
-The second strategy, denoted as Various, selects $n$ conformations as follows.
-For each conformation, the geometric center is calculated and the deviation of the distances of the atoms from the center is calculated.
-The conformations are sorted according to this deviation and then $n$ conformations are selected from this sorted list uniformly (i.e., the
-        conformation number $1$, then $1+n$, etc.).
 
 
 \section{Discussion}
