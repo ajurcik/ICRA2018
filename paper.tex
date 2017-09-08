@@ -690,11 +690,19 @@ Depending on the ligand, some conformations are more packed i.e., the atoms in t
 conformations where the atoms form a longer molecule are also possible.
 
 From motion planning point of view, both types of conformations are useful.
-The `longer' conformations can better fit in a narrow passage, while the `packed' conformations can be better rotated at place.
+The `longer' conformations can better fit in a narrow passage, while the `packed' conformations can be better rotated at place 
+(Fig.~\ref{fig::m040c}.
 To select the suitable conformations, a simple technique is proposed.  
 For each conformation, the geometric center is calculated and the deviation of the distances of the atoms from the center is calculated.
 The conformations are sorted according to this deviation and then the desired number of conformations are selected from this sorted list uniformly.
 
+\begin{figure}
+\centering
+\includegraphics[width=0.3\textwidth]{fig/m040-conformations}
+\caption{\label{fig::m040c}
+ Examples of `long' conformation (left) and a `packed' one for the ligand M040 (1,5-Dichloropentane).
+}
+\end{figure}
 
 
 \subsection{Visualization of Results}
@@ -806,8 +814,13 @@ In the case of the second tunnel, \RA\ was able to find trajectory in more frame
 \includegraphics[width=0.15\textwidth,angle=\a]{fig/m001-oneAtom-rrt_path_time} &
 \includegraphics[width=0.15\textwidth,angle=\a]{fig/m037t-cdCount} & 
 \includegraphics[width=0.15\textwidth,angle=\a]{fig/m037t-rrt_path_time} \\
-m01 & m01 & m37 & m37 \\
-
+\multicolumn{2}{c}{One-atom} &
+\multicolumn{2}{c}{m037}  \\
+\multicolumn{4}{c}{%
+\includegraphics[width=0.15\textwidth,angle=\a]{fig/m040-10-cdCount} 
+\includegraphics[width=0.15\textwidth,angle=\a]{fig/m040-10-rrt_path_time} 
+\includegraphics[width=0.15\textwidth,angle=\a]{fig/m040-10-trajDistToGoal}} \\
+\multicolumn{4}{c}{m040} 
 \end{tabular}
 \end{figure}
 }
