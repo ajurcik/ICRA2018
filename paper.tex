@@ -394,7 +394,7 @@ Therefore, the tunnels serve as a guiding path for the configuration tree~\cite{
 
 Due to the protein dynamics, the tunnel changes, move and merge, and their bottleneck changes in each frame.
 It can therefore be expected, that the detected tunnels are rather narrow.
-Based on the observation from MD simulations, the tunnels adapt to the ligands (and vice versa), so even narrow tunnels can serve as transportation path for thhe ligands TODO CITACE??.
+Based on the observation from MD simulations, the tunnels adapt to the ligands (and vice versa), so even narrow tunnels can serve as transportation path for thee ligands TODO CITACE??.
 To enable computing of trajectories in the narrow tunnels, we shrink the atom radii of the ligand, similarly to~\cite{cortes2010simulating,guieysse2008structure}.
 
 The ligand flexibility is modeled using a predefined set of typical conformations, therefore the number of the dimensions of the configuration space does not depend on the DOF of the ligand as in~\cite{cortes2010simulating}.
@@ -606,7 +606,7 @@ To minimize the distance between $\qrand$ and the ligand, the shape of the ligan
 
 Therefore, we propose to measure the distance as the smallest 3D Euclidean distance between atoms placed at $\qrand$ and a configuration
 $q$ being tested.
-This metric is denoted $\da(\cdot,\cdot)$ on line~\ref{alg::expand:a} in Alg.~\ref{alg::expand}.
+This metric is denoted $\da(\cdot,\cdot)$ on line~\ref{alg::expand:a} in Alg.~\ref{alg::expand} and it is referred to as atom-based metric in the rest of the paper.
 As the expansion routine attempts to find such sample that minimizes this distance to $\qrand$, it supports retraction of the ligand towards $\qrand$.
 The fast evaluation of this metric with complexity $O(\log n)$, where $n$ is the number of atoms of the ligand, can be achieved using KD-trees.
 For each conformation $\l \in \L$ of the ligand, a KD-tree is built for the ligand at the configuration $q=(0,0,0,0,0,0,l,\smax)$
@@ -756,7 +756,9 @@ Two motion planners were utilized: the proposed planner (described in Alg.~\ref{
 The \RA\ method was run with the following parameters:
 $\Imax=5,000$, $m=100$, $\gb=0.9$, $\dt=1.5$\AA, $\rv=2$~\AA.
 Both methods were implemented in the same software framework and they utilized the same data structures and routines for collision detection and nearest-neighbor search.
-The Retraction-based RRT was implemented using 6D Euclidean metric.
+The nearest-neighbor search of both planners is based on the 6D Euclidean metric with the same weights for rotation and translation parts.
+This metric was selected based on preliminary experiments with both planners as it resulted in the higher success rates.
+
 The tested methods differ in the expansion step (lines \ref{alg::expa}--\ref{alg::expb} in Alg.~\ref{alg::expand}).
 In these lines, the \RB\ method employs the retraction step in order to find a new collision-free configurations $\qnew$ that approaches $\qrand$.
 The retraction step was realized by sampling the vicinity of the configuration $\qnear$ in the distance $0.1$~\AA\ using 20 samples.
@@ -766,6 +768,8 @@ The \RB\ method can therefore expand the tree by at most 5 new nodes per conform
 The larger number of nodes in \RB\ method is not problematic, as the KD-trees were used for nearest-neighbor search and the time to solve these queries is significantly less than computing collision detection.
 Parameters of the methods were selected in such a way that the number of collision detection queries in each expansion step is same.
 For each conformation and tested scale, the \RA\ methods attempts to find $m=100$ collision-free configurations, and \RB\ attempts to perform $5 \times 20$ collision-detection queries.
+Other parameters of the \RB\ planner were same as for \RA.
+Planning was terminated after $\Imax$ iterations, or if the tree approached the active site to less than 0.5~\AA.
 
 In the following experiments, we measure performance of the methods using the traversability rate, which is the percentage of the protein dynamic frames that are traversable.
 A frame is considered traversable, if at least one trajectory out of 20 (the number of initial configurations $|\QI|$) $\times$ 10 trials approaches the active site to the distance less than 2~\AA.
@@ -786,7 +790,7 @@ The rates provided by \RA\ and \RB\ are similar in this case.
 
 \begin{table}
 \centering
-\caption{\label{tab::one}Traversability for one-atome}
+\caption{\label{tab::one}Traversability for one atom.}
 \small
 \renewcommand{\tabcolsep}{3.5pt}
 {\small
@@ -858,8 +862,8 @@ than using less number of conformations or when preferring the packed conformati
 \begin{table}
 \centering
 \caption{\label{tab::selection}
-    Traversability of the tunnels depending on conformation selection.
-    The number after $/$ denotes the number of atoms.
+    Influence of the conformation selection method to the traversability rates in the first tunnel.
+    The number after~`$/$' denotes the number of atoms.
 }
 \small
 \renewcommand{\tabcolsep}{3pt}
@@ -882,6 +886,14 @@ The results are summarized in Tab.~\ref{tab::main}.
 The tables shows percentages of traversable MD snapshots only for the first tunnel, as no trajectories were found in the second tunnel
 for most of the tested ligand.
 The only exception is the ligand m037t, which was the smallest tested ligand (with 8 atoms), and therefore it can fit even inside the second tunnel.
+The traversability rate is higher for the most scaled-down ligands ($\smin=0.5$) and it decreases with the increasing scale.
+For the scale $\smin=0.8$, the most traversable frames were detected for ligands DCP (8~\%), m037t (20~\%) and m038t (16~\%).
+
+{\bf doufam, ze toto neni moc drze:}
+The traversability of the DCP ligand to active site was approved by the MD simulation.
+The observed trajectory of the DCP ligand followed the first tunnel.
+From these results, we expect that at least ligands m037t and m038t can also reach the active site, but the MD simulations
+haven't been performed yet.
 
 The proposed \RA\ planner provides higher traversability rate than \RB.
 The distances of the configuration trees (measured using 3D Euclidean metric) to the active site and the runtimes in each frame
@@ -889,12 +901,20 @@ are shown in Fig.~\ref{fig::comparison}.
 The runtimes of both algorithms increase in those frames, where the tunnel is not traversable, i.e., where the distance
 to the active site is more than 2~\AA (e.g., the frame number 60).
 
+
+
 The most time consuming part of the planners is the collision detection. 
 Although both methods can utilize same amount of collision detection queries in the expansion step, \RB\ is slower than \RA.
-The reason is, that \RA\ expands the trees more closer to the random samples $\qrand$ than \RB.
-This results in faster exploration of the conifguration space and therefore, \RA\ needs less number of iterations to reach the goal
-configuration.
-We explain this behavior 
+The reason is, that \RA\ expands the tree more closer to the random samples $\qrand$ than \RB.
+This results in a faster exploration of the configuration space and therefore, \RA\ needs less number of iterations to reach the active site.
+The better performance of \RA\ is caused by the proposed atom-based metric, because this distance between two configurations depends on the actual shape of the ligand.
+This shape is different in each configuration.
+Contrary, the \RB\ utilizes only the single 6D Euclidean metric which is same for all conformations.
+To improve performance of \RB, the weights of the 6D Euclidean metric should differ for each conformation, but it would
+prevent to use KD-tree for the nearest-neighbor search.
+
+
+
 
 \begin{table}
 \centering
@@ -916,7 +936,7 @@ We explain this behavior
 \includegraphics[width=0.25\textwidth,angle=\a]{fig/m037tmins-03tunnel-1rrt_path_time-2}
 \includegraphics[width=0.25\textwidth,angle=\a]{fig/m037tmins-03tunnel-1trajDistToGoal-2}
 \caption{\label{fig::comparison}
-    Runtimes and distance to the active site for the m037 ligand at scale 0.4.
+    Runtimes and distance to the active site for the m037 ligand at scale 0.6.
     The values are computed from all 200 trials (20 initial configurations $\times$ 10 trials).
     Only each second frame is shown in the graph.
 }
@@ -925,14 +945,16 @@ We explain this behavior
 
 
 
-\section{Discussion}
+\section{Discussion - TODO prepsat}
 
-The computed trajectories cannot be considered as `real', they should rather be considered as a hint for the biochemists.
-One of the reason is that the trajectories are computed inside a static protein and static tunnels.
-Real proteins are dynamic structures and consequently also the tunnels are dynamic: they move, merge or even disappear due to motions of protein atoms.
-Contrary, usually static tunnels are used in protein engineering.
-Despite such a simplification, researches often used information about the static tunnels  to estimate the possibility of chemical reactions
-at the active sites.
+
+%The computed trajectories cannot be considered as `real', they should rather be considered as a hint for the biochemists.
+%One of the reason is that the trajectories are computed inside a static protein and static tunnels.
+%Real proteins are dynamic structures and consequently also the tunnels are dynamic: they move, merge or even disappear due to motions of protein atoms.
+%Contrary, usually static tunnels are used in protein engineering.
+%Despite such a simplification, researches often used information about the static tunnels  to estimate the possibility of chemical reactions
+%at the active sites.
+
 
 The second limitation is caused by the utilization of scaled-down ligands.
 The protein atoms fill the internal void space therefore the tunnels identified inside proteins without ligand tend
