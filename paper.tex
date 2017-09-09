@@ -619,7 +619,7 @@ $q$ being tested.
 This metric is denoted $\da(\cdot,\cdot)$ on line~\ref{alg::expand:a} in Alg.~\ref{alg::expand}.
 As the expansion routine attempts to find such sample that minimizes this distance to $\qrand$, it supports retraction of the ligand towards $\qrand$.
 The fast evaluation of this metric with complexity $O(\log n)$, where $n$ is the number of atoms of the ligand, can be achieved using KD-trees.
-For each conformation $\l \in L$ of the ligand, a KD-tree is build for the ligand at configuration $q=(0,0,0,0,0,0,l,\smax)$
+For each conformation $\l \in \L$ of the ligand, a KD-tree is build for the ligand at configuration $q=(0,0,0,0,0,0,l,\smax)$
 (i.e., for ligand with no translation and no rotation).
 To find a nearest atom to $\qrand$ for a ligand at the configuration $q=(x,y,z,r_x,r_y,r_z,l,s)$, the translation vector $T=(x,y,z)$ and
 rotation matrix $R$ given by $r_x$, $r_y$ and $r_z$ are computed.
@@ -698,9 +698,11 @@ The conformations are sorted according to this deviation and then the desired nu
 
 \begin{figure}
 \centering
-\includegraphics[width=0.3\textwidth]{fig/m040-conformations}
+%\includegraphics[width=0.25\textwidth]{fig/m040-conformations}
+\includegraphics[width=0.15\textwidth]{fig/m040-conf1} \hskip 25pt
+\includegraphics[width=0.12\textwidth]{fig/m040-conf2}
 \caption{\label{fig::m040c}
- Examples of `long' conformation (left) and a `packed' one for the ligand M040 (1,5-Dichloropentane).
+ Examples of `long' conformation (left) and a `packed' one for the ligand m040 (1,5-Dichloropentane).
 }
 \end{figure}
 
@@ -803,26 +805,30 @@ In the case of the second tunnel, \RA\ was able to find trajectory in more frame
 \end{table}
 
 
+%
+%{\def\a{270}
+%\begin{figure}
+%\centering
+%\renewcommand{\tabcolsep}{0pt}
+%\begin{tabular}{cccc}
+%\includegraphics[width=0.15\textwidth,angle=\a]{fig/m001-oneAtom-cdCount} &
+%\includegraphics[width=0.15\textwidth,angle=\a]{fig/m001-oneAtom-rrt_path_time} &
+%\includegraphics[width=0.15\textwidth,angle=\a]{fig/m037t-cdCount} & 
+%\includegraphics[width=0.15\textwidth,angle=\a]{fig/m037t-rrt_path_time} \\
+%\multicolumn{2}{c}{One-atom} &
+%\multicolumn{2}{c}{m037}  \\
+%\multicolumn{4}{c}{%
+%\includegraphics[width=0.15\textwidth,angle=\a]{fig/m040-10-cdCount} 
+%\includegraphics[width=0.15\textwidth,angle=\a]{fig/m040-10-rrt_path_time} 
+%\includegraphics[width=0.15\textwidth,angle=\a]{fig/m040-10-trajDistToGoal}} \\
+%\multicolumn{4}{c}{m040} 
+%\end{tabular}
+%\end{figure}
+%}
+%
 
-{\def\a{270}
-\begin{figure}
-\centering
-\renewcommand{\tabcolsep}{0pt}
-\begin{tabular}{cccc}
-\includegraphics[width=0.15\textwidth,angle=\a]{fig/m001-oneAtom-cdCount} &
-\includegraphics[width=0.15\textwidth,angle=\a]{fig/m001-oneAtom-rrt_path_time} &
-\includegraphics[width=0.15\textwidth,angle=\a]{fig/m037t-cdCount} & 
-\includegraphics[width=0.15\textwidth,angle=\a]{fig/m037t-rrt_path_time} \\
-\multicolumn{2}{c}{One-atom} &
-\multicolumn{2}{c}{m037}  \\
-\multicolumn{4}{c}{%
-\includegraphics[width=0.15\textwidth,angle=\a]{fig/m040-10-cdCount} 
-\includegraphics[width=0.15\textwidth,angle=\a]{fig/m040-10-rrt_path_time} 
-\includegraphics[width=0.15\textwidth,angle=\a]{fig/m040-10-trajDistToGoal}} \\
-\multicolumn{4}{c}{m040} 
-\end{tabular}
-\end{figure}
-}
+
+
 
 
 %\begin{figure}
@@ -845,14 +851,15 @@ In the case of the second tunnel, \RA\ was able to find trajectory in more frame
 \subsection{Influence of conformation selection}
 
 The aim of this experiment is to verify the procedure to select ligand conformations for the motion planning.
-The experiment was performed with the ligand DCP, for which $1300$ conformations where available and for the ligand
-M040 with $7560$ available conformations.
-Two strategies were tested: the strategy described in Sec.~\ref{sec::strat} (denoted `S') and a strategy,
-that prefers smaller conformations (denoted `P').
-In the second method, deviation of the atomic distance from the geometric center are computed and the conformations
-with the lowest deviations are selected.
-The results are summarized in Tab.~\ref{tabl::selection}, which shows the percentage number of frames that are traversable by the tested ligand.
-For each tested ligand, 5 and 50 conformations from the available pool of conformations were selected using the strategies.
+The experiment was performed with the ligand DCP (Dichloropropanol), for which $1300$ conformations where available and for the ligand
+m040 (1,5-Dichloropentane) with $7560$ available conformations.
+Two strategies were tested: the strategy described in Sec.~\ref{sec::strat} (denoted `S') and a strategy that prefers smaller conformations (denoted `P').
+The `P' method selects such conformations where the deviation of the atomic distance from the geometric center are lowest, which leads 
+to selection of the packed conformations (Fig.~\ref{m040c}).
+
+The percentage of frames that were traversible by the ligands are shown in Tab.~\ref{tab::selection}, where the subscript of each ligand
+name shows the number of selected conformations (5 or 50) and the used method (S or P).
+The number after the slash in the ligand's name denote the number of atoms of the ligand.
 In the case of both tested ligands and 50 selected conformations, the `S' strategy leads to higher traversability rate than the `P' strategy.
 For the ligand DCP, a higher traversability rates was achieved when 50 conformations are selected.
 This experiments shows that selecting 50 conformations using the `S' strategy (Sec.~\ref{sec::strat}) leads to better results
@@ -860,7 +867,10 @@ than using less number of conformations or when preferring the packed conformati
 
 \begin{table}
 \centering
-\caption{\label{tab::selection}Traversability of the tunnels depending on conformation selection}
+\caption{\label{tab::selection}
+    Traversability of the tunnels depending on conformation selection.
+    The number after $/$ denotes the number of atoms.
+}
 \small
 \renewcommand{\tabcolsep}{3pt}
 {\small
@@ -874,20 +884,53 @@ than using less number of conformations or when preferring the packed conformati
 
 \subsection{Traversability of ligands}
 
-The aim of the second experiment is to determine which ligands are 
+Based on the results of the previous experiment, 50 conformations using the `S' strategy were selected for the following
+ligands: m037t (1,2-Dichloroethane), m038t (1,3-Dichloropropane), m056 ( 2-Chlorobutane) and m080 (Trichloropropane), and
+the task was to compute trajectories for these ligands in the MD sequence.
 
-The results are shown in Tab.~\ref{tab::main}.
+The results are summarized in Tab.~\ref{tab::main}, which shows percentage of frames in which the tested planners \RA\ and \RB\ found
+trajecotries close to the active site. 
+The active site was considered as reached if the distance from the center of the ligand to the active site was less than 2~\AA.
 
+The analyzes sequence of MD  snapshots contains two tunnels. 
+The average bottleneck of the tunnels are $1.48$~\AA and $1.2$~\AA for the first, resp. the second tunnel.
+The tables shows percentages of traversable MD snapshots only for the first tunnel, as no trajectories were found in the second tunnel
+for most of the tested ligand.
+The only except is the ligand m037t, which was the smallest tested ligand (with 8 atoms), and therefore it can fit even inside the second tunnel.
+
+The proposed \RA\ planner outperforms the \RB\ planner in the number of frames where a solution was found.
+The distances of the configuration trees (measured using 3D Euclidean metric) to the active site and the runtimes in each frame
+are shown in Fig.~\ref{fig::compared}.
+The runtimes of both algorithms increases in those frames, where the tunnel is not traversable, i.e., where the distance
+to the active site is more than 2~\AA (e.g., the frame number 60).
 
 \begin{table}
 \centering
-\caption{\label{tab::main}Traversability of the tunnels}
+\caption{\label{tab::main}
+    Traversability of the tunnels for ligands with 50 conformations. 
+    The number after $/$ denotes the number of atoms.
+}
 \small
 \renewcommand{\tabcolsep}{3pt}
 {\small
 \input graph.tex
 }
 \end{table}
+
+
+{\def\a{270}
+\begin{figure}
+\centering
+\includegraphics[width=0.25\textwidth,angle=\a]{fig/m037tmins-03tunnel-1rrt_path_time-2}
+\includegraphics[width=0.25\textwidth,angle=\a]{fig/m037tmins-03tunnel-1trajDistToGoal-2}
+\caption{\label{fig::comparison}
+    Runtimes and distance to the active site for the m037 ligand at scale 0.4.
+    The values are computed from all 200 trials (20 initial configurations $\times$ 10 trials).
+    Only each second frame is shown in the graph.
+}
+\end{figure}
+}
+
 
 
 \section{Discussion}
