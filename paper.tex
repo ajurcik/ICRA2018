@@ -647,7 +647,7 @@ is also the nearest neighbor of the ligand at $q$ to $\qrand$.
 \hrule
 \ForEach{$l \in \L$}{
     \ForEach{$s \in (\smax,\smax-\sdelta, \ldots, \smin+\sdelta, \smin)$}{
-        $\qnew = \emptyset$; // empty configuration\\
+        $\qnew = \emptyset$; // empty configuration \nllabel{alg::expa} \\
         \For{$i = 1,\ldots,m$}{
             $q=\qnear$\;
             $q.position$ = random 3D position around $\qnear$\;
@@ -660,6 +660,7 @@ is also the nearest neighbor of the ligand at $q$ to $\qrand$.
                 }
             } 
         }
+        \nllabel{alg::expb}
         \If{$\qnew \ne \emptyset$} {
             $\T$.addNode($\qnew$)\;
             $\T$.addEdge($\qnear,\qnew$)\;
@@ -678,7 +679,7 @@ The path is found in the tree even if the tree does not approach $\qgoal$ close 
 Considering also these non-feasible solutions is necessary to evaluate difficult areas of the tunnels, e.g. bottlenecks.
 The utilization of all computed paths for evaluation of tunnel difficulty is described in the next section.
 
-\subsection{Selection of conformations for motion planing}
+\subsection{Selection of Conformations for Motion Planning}
 \label{sec::strat}
 
 The proposed planner utilizes a set of predefined ligand's conformations.
@@ -751,34 +752,34 @@ The throughput shows (Fig.~\ref{fig:properties}b) that the only difficult is the
 
 The proposed approach was used to analyze tunnel traversability towards to active site of Haloalkane dehalogenase protein (PDB ID 1CQW).
 The active site was defined using residues 38 (Asparagine), 102 (Histidine) and 103 (Aspartate).
-Molecular dynamics of the protein was computed using Amber tool. 
-First 100 frames were analyzed with the aim to calculate percentage of frames where the active site was accessible through the tunnels.
-In each frame, tunnels for spherical probe 0.9~\AA were detected using CAVER 3.0~\cite{caver3}. 
+Molecular dynamics of the protein was computed using Amber tool.
+%100 frames of the dynamics were analyzed with the aim to calculate percentage of frames where the active site was accessible through the tunnels.
+In each frame, tunnels for the spherical probe 0.9~\AA were detected using CAVER 3.0~\cite{caver3}. 
 In most of the frames, two tunnels were detected.
+The average bottleneck of the tunnels are $1.48$~\AA and $1.2$~\AA for the first, resp. the second tunnel.
+%The second tunnel is more dynamic, i.e., it fluctuatest more
 
-%has been analyzed using the proposed approach.
-%Three tunnels were detected using CAVER 3.0~\cite{caver3} for the spherical probe of radius 0.9~\AA (Fig.~\ref{fig::tunnel}a).
-%The traversability was evaluated for 1-chlorpropan (denoted as $\LA$) with 11 atoms and 
-% from David: m003 je "1-chlorpropan" a m004 "1-chlorbutan"
-%and 1-chlorbutan (denoted as $\LB$) with 14 atoms.
-%$\LA$ was represented by 12 conformations, and $\LB$ by a set of $114$ conformations.
-%Examples of three conformations of $\LA$ and $\LB$ are depicted in Fig.~\ref{fig::tunnel}b.
-%Further information about the experiments can be found at %{\url{http://mrs.felk.cvut.cz/isrr2017}}.
-
-%Both tested ligands have more than 10 atoms and therefore they cannot fit into the tunnel of with 0.9~\AA, so
-%the radii of ligands were scaled down. 
 Four different scaling-down factors were used: $\S=\{0.5,0.6,0.7,0.8\}$.
 For each scale, 20 collision-free initial configurations were found in the $\RI=2$\AA\ radius around the first sphere of the tunnel (outside the protein).
-For each ligand, each minimal scale $\smin$ and each initial configuration, 10 trajectories were computed using the proposed planner.
+For each ligand, each minimal scale $\smin$ and each initial configuration, 10 trajectories were computed.
 
-The proposed algorithm (Alg.~\ref{alg::main} and Alg.~\ref{alg::expand}), denoted as \RA\ in the rest of the paper, was run
-with the parameters $\Imax=10,000$, $m=50$, $\gb=0.9$, $\dt=1.5$\AA, $\rv=2$~\AA.
-This method was compared to RRT-Retraction~\cite{zhangRetraction} which is denoted as \RB\ in the rest of the text.
+Two motion planners were utilized: the proposed planner (Alg.~\ref{alg::main} and Alg.~\ref{alg::expand}), denoted as \RA\ in the rest of the paperm, and the Retraction-based RRT~\cite{zhangRetraction} denoted as \RB\ in the rest of the paper.
+The \RA\ method was run with the following parameters:
+$\Imax=10,000$, $m=100$, $\gb=0.9$, $\dt=1.5$\AA, $\rv=2$~\AA.
+Both methods were implemented in the same software framework and they utilized the same data structures and routines for collision detection and nearest-neighbor search.
+The Retraction-based RRT was implemented using 6D Euclidean metric.
+The tested methods differ in the expansion step (lines \ref{alg::expa}--\ref{alg::expb} in Alg.~\ref{alg::expand}).
+In these lines, the \RB\ method employs the retraction step in order to find a new collision-free configurations $\qnew$ that approaches $\qrand$.
+The retraction step was realized by sampling the vicinity of the configuration $\qnear$ in the distance $0.1$~\AA\ using 20 samples.
+A collision-free sample that maximally approached $\qrand$ was selected and added to the tree, and the retraction continued from this sample.
+The retraction step was repeated 5 times.
+The \RB\ method can therefore expand the tree by at most 5 new nodes per conformation, while \RA\ extends the tree only by one configuration.
+The larger number of nodes in \RB\ method is not problematic, as the KD-trees were used for nearest-neighbor search and the time to solve these queries is significantly less than computing collision detection.
+Parameters of the methods were selected in such a way that the number of collision detection queries in each expansion step is same.
+For each conformation and tested scale, the \RA\ methods attempts to find $m=100$ collision-free configurations, and \RB\ attempts to perform $5 \times 20$ collision-detection queries.
 
-TODO parametry.
 
-Both methods utilized the same data structures for nearest-neighbor search and collision detection.
-Parameters of the methods were chosen in order to use similar (in the term of order) number of collision-detection queries.
+
 
 \subsection{Traversability of one atom}
 
@@ -892,15 +893,13 @@ The results are summarized in Tab.~\ref{tab::main}, which shows percentage of fr
 trajecotries close to the active site. 
 The active site was considered as reached if the distance from the center of the ligand to the active site was less than 2~\AA.
 
-The analyzes sequence of MD  snapshots contains two tunnels. 
-The average bottleneck of the tunnels are $1.48$~\AA and $1.2$~\AA for the first, resp. the second tunnel.
 The tables shows percentages of traversable MD snapshots only for the first tunnel, as no trajectories were found in the second tunnel
 for most of the tested ligand.
 The only except is the ligand m037t, which was the smallest tested ligand (with 8 atoms), and therefore it can fit even inside the second tunnel.
 
 The proposed \RA\ planner outperforms the \RB\ planner in the number of frames where a solution was found.
 The distances of the configuration trees (measured using 3D Euclidean metric) to the active site and the runtimes in each frame
-are shown in Fig.~\ref{fig::compared}.
+are shown in Fig.~\ref{fig::comparison}.
 The runtimes of both algorithms increases in those frames, where the tunnel is not traversable, i.e., where the distance
 to the active site is more than 2~\AA (e.g., the frame number 60).
 
