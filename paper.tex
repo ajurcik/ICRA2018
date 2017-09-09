@@ -8,7 +8,7 @@
 \usepackage[ruled,lined]{algorithm2e}
 \usepackage{multirow}
 \usepackage{flushend}
-%\usepackage[bookmarks=false]{hyperref}
+\usepackage[bookmarks=false]{hyperref}
 %\usepackage{setspace}
 \pdfminorversion=4
 
@@ -181,7 +181,7 @@ leading to a specific place (called active site) inside the protein~\cite{gora20
 %Understanding of interactions between proteins and other small molecules is crucial in many research fields, including drug design and protein engineering. 
 %The knowledge about the existence of the tunnels and their properties (e.g., their bottleneck and chemical properties around the tunnel),
 %is important to understand interactions between proteins and other molecules (ligands)~\cite{Koudelakova2013}.
-As the interaction takes place in the active site, the existence of a tunnel connection the active site with the outer environment
+As the interaction takes place in the active site, the existence of a tunnel connecting the active site with the outer environment
 is necessary for the interaction.
 %To get the ligand to the active site, a transportation tunnel connecting the protein outer environment with the active site has to exists.
 Such a  tunnel has to be wide enough and the physico-chemical properties of the surrounding amino acids have to be compatible with the ligand.
@@ -203,12 +203,12 @@ This can be formulated as a motion planning problem.
 It is necessary to cope with the narrow passage problem, as the proteins are dense structures and the movements of the ligands are limited, and to efficiently model the flexible ligands.
 
 In this paper, we propose a modification to RRT to cope with these issues.
-In the proposed method, the random samples are not generated from the whole configuration space, but the sampling is guided using
+The random samples are not generated from the whole configuration space, but the sampling is guided using
 the spheres of the tunnel.
-This allows us to find trajectories along the given tunnel, but it also decreases the volume of the configuration space to be searched.
+This allows us to find trajectories along the given tunnel, which is faster than searching any trajectory in the whole protein.
 To increase movements of the ligands in the narrow tunnels, the free-space is dilated by 
 shrinking the atom radii, similarly, e.g., to~\cite{cortes2005path,hsu06multilevel}.
-We model the ligand flexibility using a fixed set of predefined conformations.
+The ligand flexibility is modelled using a fixed set of predefined conformations.
 
 %Proteins are dense structures which limits movements of the ligand insider the tunnels, which leads to the narrow passage problem.
 %To cope with this problem, we propose to utilize the principle of guided sampling~\cite{vonasek2009rrt,denny2016dynamic}.
@@ -743,18 +743,19 @@ The active site was defined using residues 38 (Asparagine), 102 (Histidine) and 
 The molecular dynamics of the protein was computed using the Amber tool.
 %100 frames of the dynamics were analyzed with the aim to calculate percentage of frames where the active site was accessible through the tunnels.
 In each frame, tunnels for the spherical probe 0.9~\AA\ were detected using CAVER 3.0~\cite{caver3}. 
-In most of the frames, two tunnels were detected.
+In most of the frames, two tunnels were detected.~\footnote{%
+We refer to~\url{http://mrs.felk.cvut.cz/icra2018protein} for additional images.
+}
 The average bottleneck of the tunnels are $1.48$~\AA\ and $1.2$~\AA\ for the first and the second tunnel, resp.
-%The second tunnel is more dynamic, i.e., it fluctuatest more
 
 Four different scaling-down factors were used: $\S=\{0.5,0.6,0.7,0.8\}$.
-For each scale, 20 collision-free initial configurations were found in the $\RI=2$\AA\ radius around the first sphere of the tunnel (outside the protein).
+For each scale, 20 collision-free initial configurations were found in the $\RI=2$~\AA\ radius around the first sphere of the tunnel (outside the protein).
 For each ligand, each minimal scale $\smin$ and each initial configuration, 10 trajectories were computed.
 
 Two motion planners were utilized: the proposed planner (described in Alg.~\ref{alg::main} and Alg.~\ref{alg::expand}), 
     denoted as \RA\ in the rest of the paper, and the Retraction-based RRT~\cite{zhangRetraction} denoted as \RB\ in the rest of the paper.
 The \RA\ method was run with the following parameters:
-$\Imax=5,000$, $m=100$, $\gb=0.9$, $\dt=1.5$\AA, $\rv=2$~\AA.
+$\Imax=5,000$, $m=100$, $\gb=0.9$, $\dt=1.5$~\AA, $\rv=2$~\AA.
 Both methods were implemented in the same software framework and they utilized the same data structures and routines for collision detection and nearest-neighbor search.
 The nearest-neighbor search of both planners is based on the 6D Euclidean metric with the same weights for rotation and translation parts.
 This metric was selected based on preliminary experiments with both planners as it resulted in the higher success rates.
@@ -785,13 +786,12 @@ The row Planners shows traversable rate detected by the planners.
 This rate decreases with the increasing radius and it is lower than the maximum traversable rate.
 Higher traversability rate can be achieved by increasing the maximum number of planning iterations $\Imax$, which would also
 increases the planning time.
-For the purpose of the following experiments, we used $\Imax=5,000$ as a compromised between the performance and the runtime.
+For the purpose of the following experiments, we used $\Imax=5,000$ as a compromise between the performance and the runtime.
 The rates provided by \RA\ and \RB\ are similar in this case.
 
 \begin{table}
 \centering
 \caption{\label{tab::one}Traversability for one atom.}
-\small
 \renewcommand{\tabcolsep}{3.5pt}
 {\small
 \input graphProbe.tex
@@ -855,7 +855,7 @@ The traversability rates are shown in Tab.~\ref{tab::selection}, where the subsc
 name shows the number of selected conformations (5 or 50) and the used method (S or P).
 The number after the slash in the ligand's name denotes the number of atoms of the ligand.
 In the case of both tested ligands and 50 selected conformations, the `S' strategy leads to higher traversability rate than the `P' strategy.
-For the ligand DCP, higher traversability rates was achieved when 50 conformations were selected.
+For the ligand DCP, a higher traversability rate was achieved when 50 conformations were selected.
 This experiments shows that selecting 50 conformations using the `S' strategy (Sec.~\ref{sec::strat}) leads to better results
 than using less number of conformations or when preferring the packed conformations.
 
@@ -904,14 +904,14 @@ to the active site is more than 2~\AA (e.g., the frame number 60).
 
 
 The most time consuming part of the planners is the collision detection. 
-Although both methods can utilize same amount of collision detection queries in the expansion step, \RB\ is slower than \RA.
+Although the both methods can utilize the same number of collision detection queries in the expansion step, \RB\ is slower than \RA.
 The reason is, that \RA\ expands the tree more closer to the random samples $\qrand$ than \RB.
 This results in a faster exploration of the configuration space and therefore, \RA\ needs less number of iterations to reach the active site.
 The better performance of \RA\ is caused by the proposed atom-based metric, because this distance between two configurations depends on the actual shape of the ligand.
 This shape is different in each configuration.
 Contrary, the \RB\ utilizes only the single 6D Euclidean metric which is same for all conformations.
 To improve performance of \RB, the weights of the 6D Euclidean metric should differ for each conformation, but it would
-prevent to use KD-tree for the nearest-neighbor search.
+prevent the usage KD-tree for the nearest-neighbor search.
 
 
 
