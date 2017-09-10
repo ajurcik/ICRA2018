@@ -719,9 +719,9 @@ From the motion planning point of view, both types of conformations are useful.
 The longer conformations can better fit in a narrow passage, while the packed conformations can be better rotated at a given position.
 In the narrow parts of the tunnel, the tree can be extended by the longer conformations, while in the wider regions, also the
 packed conformations can be used.
+\vspace{-3mm}
 
-
-\begin{figure}[b]
+\begin{figure}[hb]
 \centering
 %\includegraphics[width=0.25\textwidth]{fig/m040-conformations}
 \includegraphics[width=0.14\textwidth]{fig/m040-conf1} \hskip 25pt
@@ -730,6 +730,7 @@ packed conformations can be used.
  The examples of a `long' conformation (left) and a `packed' one for the ligand m040 (1,5-Dichloropentane).
 }
 \end{figure}
+
 
 To select the suitable set $\L$ of conformations from a pool of available conformations, a simple technique is proposed.  
 For each conformation, the geometric center is calculated and the deviation of the distances of the atoms from the center is calculated.
@@ -922,11 +923,8 @@ the task was to compute the trajectories for these ligands in a given molecular 
 
 The results are summarized in Tab.~\ref{tab::main}.
 The table shows the traversability rate only for the main tunnel, as no trajectory was found in the side tunnel for most of the tested ligands.
-The only exception is the ligand m037t, which was the smallest tested one (with 8 atoms), and therefore it could fit even inside the side tunnel.
-The traversability rate is higher for the most scaled-down ligands ($\smin=0.5$) and it decreases with the increasing scale.
-For the scale $\smin=0.8$, the most traversable frames were detected for ligands DCP (8~\%), m037t (20~\%) and m038t (16~\%).
 
-\begin{table}[ht]
+\begin{table}[bt]
 \centering
 \caption{\label{tab::main}
     Traversability of the tunnels for ligands with 50 conformations. 
@@ -939,6 +937,11 @@ For the scale $\smin=0.8$, the most traversable frames were detected for ligands
 \input graph.tex
 }
 \end{table}
+
+
+The only exception is the ligand m037t, which was the smallest tested one (with 8 atoms), and therefore it could fit even inside the side tunnel.
+The traversability rate is higher for the most scaled-down ligands ($\smin=0.5$) and it decreases with the increasing scale.
+For the scale $\smin=0.8$, the most traversable frames were detected for ligands DCP (8~\%), m037t (20~\%) and m038t (16~\%).
 
 %{\bf doufam, ze toto neni moc drze:}
 In conclusion, the traversability of the DCP ligand to active site was approved by the MD simulation.
@@ -968,6 +971,7 @@ to the active site is more than 2~\AA\ (for example, in the frame no. 60).
 \end{figure}
 }
 
+\vspace{-3mm}
 The most time-consuming part of the planners is the collision detection. 
 Although both methods can utilize the same number of collision detection queries in the expansion step, \RB\ is slower than \RA.
 The reason is that \RA\ expands the tree more closer to the random samples $\qrand$ than \RB.
