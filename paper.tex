@@ -350,7 +350,7 @@ The path can be computed in the workspace~\cite{vonasek2009rrt}, or iteratively 
 %the random sample $\qrand$ is connected to the tree if the line segment  from $\qnear$ to $\qrand$ is collision-free. Otherwise, the retraction-step is performed.
 %The task of the retraction step is to find a contact configuration around $\qnear$ that minimizes the distance to $\qrand$.
 In Retraction-based RRT~\cite{zhangRetraction}, the tree is retracted along the boundary of the obstacles in the configuration space.
-This requires the analysis of contact space, which leads to the generalized penetration depth computation of high complexity~\cite{zhang2008fast,he2016efficient}. %\cite{he2016efficient} in RAL!!
+This requires the analysis of contact space, which leads to the generalized penetration depth computation of high complexity~\cite{he2016efficient}. %\cite{he2016efficient} in RAL!! + zhang2008fast
 Selective Retraction-based RRT~\cite{lee2012srrrt} avoids the expensive growth in the open areas of the configuration space and focuses 
 the retractions only to the narrow passages.
 Obstacle-based RRT~\cite{amatoOBRRT} utilizes several expansion procedures based on e.g. random vectors, obstacles vectors or medial axis in order to improve growth in the narrow passages.
@@ -379,8 +379,8 @@ and translation) and it employs the other DOFs (i.e., that are responsible for c
 \section{Proposed method}
 
 
-In this paper, we propose a modification of the RRT planner for computing trajectories through protein tunnels.
-The input is a set of tunnels computed by Voronoi diagrams and the task is to find trajectories along the given tunnels
+We propose a modification of the RRT planner for computing trajectories through protein tunnels.
+The input is a set of tunnels computed using Voronoi diagrams and the task is to find trajectories along the given tunnels
 leading from outside the protein to the active site.
 The tunnels are detected in a sequence of protein dynamics that is computed using MD simulations. 
 
@@ -401,7 +401,7 @@ The ligand flexibility is modeled using a predefined set of typical conformation
 Library of conformations are used also in different types of calculations, e.g.~\cite{kellogg}. 
 While classic 6D Euclidean metric is used in the nearest-neighbor search of RRT, we propose to use another metric during the expansion step.
 This metric measures distances between two configurations as the nearest distance of two atoms. 
-This enables the metric to consider the shape of the ligand and it support retraction of the ligand to the narrow passages.
+This enables the metric to consider the shape of the ligand and it supports retraction of the ligand to the narrow passages.
 
 
 %approximate the distance metric using nonlinear parametric regression model 
@@ -464,7 +464,6 @@ This enables the metric to consider the shape of the ligand and it support retra
 \subsection{Preliminaries}
 
 Proteins and ligands are represented by the hard sphere model, where the radius of each sphere (atom) is given by its van der Waals radius.
-
 A protein tunnel is described by a sequence of collision-free spheres 
 $T=( (c_1, r_1),\ldots,(c_n,r_n) )$, where $n$ denotes the number of spheres,
 $c_i \in \R^3$ is their 3D position and $r_i > 0$ denotes the maximum collision-free radius of a sphere centered at $c_i$. 
@@ -495,7 +494,7 @@ $\smin$ is the minimal allowed scale, $\smax=1$ is the maximal allowed scale and
 
 A configuration of the ligand $q=(x,y,z,r_x,r_y,r_z,l,s)$  is described
 by the 3D position $(x,y,z)$ of the reference point of the ligand (the geometric center), the rotation around $x$, $y$, and $z$ axes,
-the index of the conformation $l\in \L$ and the actual scale $s \in \S$.
+the index of the conformation $l\in \L$ and the scale $s \in \S$.
 All possible configurations form the configuration space $\C$ and the collision-free configurations
 form the subspace $\CF \subseteq \C$.
 A configuration $q$ is collision-free if none of the ligand atoms scaled by $s$ and placed at the
@@ -506,7 +505,7 @@ position defined by $q$ collides with the protein atoms.
 \subsection{Computing Initial Configurations}
 
 Depending on the chemical interactions between the ligand and the protein surface, the ligand may enter a tunnel with various rotations and in various conformations.
-The traversability of the tunnel should therefore be evaluated using various starting configurations $\QI$.
+The traversability of the tunnel should therefore be evaluated using multiple starting configurations $\QI$.
 The initial configurations are searched around the beginning of the tunnel.
 To find a new initial configuration, a random sample $q$ is generated around the first sphere of the tunnel 
 $c_1$ in the distance $\RI$ (the translation and rotation  parts of $q$ are generated randomly, the scale is set to $\smin$ and the conformation index is set randomly).
@@ -515,13 +514,14 @@ If the sample $q$ is collision-free, it can be considered as a new starting conf
 For each starting configuration $\qinit \in \QI$, the trajectories are computed using a modified RRT, which is introduced in the following section.
 
 
-\subsection{RRT for computing ligands trajectory inside a tunnel}
+\subsection{RRT for computing ligands trajectory along a tunnel}
 
-The proposed motion planning is based on the principle of RRT~\cite{lavalleRRT} planner.
-The main loop of planner (Alg.~\ref{alg::main}) is similar to the original RRT planner.
+The proposed motion planning is based on the principle of the RRT~\cite{lavalleRRT} planner.
 In each iteration, a random sample $\qrand$ is generated and its nearest node $\qnear\in\T$ in the tree is found.
-The nearest-neighbor search between $\qrand$ and the tree is performed using the weighted 6D Euclidean metric considering
+The nearest-neighbor search between $\qrand$ and the tree is performed using the weighted 6D Euclidean metric computed using
 both 3D rotation and 3D translation.
+The main loop of the planner (Alg.~\ref{alg::main}) is similar to original RRT, but we propose three modifications.
+
 
 The aim of the first modification is to sample the configuration space along the tunnel being analyzed.
 To guide the growth of the tree using the tunnel, a moving virtual goal is used~\cite{vonasek2009rrt}.
@@ -532,8 +532,7 @@ After the tree reaches the sphere $c_v$, i.e., the distance of the tree to $c_v$
 less than a predefined threshold $\dt$, the virtual goal is moved to the successor of the last sphere in the tunnel
 that is reached by the tree (lines~\ref{alg::main:a}--\ref{alg::main:b} in Alg.~\ref{alg::main}).
 Setting the virtual goal to this successor allows the tree to avoid such parts of the tunnels that are not traversable or reachable by the ligand.
-%This is necessary in the dense protein structures, where it is not always possible to exactly follow the tunnel.
-This allows the tree to slightly detour from the tunnel, which improves performance around narrow tunnels.
+This allows the tree to slightly detour from the tunnel and overcome its difficult (narrow) parts by finding an alternative trajectory nearby.
 The algorithm terminates after a predefined number of planning trials $\Imax$ or if the tree reaches
 the last sphere in the tunnel, i.e., when $v = n$.
 
@@ -542,10 +541,10 @@ from the Gaussian distribution $N(c_v,\Sigma)$, where $\Sigma$ is the diagonal m
 part of $\qrand$ is generated using techniques described in~\cite{kuffnerES}.
 The other two parameters (ligand index $l$ and scale $s$) of $\qrand$ can be left zero, as these are not used in the employed
 metric for the nearest-neighbor search.
-The parameter $\rv$ influences the distribution of samples around the tunnel centerline. 
+The parameter $\rv$ influences the distribution of the random samples around the tunnel centerline. 
 By setting $\rv$ to a small value, the planner attempts to find the trajectories inside the tunnel, while higher values
 of $\rv$ cause  exploration of paths around the tunnel.
-We propose to set this parameter to the average tunnel width.
+We propose to set this parameter to the average width of the tunnel.
 
 
 \linesnumbered
@@ -589,32 +588,46 @@ $iteration = 0$\;
 }
 \end{algorithm}
 
-The second proposed modification of RRT is the expansion procedure (Alg.~\ref{alg::expand}), which generates new collision-free nodes around $\qnear\in\T$.
+The second proposed modification is the expansion procedure (Alg.~\ref{alg::expand}), which expands the tree from $\qnear$ towards $\qrand$.
+The expansion towards $\qrand$ is crucial for the growth of the tree towards unexplored areas of the configuration space.
+Traditionally, a line is constructed from $\qnear$ to $\qrand$ and the tree is expanded by a configuration located on this line.
+This would however mostly lead to a collision in the case of ligands.
+
+Instead, we propose to expand the tree by considering all conformations and also by expanding the tree using the maximal possible scale that
+does not lead to a collision.
 For each ligand conformation $l \in \L$, the expansion procedure attempts to find a new collision-free configuration around $\qnear$ with a maximal scale.
-First, the maximal scale $\smax \in \S$ is selected and $m$ random samples are generated around $\qrand$ and tested for collisions.
+First, the maximal scale $\smax \in \S$ is selected and $m$ random samples are generated around $\qnear$ and tested for collisions.
 The nearest collision-free sample towards $\qrand$ is selected and added to the tree.
 If none of the tested samples is collision-free, the scale is reduced to $\smax-\sdelta$ and the search continues
 until a collision-free sample is found or until the minimal reduced-scale $\smin$ is reached.
 The random samples are generated similarly as in the case of $\qrand$ samples, only their translation
 part $(x,y,z)$ is generated around $\qnear$.
 
-The third modification is the utilization of another metric during the expansion procedure.
-While the nearest neighbors are search using 6D Euclidean metric, which can be efficiently realized using KD-trees, the expansion
-procedure utilizes a metric that is sensitive to the shape of the ligands.
-This is necessary as the ligands adopt various shapes according to the actual conformations.
-To minimize the distance between $\qrand$ and the ligand, the shape of the ligand should be considered.
+The third modification is the utilization of another metric during the expansion procedure (line~\ref{alg::expand:a} in Alg.~\ref{alg::expand}).
+This metric is denoted $\da(\cdot,\cdot)$ and it is referred to as atom-based metric in the rest of the paper.
+To evaluate $\da(q_1,q_2)$, the absolute positions of atoms of the ligand defined by $q_1$ and $q_2$ are computed.
+The minimal 3D Euclidean distance from the first set of atoms (defined by $q_1$) to the second set of atoms (defined by $q_2$) is the value of 
+$\da(q_1,q_2)$.
+By computing the atom-based metric using the absolute positions of atoms, this metric considers the shape of the ligands, which
+is useful when multiple conformations are utilized.
+By employing this metric in the expansion procedure, the tree is expanded by such a new configurations, whose atoms maximally approach
+the atoms of the configuration $\qrand$.
+We observed that this leads to a better construction of the configuration tree inside the proteins and it increases probability
+of reaching the active site.
 
-Therefore, we propose to measure the distance as the smallest 3D Euclidean distance between atoms placed at $\qrand$ and a configuration
-$q$ being tested.
-This metric is denoted $\da(\cdot,\cdot)$ on line~\ref{alg::expand:a} in Alg.~\ref{alg::expand} and it is referred to as atom-based metric in the rest of the paper.
-As the expansion routine attempts to find such sample that minimizes this distance to $\qrand$, it supports retraction of the ligand towards $\qrand$.
-The fast evaluation of this metric with complexity $O(\log n)$, where $n$ is the number of atoms of the ligand, can be achieved using KD-trees.
+%While the nearest neighbors are searched using 6D Euclidean metric, which can be efficiently realized using KD-trees, the expansion
+%procedure utilizes a metric that is sensitive to the shape of the ligands.
+%This is necessary as the ligands adopt various shapes according to the actual conformations.
+%To minimize the distance between $\qrand$ and the ligand, the shape of the ligand should be considered.
+
+%Therefore, we propose to measure the distance as the smallest 3D Euclidean distance between atoms placed at $\qrand$ and a configuration $q$ being tested.
+The atom-based metric can be evaluated fast with complexity $O(\log n)$, where $n$ is the number of atoms of the ligand, using KD-trees.
 For each conformation $\l \in \L$ of the ligand, a KD-tree is built for the ligand at the configuration $q=(0,0,0,0,0,0,l,\smax)$
 (i.e., for ligand with no translation and no rotation).
 To find the nearest atom to $\qrand$ for a ligand at the configuration $q=(x,y,z,r_x,r_y,r_z,l,s)$, the translation vector $T=(x,y,z)$ and
 rotation matrix $R$ given by $r_x$, $r_y$ and $r_z$ are computed.
-Then, $\qrand$ is translated to $\qrand' = R^{-1}(\qrand-T)$ and the KD-tree search is used to find nearest point towards $\qrand'$, which
-is also the nearest neighbor of the ligand at $q$ to $\qrand$.
+Then, $\qrand$ is translated to $\qrand' = R^{-1}(\qrand-T)$ and the KD-tree search is used to find the nearest point towards $\qrand'$, which
+is also the nearest point of the ligand at $q$ to $\qrand$.
 
 
 \begin{algorithm}[h]
