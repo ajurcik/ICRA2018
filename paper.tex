@@ -979,13 +979,14 @@ By using a single set of weights in the 6D Euclidean metric, we implicitly favor
 
 \section{Discussion and Utilization of the Results}
 
-The work presented in the paper was motivated by the current needs of biochemists who need to analyze the traversability of selected ligands through protein tunnels.
+The presented work was motivated by the current needs of biochemists who need to analyze the traversability of selected ligands through protein tunnels.
 To find the feasible ligand trajectories, it is often required to shrink the atomic radii of the ligand, as utilized also in other existing tools.
-Finding trajectories for the scaled-down ligands enables to solve the problem with narrow passages, but it can be questionable how biochemically relevant such trajectories are.
+Finding trajectories for the scaled-down ligands enables to solve the problem with narrow passages, but it can be questionable how biochemically relevant such trajectories~are.
 
 Judging the accessibility of the active site by a ligand based only on the traversability rates may be problematic if the ligand is scaled too much.
 Instead of using a single version of the scaled-down ligand, we only limit the minimal scale used by the planner (the parameter $\smin$).
-The expansion step always prefers to expand the tree with the maximal scale, that leads to a new collision-free configuration.
+The expansion step always prefers to expand the tree by a collision-free configuration with the maximal scale.
+%that leads to a new collision-free configuration.
 The information about the scales used at the trajectory points (which can be extracted from the configuration tree of the proposed planner) brings the biochemists new knowledge about the tunnels, which was impossible to get using the previous solutions.
 Our proposed visualization allows the biochemists to easily observe those parts of the tunnel where the ligand had to be scaled-down significantly (red parts of trajectories in Fig.~\ref{fig::dcp}), and parts where the ligand could be enlarged again (green parts in Fig.~\ref{fig::dcp}).
 According to the results of the motion planing, the DCP needs to shrink down to ca. 75~\% of its size (Fig.~\ref{fig::dcp}, point B).
