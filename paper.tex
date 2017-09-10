@@ -793,7 +793,7 @@ The \RA\ method was run with the following parameters:
 $\Imax=5,000$, $m=100$, $\gb=0.9$, $\dt=1.5$~\AA, $\rv=2$~\AA\ and $\varepsilon=0.05$~\AA.
 Both methods were implemented in the same software framework and they utilized the same data structures and routines for the collision detection and nearest-neighbor search.
 The nearest-neighbor search of both planners was based on the 6D Euclidean metric with the same weights for rotation and translation parts.
-This metric was selected based on preliminary experiments with both planners as it resulted in the success rates.
+This metric was selected based on preliminary experiments with both planners as it resulted in the highest success rates.
 
 The tested methods differ in the expansion step (lines \ref{alg::expa}--\ref{alg::expb} in Alg.~\ref{alg::expand}).
 In these lines, the \RB\ method employs the retraction step in order to find a new collision-free configuration $\qnew$ that approaches $\qrand$.
@@ -808,7 +808,7 @@ Other parameters of the \RB\ planner were the same as for \RA.
 The planning was terminated after $\Imax$ iterations or if the tree approached the active site to the distance less than 0.5~\AA.
 
 In the following experiments, we measured the performance of the methods using the traversability rate, which is the percentage of frames of the protein dynamics that are traversable by the tested ligand.
-A frame is considered traversable if at least one trajectory out of 20 (the number of initial configurations $|\QI|$) $\times$ 10 trials approaches the active site to the distance less than 2~\AA.~\footnote{We refer to~\url{http://mrs.felk.cvut.cz/icra2018protein} for additional material.}
+A frame is considered traversable if at least one trajectory out of 200 ($\!|\QI|\!\times\!\!10$ trials) approaches the active site to the distance less than~2~\AA.~\footnote{We refer to~\url{http://mrs.felk.cvut.cz/icra2018protein} for additional material.}
 
 \subsection{Traversability of One Atom}
 
@@ -958,7 +958,7 @@ to the active site is more than 2~\AA\ (for example, in the frame no. 60).
 \caption{\label{fig::comparison}
     Runtimes and the distance to the active site for the m037 ligand at scale 0.6.
     The values are computed from all 200 trials (20 initial configurations $\times$ 10 trials).
-    Only each second frame is shown in the graph.
+    Only each third frame is shown in the graph.
 }
 \end{figure}
 }
