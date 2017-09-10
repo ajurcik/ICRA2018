@@ -132,7 +132,7 @@ Protein reactivity is tightly connected with the presence of the void space betw
 This space, forming a path called tunnel, can be utilized by a small molecule (ligand) which can enter the protein inner space and react with its amino acids surrounding a specific site, called the active site~\cite{gora2013gates}.
 The size and location of tunnels determine the ligand size and shape which can enter the active site.
 %The tunnel has to be wide enough and also the physico-chemical properties of the surrounding amino acids have to be compatible with the ligand.
-Currently the biochemists are using various computational methods for tunnel detection (Fig.~\ref{fig::motiv}) in order to estimate the possibility of interactions between a protein and ligand.
+Currently the biochemists are using various computational methods for tunnel detection (Fig.~\ref{fig::motiv}) in order to estimate the possibility of interactions between a protein and a ligand.
 This helps them to reduce the number of necessary in-vitro lab experiments.
 The most common methods detect the tunnels using Voronoi diagrams~\cite{yaffe2008,caver3}, assuming a spherical ligand (probe), i.e., the approximation of the ligand by a bounding sphere.
 However, as the ligands are typically non-spherical, these methods can often skip possible candidate tunnels.
@@ -164,8 +164,7 @@ Protein 1CQW & Active site & Detected tunnels \\ %& Example of a  \\
 }
 \end{figure}
 
-
-To provide the biochemists with a solution which detects also the candidate tunnels omitted by the traditional methods, it is necessary take into account not only the ligand shape but also its conformation changes when the ligand moves.
+To provide the biochemists with a solution which detects also the candidate tunnels omitted by the traditional methods, it is necessary to take into account not only the ligand shape but also its conformation changes when the ligand moves.
 Such a ligand, changing the mutual position of its atoms within a molecular dynamics, is denoted as a flexible ligand.
 We can formulate this task as a motion planning problem.
 The proposed solution needs also to cope with the narrow passage problem, as proteins are dense structures limiting the ligand movements inside.
@@ -405,7 +404,7 @@ To further cope with the narrow passage problem, the random samples are not gene
 the tunnel in a user-defined distance.
 Therefore, the tunnels serve as a navigation path for the configuration tree~\cite{vonasek2009rrt}.
 
-Due to the protein dynamics, the tunnel changes, move and merge, and their bottleneck can change in each time step.
+Due to the protein dynamics, the tunnels move and merge, and their bottleneck can change in each time step.
 Therefore, it can be expected that the detected tunnels are rather narrow.
 Based on the observations of MD simulations, tunnels adapt their shape to the passing ligands and vice versa.
 In consequence, even very narrow tunnels, being too small for the passage of a given ligand-approximating sphere, can serve as the transportation path for this ligand.
@@ -720,7 +719,7 @@ The longer conformations can better fit in a narrow passage, while the packed co
 In the narrow parts of the tunnel, the tree can be extended by the longer conformations, while in the wider regions, also the
 packed conformations can be used.
 \vspace{-3mm}
-
+	
 \begin{figure}[hb]
 \centering
 %\includegraphics[width=0.25\textwidth]{fig/m040-conformations}
