@@ -830,6 +830,7 @@ For the purpose of the following experiments, we used $\Imax=5,000$ as a comprom
 \caption{\label{tab::one}Traversability for one atom.}
 \renewcommand{\tabcolsep}{4.3pt}
 {\small
+\renewcommand{\arraystretch}{0.7}
 \input graphProbe.tex
 }
 \end{table}
@@ -904,6 +905,7 @@ than using a less number of conformations or when preferring the packed conforma
 \small
 \renewcommand{\tabcolsep}{4.3pt}
 {\small
+\renewcommand{\arraystretch}{0.7}
 \input graphSel.tex
 }
 \end{table}
@@ -929,6 +931,7 @@ For the scale $\smin=0.8$, the most traversable frames were detected for ligands
 \small
 \renewcommand{\tabcolsep}{4.3pt}
 {\small
+\renewcommand{\arraystretch}{0.7}
 \input graph.tex
 }
 \end{table}
@@ -949,8 +952,10 @@ to the active site is more than 2~\AA\ (for example, in the frame no. 60).
 {\def\a{270}
 \begin{figure}[hb]
 \centering
-\includegraphics[width=0.25\textwidth,angle=\a]{fig/m037tmins-03tunnel-1rrt_path_time-2}
-\includegraphics[width=0.25\textwidth,angle=\a]{fig/m037tmins-03tunnel-1trajDistToGoal-2}
+%\includegraphics[width=0.17\textwidth,angle=\a]{fig/m037tmins-03tunnel-1rrt_path_time-2}
+%\includegraphics[width=0.17\textwidth,angle=\a]{fig/m037tmins-03tunnel-1trajDistToGoal-2}
+\includegraphics[width=0.18\textwidth,angle=\a]{fig/crop1}
+\includegraphics[width=0.18\textwidth,angle=\a]{fig/crop2}
 \caption{\label{fig::comparison}
     Runtimes and the distance to the active site for the m037 ligand at scale 0.6.
     The values are computed from all 200 trials (20 initial configurations $\times$ 10 trials).

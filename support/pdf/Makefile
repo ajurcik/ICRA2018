@@ -7,12 +7,12 @@ all:
 	echo Done
 
 #%.pdf: 
-#	$(CONVERT) $(basename $@).eps -o=$@
+	$(CONVERT) $(basename $@).eps -o=$@
 	
 clean:
 	echo done
 
 copy: all
-#	cp *.eps ../../fig	
-#	cp *.pdf ../../fig	
-	@for i in $(PDF) ; do ln -s -f ../support/pdf/$$i ../../fig; done
+	cp *.eps ../../fig	
+	cp *.pdf ../../fig	
+#	@for i in $(PDF) ; do ln -s -f ../support/pdf/$$i ../../fig; done
