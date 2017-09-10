@@ -235,6 +235,7 @@ Our proposed method was tested by the biochemists who compared the results with 
 
 %TODO some words about MD and why it better to analyze stuff with tunnels than with MD
 
+
 Most of the available tools for tunnel detection are based on Voronoi diagrams~\cite{yaffe2008,caver3} or they utilize a grid-based computation~\cite{sehnal2013mole}.
 %The tunnels are pathways computed for a single atom (spherical probe) using Voronio-diagrams~\cite{yaffe2008,caver3} or 
 %grid-based approaches~\cite{sehnal2013mole,petrek2006caver}.
@@ -242,7 +243,11 @@ The resulting tunnels are represented as a sequence of spheres and characterized
 More details can be found in the recently published state-of-the-art report about analysis and visualization of biomolecular cavities~\cite{Krone_2016}.
 The main disadvantage of both grid-based and VD-based methods is that the shape of the ligand is not taken into account during the tunnel detection and it is therefore not easy to estimate if (and how) a non-spherical ligand might traverse the tunnel.
 Moreover, the ligand flexibility cannot be principally considered by these approaches.
-In order to determine if the ligand can pass the tunnel, it is necessary to compute a trajectory considering the shape of the ligand and its 3D translation and rotation.
+Simulations based on molecular dynamics (MD) can directly evaluate migration of a ligand into a protein, but they are significantly more computationally demanding~\cite{kingsley2014including}. 
+Moreover, MD simulations have to be prepared for a specific ligand/protein pair, which is not practical for testing a large number of ligands.
+The geometric-based methods are therefore still preferable due to their fast speed.
+In order to determine if the ligand can pass the tunnel using the geometric-based methods, it is necessary to compute a trajectory considering the shape of the ligand and its 3D translation and rotation.
+
 %This can be formulated as a motion planning problem in a high-dimensional configuration space $\C$.
 %In this case, the configuration space $\C$ has at least $6+n$ dimensions (3D rotation + 3D translation + additional degrees of freedom
 %caused by the ligand flexibility).
@@ -367,7 +372,7 @@ the robot~\cite{hsuOnProb} or the obstacles~\cite{bayazitIRC}.
 The shrinking technique has been used also in~\cite{cortes2010simulating}, where the exit pathways for a small flexible molecule are
 computed using a RRT-based method.
 The flexible ligand is modeled as a kinematic chain, which increases the dimension of the configuration space.
-To cope with these many-DOF ligands, the RRT-ML~\cite{cortes2007mlrrt} approach is employed as the basic planner.
+To cope with these many-DOF ligands, the RRT-ML~\cite{cortes2007mlrrt} approach is employed as the basic planner in~\cite{cortes2010simulating}.
 RRT-ML expands the tree primarily using those DOF that are essential for achieving the motion of the ligand (i.e., rotation
 and translation) and it employs the other DOFs (i.e., those that are responsible for conformation changes) if they hinder the growth of the tree.
 
@@ -557,7 +562,8 @@ the last sphere in the tunnel, i.e., when $v = n$.
 }
 \KwData{
    ligand conformations $\L$,
-   scale limits $\smin, \smax$ and $\sdelta$
+   scale limits $\smin, \smax$ and $\sdelta$,
+   distance $\dt$ to move virtual goal
 }
 \KwOut{
     configuration tree $\T$\;
@@ -573,7 +579,7 @@ $\T$.addNode($\qinit$)\;
         $\qrand$ = random sample from $\C$\;
     }
     $\qnear$ = nearest node in $\T$ towards $\qrand$\;
-    expand($\qnear,\qrand$)\;
+    expand($\T, \qnear,\qrand$)\;
     \For{$i= n-1,n-2,\ldots,v+1,v$}{ \nllabel{alg::main:a}
         $d$ = nearest node in the tree towards sphere $c_i$\;
         \If{$d < \dt $}{
@@ -639,9 +645,9 @@ of reaching the active site.
 The atom-based metric can be evaluated fast using KD-trees with complexity $\mathcal{O}(\log n)$, where $n$ is the number of atoms of the ligand.
 For each conformation $\l \in \L$ of the ligand, a KD-tree is built for the ligand at the configuration $q=(0,0,0,0,0,0,l,\smax)$
 (i.e., for ligand with no translation and no rotation).
-To find the nearest atom to $\qrand$ for a ligand at the configuration $q=(x,y,z,r_x,r_y,r_z,l,s)$, the translation vector $T=(x,y,z)$ and
-rotation matrix $R$ given by $r_x$, $r_y$, and $r_z$ are computed.
-Then, $\qrand$ is translated to $\qrand' = R^{-1}(\qrand-T)$ and the KD-tree search is used to find the nearest point towards $\qrand'$, which
+To find the nearest atom to $\qrand$ for a ligand at the configuration $q=(x,y,z,r_x,r_y,r_z,l,s)$, the translation vector $V=(x,y,z)$ and
+rotation matrix $R$ given by $r_x$, $r_y$ and $r_z$ are computed.
+Then, $\qrand$ is translated to $\qrand' = R^{-1}(\qrand-V)$ and the KD-tree search is used to find the nearest point towards $\qrand'$, which
 is also the nearest point of the ligand at $q$ to $\qrand$.
 
 
@@ -650,13 +656,13 @@ is also the nearest point of the ligand at $q$ to $\qrand$.
 \setstretch{0.88}
 \caption{\label{alg::expand}expand}
 \KwIn{
+   tree $\T$,
    configuration $\qnear$ to be expanded,
    random configuration $\qrand$
 }
 \KwData{
    ligand conformations $\L$,
    scale limits $\smin, \smax$, and $\sdelta$,
-   tree $\T$
 }
 %\KwOut{
 %    set $S$ of collision-free configurations reachable from $\qnear$\;
@@ -706,12 +712,7 @@ Selection of a suitable set of conformations $\L$ is therefore crucial.
 Depending on the ligand, some conformations can be considered as more packed i.e., the atoms in such conformations are closer to each other, but 
 the atoms can also form a more elongated shape (Fig.~\ref{fig::m040c}).
 
-From the motion planning point of view, both types of conformations are useful.
-The longer conformations can better fit in a narrow passage, while the packed conformations can be better rotated at a given position.
-In the narrow parts of the tunnel, the tree can be extended by the longer conformations, while in the wider regions, also the
-packed conformations can be used.
-
-\begin{figure}[b!]
+\begin{figure}[bh]
 \centering
 %\includegraphics[width=0.25\textwidth]{fig/m040-conformations}
 \includegraphics[width=0.14\textwidth]{fig/m040-conf1} \hskip 25pt
@@ -721,6 +722,10 @@ packed conformations can be used.
 }
 \end{figure}
 
+From the motion planning point of view, both types of conformations are useful.
+The longer conformations can better fit in a narrow passage, while the packed conformations can be better rotated at a given position.
+In the narrow parts of the tunnel, the tree can be extended by the longer conformations, while in the wider regions, also the
+packed conformations can be used.
 
 To select the suitable set $\L$ of conformations from a pool of available conformations, a simple technique is proposed.  
 For each conformation, the geometric center is calculated and the deviation of the distances of the atoms from the center is calculated.
@@ -1053,15 +1058,18 @@ This was observed in the MD simulation of the DCP ligand in the 1CQW protein, wh
 
 In this paper, we presented a modification of the RRT planner for trajectory computation of ligands inside protein tunnels.
 The tunnels are pathways leading from an outer environment toward the active sites, where chemical interactions may undergo.
-So far, the tunnels have been detected using Voronoi diagrams and analyzed based on their length, bottleneck and the list of residues along them.
-Such an analysis is however useful only for small spherical ligands and it is difficult to estimate behavior of a large, non-spherical ligands.
+So far, the tunnels have been detected using Voronoi diagrams, which does not take into account shape of the ligand neither the possible 
+conformation changes.
 In the proposed work, we compute trajectories using modified RRT for whole ligands and we model the conformation changes of the
 ligands using a predefined set of conformations.
-The main idea of the proposed planner is to generate the random samples around the Voronoi-based tunnels.
-The probability of sampling is increased around so called virtual goal, which is a point moving along the tunnel. 
-The virtual goal is moved forward, if the tree approaches it close enough.
-To enable movements in narrow tunnels, the atomic radii of the ligands are scaled down.
-
+The atomic radii of the ligands can be scaled down up to a certain predefined factor.
+The planner generates the random samples along a tunnel computed by Voronoi diagram and it attempts to expand the configuration
+tree using all conformations. 
+The expansion prefers atoms with a higher scale, which ensures that the ligand shrinks down only if traversing narrow parts of the tunnels.
+To further boost exploration of the configuration space, a novel metric suitable for measuring distances between various shapes
+of the ligands, is used in the expansion step.
+The proposed method has been used to  evaluate trajectories of several ligands in a sequence of protein dynamics.
+Traversability of one of the tested ligands has been already approved in MD simulations.
 
 \bibliographystyle{plain}
 \bibliography{paper}
