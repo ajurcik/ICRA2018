@@ -132,9 +132,10 @@ Protein reactivity is tightly connected with the presence of the void space betw
 This space, forming a path called tunnel, can be utilized by a small molecule (ligand) which can enter the protein inner space and react with its amino acids surrounding a specific site, called the active site~\cite{gora2013gates}.
 The size and location of tunnels determine the ligand size and shape which can enter the active site.
 %The tunnel has to be wide enough and also the physico-chemical properties of the surrounding amino acids have to be compatible with the ligand.
-Biochemists are currently using computational methods for tunnel detection in order to estimate the possibility of interactions between a protein and a ligand without the need to perform laboratory experiments (Fig.~\ref{fig::motiv}).
-The most common methods detect tunnels using Voronoi diagrams~\cite{yaffe2008,caver3} assuming a spherical ligand (probe), i.e., the ligand is approximated by a bounding sphere.
-However, as the ligands are typically non-spherical and flexible, these methods can often skip possible candidate tunnels.
+Currently the biochemists are using various computational methods for tunnel detection (Fig.~\ref{fig::motiv}) in order to estimate the possibility of interactions between a protein and ligand.
+This helps them to reduce the number of necessary in-vitro lab experiments.
+The most common methods detect the tunnels using Voronoi diagrams~\cite{yaffe2008,caver3}, assuming a spherical ligand (probe), i.e., the approximation of the ligand by a bounding sphere.
+However, as the ligands are typically non-spherical, these methods can often skip possible candidate tunnels.
 
 \begin{figure}[t]
 \centering
@@ -164,10 +165,10 @@ Protein 1CQW & Active site & Detected tunnels \\ %& Example of a  \\
 \end{figure}
 
 
-To provide the biochemists with a solution which detects also candidate tunnels omitted by the traditional methods, it is necessary take into account also the ligand shape and its conformation changes when the ligand moves, i.e., changes its conformation.
-Such a ligand changing the mutual position of its atoms within a molecular dynamics is denoted as a flexible ligand.
-To address this, we can formulate the task as a motion planning problem.
-It is also necessary to cope with the narrow passage problem, as the proteins are dense structures and the movements of the ligand are limited by the surrounding amino acids.
+To provide the biochemists with a solution which detects also the candidate tunnels omitted by the traditional methods, it is necessary take into account not only the ligand shape but also its conformation changes when the ligand moves.
+Such a ligand, changing the mutual position of its atoms within a molecular dynamics, is denoted as a flexible ligand.
+We can formulate this task as a motion planning problem.
+The proposed solution needs also to cope with the narrow passage problem, as proteins are dense structures limiting the ligand movements inside.
 
 The idea of the sampling-based motion planning is to randomly sample the configuration space of the robot and to connect the collision-free samples
 into a graph structure (roadmap).
@@ -177,7 +178,7 @@ A path in the roadmap then corresponds to a motion in the workspace.
 Two most commonly used sampling-based techniques are Probabilistic Roadmaps (PRM)~\cite{kavrakiForPP} and Rapidly Exploring Random Trees (RRT)~\cite{lavalleRRT}.
 The sampling-based planners can cope with many-DOF (Degrees of Freedom) robots of an arbitrary shape.
 Therefore, they have been used for motion planning of various robotic systems.
-Besides many applications in robotics, the sampling-based planners have been already used in biochemistry as well 
+Besides many applications in robotics, the sampling-based planners have been already used in biochemistry as well, 
 %Sampling-based motion planners has been intensively studied in robotics, but they have been applied also in other research fields.
 %In bio-chemistry, the planners have been used to study
 to study loop motions~\cite{cortes2004geometric}
