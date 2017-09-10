@@ -367,7 +367,7 @@ the robot~\cite{hsuOnProb} or the obstacles~\cite{bayazitIRC}.
 The shrinking technique has been used also in~\cite{cortes2010simulating}, where the exit pathways for a small flexible molecule are
 computed using a RRT-based method.
 The flexible ligand is modeled as a kinematic chain, which increases the dimension of the configuration space.
-To cope with these many-DOF ligands, the RRT-ML~\cite{cortes2007mlrrt} approach is employed as the basic planner.
+To cope with these many-DOF ligands, the RRT-ML~\cite{cortes2007mlrrt} approach is employed as the basic planner in~\cite{cortes2010simulating}.
 RRT-ML expands the tree primarily using those DOF that are essential for achieving the motion of the ligand (i.e., rotation
 and translation) and it employs the other DOFs (i.e., those that are responsible for conformation changes) if they hinder the growth of the tree.
 
@@ -562,7 +562,8 @@ We propose to set this parameter to the average width of the tunnel.
 }
 \KwData{
    ligand conformations $\L$,
-   scale limits $\smin, \smax$ and $\sdelta$
+   scale limits $\smin, \smax$ and $\sdelta$,
+   distance $\dt$ to move virtual goal
 }
 \KwOut{
     configuration tree $\T$\;
@@ -578,7 +579,7 @@ $\T$.addNode($\qinit$)\;
         $\qrand$ = random sample from $\C$\;
     }
     $\qnear$ = nearest node in $\T$ towards $\qrand$\;
-    expand($\qnear,\qrand$)\;
+    expand($\T, \qnear,\qrand$)\;
     \For{$i= n-1,n-2,\ldots,v+1,v$}{ \nllabel{alg::main:a}
         $d$ = nearest node in the tree towards sphere $c_i$\;
         \If{$d < \dt $}{
@@ -632,9 +633,9 @@ of reaching the active site.
 The atom-based metric can be evaluated fast using KD-trees with complexity $\mathcal{O}(\log n)$, where $n$ is the number of atoms of the ligand.
 For each conformation $\l \in \L$ of the ligand, a KD-tree is built for the ligand at the configuration $q=(0,0,0,0,0,0,l,\smax)$
 (i.e., for ligand with no translation and no rotation).
-To find the nearest atom to $\qrand$ for a ligand at the configuration $q=(x,y,z,r_x,r_y,r_z,l,s)$, the translation vector $T=(x,y,z)$ and
+To find the nearest atom to $\qrand$ for a ligand at the configuration $q=(x,y,z,r_x,r_y,r_z,l,s)$, the translation vector $V=(x,y,z)$ and
 rotation matrix $R$ given by $r_x$, $r_y$ and $r_z$ are computed.
-Then, $\qrand$ is translated to $\qrand' = R^{-1}(\qrand-T)$ and the KD-tree search is used to find the nearest point towards $\qrand'$, which
+Then, $\qrand$ is translated to $\qrand' = R^{-1}(\qrand-V)$ and the KD-tree search is used to find the nearest point towards $\qrand'$, which
 is also the nearest point of the ligand at $q$ to $\qrand$.
 
 
@@ -643,13 +644,13 @@ is also the nearest point of the ligand at $q$ to $\qrand$.
 \setstretch{0.88}
 \caption{\label{alg::expand}expand}
 \KwIn{
+   tree $\T$,
    configuration $\qnear$ to be expanded,
    random configuration $\qrand$
 }
 \KwData{
    ligand conformations $\L$,
    scale limits $\smin, \smax$, and $\sdelta$,
-   tree $\T$
 }
 %\KwOut{
 %    set $S$ of collision-free configurations reachable from $\qnear$\;
