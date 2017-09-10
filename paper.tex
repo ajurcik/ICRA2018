@@ -190,7 +190,7 @@ We localize the generation of the random samples, i.e., instead of sampling the 
 The potential tunnel is represented by a set of consecutive spheres surrounding the tunnel centerline.
 This optimization allows us to find trajectories along the given tunnel, which is faster than searching for any trajectory in the whole protein.
 To enable the movement of the ligand in the narrow parts of the tunnel, the free-space can be dilated by shrinking the atom radii, similarly, e.g., to~\cite{cortes2005path,hsu06multilevel}. 
-The ligand flexibility is modeled using a fixed set of predefined configurations which the ligand can occupy.
+The ligand flexibility is modeled using a fixed set of predefined conformations which the ligand can occupy.
 
 Our proposed method was tested by the biochemists who compared the results with trajectories of ligands determined experimentally in the lab.
 
@@ -386,7 +386,7 @@ To address the problems of the existing solutions for computing the non-spherica
 Our approach takes into account the shape and flexibility of the ligand and localizes the searched configuration space using the information about tunnels detected by the Voronoi-based approach.
 The input is therefore formed by a set of tunnels computed using Voronoi diagrams and the task is to find trajectories for a ligand along these tunnels
 leading from outside the protein to the active site.
-The tunnels are detected in a sequence time steps capturing protein dynamic behavior that is computed using molecular dynamics simulations. 
+The tunnels are detected in a sequence time steps capturing protein dynamic behavior that is computed using molecular dynamics (MD) simulations. 
 
 In contrast to~\cite{cortes2010simulating}, which searches for any exit path from the protein, we localize the searching and compute the trajectories only along each tunnel separately.
 This is motivated by the practical needs of biochemists that are interested in the actual traversability the ligand through a selected tunnel.
@@ -396,16 +396,23 @@ To further cope with the narrow passage problem, the random samples are not gene
 the tunnel in a user-defined distance.
 Therefore, the tunnels serve as a navigation path for the configuration tree~\cite{vonasek2009rrt}.
 
-Due to the protein dynamics, the tunnel changes, move and merge, and their bottleneck changes in each frame.
-It can therefore be expected, that the detected tunnels are rather narrow.
-Based on the observation from MD simulations, the tunnels adapt to the ligands (and vice versa), so even narrow tunnels can serve as transportation path for thee ligands TODO CITACE??.
-To enable computing of trajectories in the narrow tunnels, we shrink the atom radii of the ligand, similarly to~\cite{cortes2010simulating,guieysse2008structure}.
+Due to the protein dynamics, the tunnel changes, move and merge, and their bottleneck can change in each time step.
+Therefore, it can be expected that the detected tunnels are rather narrow.
+Based on the observations of MD simulations, tunnels adapt their shape to the passing ligands and vice versa.
+In consequence, even very narrow tunnels, being too small for the passage of a given ligand approximating sphere, can serve as the transportation path for this ligand.
+Therefore, also the existing Voronoi-based methods enable the user to decrease the size of the approximating sphere which simulates shrinking of the ligand size.
+In our solution we simulate this by shrinking the atom radii of the ligand, used also by~\cite{cortes2010simulating,guieysse2008structure}.
 
-The ligand flexibility is modeled using a predefined set of typical conformations, therefore the number of the dimensions of the configuration space does not depend on the DOF of the ligand as in~\cite{cortes2010simulating}.
-Library of conformations are used also in different types of calculations, e.g.~\cite{kellogg}. 
-While classic 6D Euclidean metric is used in the nearest-neighbor search of RRT, we propose to use another metric during the expansion step.
-This metric measures distances between two configurations as the nearest distance of two atoms. 
-This enables the metric to consider the shape of the ligand and it supports retraction of the ligand to the narrow passages.
+Molecular dynamics simulations of ligands passing through proteins show that the ligands can be highly flexible.
+However, ligands cannot form arbitrary conformations. 
+Ligand can contain several torsion and dihedral angles between its atoms which determine possible ligand conformations.
+Therefore, the ligand flexibility can be modeled using only a predefined set of conformations.
+So the number of dimensions of the configuration space does not depend on the DOF of the ligand as in~\cite{cortes2010simulating}.
+The libraries containing possible ligand conformations are used also in different types of calculations, e.g., in~\cite{kellogg}. 
+
+While the classic 6D Euclidean metric is used in the nearest-neighbor search of RRT, we propose to use another metric during the expansion step.
+This metric measures the distances between two configurations as the nearest distance of two atoms. 
+This enables the metric to consider the shape of the ligand and it supports the retraction of the ligand to the narrow passages.
 
 
 %approximate the distance metric using nonlinear parametric regression model 
@@ -467,11 +474,11 @@ This enables the metric to consider the shape of the ligand and it supports retr
 
 \subsection{Preliminaries}
 
-Proteins and ligands are represented by the hard sphere model, where the radius of each sphere (atom) is given by its van der Waals radius.
+Proteins and ligands are represented by the hard sphere model, where the radius of each sphere representing an atom is given by its van der Waals radius.
 A protein tunnel is described by a sequence of collision-free spheres 
 $T=( (c_1, r_1),\ldots,(c_n,r_n) )$, where $n$ denotes the number of spheres,
-$c_i \in \R^3$ is their 3D position and $r_i > 0$ denotes the maximum collision-free radius of a sphere centered at $c_i$. 
-The tunnels can be found by the tunnel detection tools like CAVER 3.0~\cite{caver3}.
+$c_i \in \R^3$ is their 3D position, and $r_i > 0$ denotes the maximum collision-free radius of a sphere centered at $c_i$. 
+Tunnels serving as an input for our proposed method can be detected using some of the existing computational tools, such as CAVER 3.0~\cite{caver3}.
 
 %from wiki:
 %Multiple static structures experimentally determined for the same protein in different conformations are often used to emulate receptor flexibility.[19] Alternatively rotamer libraries of amino acid side chains that surround the binding cavity may be searched to generate alternate but energetically reasonable protein conformations.[20][21]
@@ -488,17 +495,17 @@ The tunnels can be found by the tunnel detection tools like CAVER 3.0~\cite{cave
 
 %The proteins are dense structures and the tunnels are typically narrow.
 %Depending on the protein, the tunnel bottlenecks can be even less than $1$~\AA, which is too narrow for ligands with more than 2 atoms.
-The flexibility of a ligand is modeled using the set $\L$ of its conformations.
-We assume that a library of all possible (in the considered resolution) conformations is available (e.g., ~\cite{dunbrack}) and we later show how to select a subset of conformations suitable for motion planning.
+The flexibility of the ligand is modeled using the set $\L$ of its conformations.
+We assume that the library of all possible conformations in a considered resolution is available (e.g., ~\cite{dunbrack}) and we later show how to select a subset of conformations suitable for the motion planning.
 %The conformations $\L$ are used from a library (e.g.,~\cite{dunbrack}), or they can be prepared considering the potential energy.
 
-To enable motion of ligands in the narrow tunnels, the atomic radii of the ligand are scaled down by a factor $s, 0 < s \le 1$.
-A discrete set of scales is used, i.e., $s \in \S=\{\smin, \smin+\sdelta, \ldots, \smax\}$, where 
-$\smin$ is the minimal allowed scale, $\smax=1$ is the maximal allowed scale and $\sdelta$ is the minimal difference between two scales.
+To enable the motion of ligands in the narrow tunnels, the atomic radii of the ligand are scaled down by a factor $s, 0 < s \le 1$.
+In our solution we use a discrete set of scales, i.e., $s \in \S=\{\smin, \smin+\sdelta, \ldots, \smax\}$, where 
+$\smin$ is the minimal allowed scale, $\smax=1$ is the maximal allowed scale, and $\sdelta$ is the minimal difference between two scales.
 
-A configuration of the ligand $q=(x,y,z,r_x,r_y,r_z,l,s)$  is described
-by the 3D position $(x,y,z)$ of the reference point of the ligand (the geometric center), the rotation around $x$, $y$, and $z$ axes,
-the index of the conformation $l\in \L$ and the scale $s \in \S$.
+A configuration of the ligand $q=(x,y,z,r_x,r_y,r_z,l,s)$ is described
+by the 3D position $(x,y,z)$ of the reference point of the ligand (its geometric center), the rotation around $x$, $y$, and $z$ axes,
+the index of the conformation $l\in \L$, and the scale $s \in \S$.
 All possible configurations form the configuration space $\C$ and the collision-free configurations
 form the subspace $\CF \subseteq \C$.
 A configuration $q$ is collision-free if none of the ligand atoms scaled by $s$ and placed at the
@@ -508,24 +515,23 @@ position defined by $q$ collides with the protein atoms.
 
 \subsection{Computing Initial Configurations}
 
-Depending on the chemical interactions between the ligand and the protein surface, the ligand may enter a tunnel with various rotations and in various conformations.
+Depending on the chemical interactions between the ligand and the protein surface, the ligand may enter a tunnel with various rotations and in various spatial conformations.
 The traversability of the tunnel should therefore be evaluated using multiple starting configurations $\QI$.
 The initial configurations are searched around the beginning of the tunnel.
 To find a new initial configuration, a random sample $q$ is generated around the first sphere of the tunnel 
-$c_1$ in the distance $\RI$ (the translation and rotation  parts of $q$ are generated randomly, the scale is set to $\smin$ and the conformation index is set randomly).
+$c_1$ in the distance $\RI$ (the translation and rotation parts of $q$ are generated randomly, the scale is set to $\smin$, and the conformation index is set randomly).
 If the sample $q$ is collision-free, it can be considered as a new starting configuration and it is added to $\QI$.
 %Similarly, a single goal configuration $\qgoal$ is found around the end of the tunnel. 
 For each starting configuration $\qinit \in \QI$, the trajectories are computed using a modified RRT, which is introduced in the following section.
 
 
-\subsection{RRT for computing ligands trajectory along a tunnel}
+\subsection{RRT for Computing Ligand's Trajectory along Tunnel}
 
 The proposed motion planning is based on the principle of the RRT~\cite{lavalleRRT} planner.
 In each iteration, a random sample $\qrand$ is generated and its nearest node $\qnear\in\T$ in the tree is found.
 The nearest-neighbor search between $\qrand$ and the tree is performed using the weighted 6D Euclidean metric computed using
 both 3D rotation and 3D translation.
-The main loop of the planner (Alg.~\ref{alg::main}) is similar to original RRT, but we propose three modifications.
-
+The main loop of the planner (Alg.~\ref{alg::main}) is similar to the original RRT, but we propose its three modifications.
 
 The aim of the first modification is to sample the configuration space along the tunnel being analyzed.
 To guide the growth of the tree using the tunnel, a moving virtual goal is used~\cite{vonasek2009rrt}.
@@ -536,23 +542,12 @@ After the tree reaches the sphere $c_v$, i.e., the distance of the tree to $c_v$
 less than a predefined threshold $\dt$, the virtual goal is moved to the successor of the last sphere in the tunnel
 that is reached by the tree (lines~\ref{alg::main:a}--\ref{alg::main:b} in Alg.~\ref{alg::main}).
 Setting the virtual goal to this successor allows the tree to avoid such parts of the tunnels that are not traversable or reachable by the ligand.
-This allows the tree to slightly detour from the tunnel and overcome its difficult (narrow) parts by finding an alternative trajectory nearby.
+This allows the tree to slightly detour from the tunnel and overcome its difficult (i.e., narrow) parts by finding an alternative trajectory nearby.
 The algorithm terminates after a predefined number of planning trials $\Imax$ or if the tree reaches
 the last sphere in the tunnel, i.e., when $v = n$.
 
-To generate the samples $\qrand$ around the virtual goal $v$, the translation part $(x,y,z)$ of $\qrand$ is generated
-from the Gaussian distribution $N(c_v,\Sigma)$, where $\Sigma$ is the diagonal matrix with diagonal entries equal to the parameter $\rv$, and the rotational
-part of $\qrand$ is generated using techniques described in~\cite{kuffnerES}.
-The other two parameters (ligand index $l$ and scale $s$) of $\qrand$ can be left zero, as these are not used in the employed
-metric for the nearest-neighbor search.
-The parameter $\rv$ influences the distribution of the random samples around the tunnel centerline. 
-By setting $\rv$ to a small value, the planner attempts to find the trajectories inside the tunnel, while higher values
-of $\rv$ cause  exploration of paths around the tunnel.
-We propose to set this parameter to the average width of the tunnel.
-
-
 \linesnumbered
-\begin{algorithm}[h]
+\begin{algorithm}[bh]
 {\small
 \setstretch{0.88}
 \caption{\label{alg::main}Main loop of the RRT planner}
@@ -592,11 +587,23 @@ $\T$.addNode($\qinit$)\;
 }
 \end{algorithm}
 
+To generate the samples $\qrand$ around the virtual goal $v$, the translation part $(x,y,z)$ of $\qrand$ is generated
+from the Gaussian distribution $N(c_v,\Sigma)$, where $\Sigma$ is the diagonal matrix with diagonal entries equal to the parameter $\rv$, and the rotational
+part of $\qrand$ is generated using techniques described in~\cite{kuffnerES}.
+The other two parameters (ligand index $l$ and scale $s$) of $\qrand$ can be set to zero, as these are not used in the employed
+metric for the nearest-neighbor search.
+The parameter $\rv$ influences the distribution of the random samples around the tunnel centerline. 
+By setting $\rv$ to a small value, the planner attempts to find the trajectories inside the tunnel, while higher values
+of $\rv$ cause the exploration of paths around the tunnel.
+We propose to set this parameter to the average width of the tunnel.
+
+
+
 The second proposed modification is the expansion procedure (Alg.~\ref{alg::expand}), which expands the tree from $\qnear$ towards $\qrand$.
-The expansion towards $\qrand$ is crucial for the growth of the tree towards unexplored areas of the configuration space.
+The expansion towards $\qrand$ is crucial for the growth of the tree towards the unexplored areas of the configuration space.
 Traditionally, a line is constructed from $\qnear$ to $\qrand$ and the tree is expanded by a configuration located on this line in the 
 distance $\varepsilon$ from $\qnear$.
-This would however mostly lead to a collision in the case of ligands.
+However, in the case of ligands, this would mostly lead to a collision.
 
 The expansion procedure attempts to expand the tree using all the conformations $\L$ and by preferring larger scales than the smaller ones.
 For each $l \in \L$, the expansion procedure attempts to find a new collision-free configuration around $\qnear$ with a maximal scale.
@@ -607,18 +614,18 @@ part $(x,y,z)$ is generated around $\qnear$.
 The nearest collision-free sample towards $\qrand$ is selected and added to the tree.
 If none of the tested samples is collision-free, the scale is reduced to $\smax-\sdelta$ and the search continues
 until a collision-free sample is found or until the minimal reduced-scale $\smin$ is reached.
-By testing first the largest scale ($\smax$), the expansion procedure preffers expanding the tree by larger scales.
-This forces the planner to automatically use smaller scaled in the difficult (narrow) parts of the tunnels, while prefering
+By testing first the largest scale ($\smax$), the expansion procedure prefers expanding the tree by larger scales.
+This forces the planner to automatically use smaller scales in the difficult (narrow) parts of the tunnels, while preferring
 large scales if possible.
 
 The third modification is the utilization of another metric during the expansion procedure (line~\ref{alg::expand:a} in Alg.~\ref{alg::expand}).
-This metric is denoted $\da(\cdot,\cdot)$ and it is referred to as atom-based metric in the rest of the paper.
+This metric is denoted as $\da(\cdot,\cdot)$ and it is referred to as atom-based metric in the rest of the paper.
 To evaluate $\da(q_1,q_2)$, the absolute positions of the atoms of the ligand defined by $q_1$ and $q_2$ are computed.
 The minimal 3D Euclidean distance from the first set of atoms (defined by $q_1$) to the second set of atoms (defined by $q_2$) is the value of 
 $\da(q_1,q_2)$.
 By computing the atom-based metric using the absolute positions of atoms, this metric considers the shape of the ligands, which
 is useful when multiple conformations are utilized.
-By employing this metric in the expansion procedure, the tree is expanded by such a new configuration, which atoms maximally approach
+By employing this metric in the expansion procedure, the tree is expanded by such a new configuration, whose atoms maximally approach
 the atoms of the configuration $\qrand$.
 We observed that this leads to a better construction of the configuration tree inside the proteins and it increases the probability
 of reaching the active site.
@@ -633,12 +640,12 @@ The atom-based metric can be evaluated fast using KD-trees with complexity $\mat
 For each conformation $\l \in \L$ of the ligand, a KD-tree is built for the ligand at the configuration $q=(0,0,0,0,0,0,l,\smax)$
 (i.e., for ligand with no translation and no rotation).
 To find the nearest atom to $\qrand$ for a ligand at the configuration $q=(x,y,z,r_x,r_y,r_z,l,s)$, the translation vector $T=(x,y,z)$ and
-rotation matrix $R$ given by $r_x$, $r_y$ and $r_z$ are computed.
+rotation matrix $R$ given by $r_x$, $r_y$, and $r_z$ are computed.
 Then, $\qrand$ is translated to $\qrand' = R^{-1}(\qrand-T)$ and the KD-tree search is used to find the nearest point towards $\qrand'$, which
 is also the nearest point of the ligand at $q$ to $\qrand$.
 
 
-\begin{algorithm}[h]
+\begin{algorithm}[th]
 {\small
 \setstretch{0.88}
 \caption{\label{alg::expand}expand}
@@ -696,21 +703,15 @@ In the expansion step, each conformation from $\L$ is tested in order to approac
 By using more conformations, there is a higher chance that at least one of them can expand the tree towards the random sample $\qrand$.
 On the other hand, using a large number of conformations also increases the time complexity of the expansion step.
 Selection of a suitable set of conformations $\L$ is therefore crucial.
-Depending on the ligand, some conformations can be considered as more packed i.e., the atoms in such conformations are close to each other, but 
-the atoms can also form a more longer shape (Fig.~\ref{fig::m040c}).
+Depending on the ligand, some conformations can be considered as more packed i.e., the atoms in such conformations are closer to each other, but 
+the atoms can also form a more elongated shape (Fig.~\ref{fig::m040c}).
 
-From motion planning point of view, both types of conformations are useful.
-The longer conformations can better fit in a narrow passage, while the packed conformations better rotate at a place.
-In the narrow parts of the tunnels, the tree can be extended by the longer conformations, while in the more open regions, also the
-packed configurations can be used.
+From the motion planning point of view, both types of conformations are useful.
+The longer conformations can better fit in a narrow passage, while the packed conformations can be better rotated at a given position.
+In the narrow parts of the tunnel, the tree can be extended by the longer conformations, while in the wider regions, also the
+packed conformations can be used.
 
-To select the suitable set $\L$ of conformations from a pool of available conformations, a simple technique is proposed.  
-For each conformation, the geometric center is calculated and the deviation of the distances of the atoms from the center is calculated.
-The low value of the deviation is characteristic for the packed conformations, while larger deviations correspond to the longer conformations.
-To select $n$ conformations from all $m$ available conformations, they are sorted according to the deviation.
-Each $k-$th conformation from the sorted list, where $k=\lfloor{m\over n}\rfloor$, is added to $\L$.
-
-\begin{figure}
+\begin{figure}[b!]
 \centering
 %\includegraphics[width=0.25\textwidth]{fig/m040-conformations}
 \includegraphics[width=0.14\textwidth]{fig/m040-conf1} \hskip 25pt
@@ -719,6 +720,14 @@ Each $k-$th conformation from the sorted list, where $k=\lfloor{m\over n}\rfloor
  The examples of a `long' conformation (left) and a `packed' one for the ligand m040 (1,5-Dichloropentane).
 }
 \end{figure}
+
+
+To select the suitable set $\L$ of conformations from a pool of available conformations, a simple technique is proposed.  
+For each conformation, the geometric center is calculated and the deviation of the distances of the atoms from the center is calculated.
+The low value of the deviation is characteristic for the packed conformations, while larger deviations correspond to the longer conformations.
+To select $n$ conformations from all $m$ available conformations, they are sorted according to the deviation.
+Each $k-$th conformation from the sorted list, where $k=\lfloor{m\over n}\rfloor$, is added to $\L$.
+
 
 
 %\subsection{Visualization of Results}
@@ -762,10 +771,9 @@ Each $k-$th conformation from the sorted list, where $k=\lfloor{m\over n}\rfloor
 
 \section{Experimental Verification}
 
-
-The proposed approach was used to analyze tunnel traversability towards the active site of Haloalkane dehalogenase protein (PDB ID 1CQW).
-The active site was defined using residues 38 (Asparagine), 102 (Histidine) and 103 (Aspartate).
-The molecular dynamics of the protein was computed using the Amber tool.
+The proposed approach was used to analyze tunnel traversability towards the active site of the Haloalkane dehalogenase protein (PDB ID 1CQW).
+The active site was defined using residues 38 (Asparagine), 102 (Histidine), and 103 (Aspartic Acid).
+The molecular dynamics of the protein was computed using the AMBER tool~\cite{amber}.
 In each frame, tunnels for the spherical probe 0.9~\AA\ were detected using CAVER 3.0~\cite{caver3}. 
 In most of the frames, two tunnels were detected.
 The average bottleneck of the tunnels are $1.48$~\AA\ and $1.2$~\AA\ for the first and the second tunnel, resp.
