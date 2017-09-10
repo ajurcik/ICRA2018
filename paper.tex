@@ -404,7 +404,7 @@ Therefore, the tunnels serve as a navigation path for the configuration tree~\ci
 Due to the protein dynamics, the tunnel changes, move and merge, and their bottleneck can change in each time step.
 Therefore, it can be expected that the detected tunnels are rather narrow.
 Based on the observations of MD simulations, tunnels adapt their shape to the passing ligands and vice versa.
-In consequence, even very narrow tunnels, being too small for the passage of a given ligand approximating sphere, can serve as the transportation path for this ligand.
+In consequence, even very narrow tunnels, being too small for the passage of a given ligand-approximating sphere, can serve as the transportation path for this ligand.
 Therefore, also the existing Voronoi-based methods enable the user to decrease the size of the approximating sphere which simulates shrinking of the ligand size.
 In our solution we simulate this by shrinking the atom radii of the ligand, used also by~\cite{cortes2010simulating,guieysse2008structure}.
 
@@ -536,10 +536,10 @@ The proposed motion planning is based on the principle of the RRT~\cite{lavalleR
 In each iteration, a random sample $\qrand$ is generated and its nearest node $\qnear\in\T$ in the tree is found.
 The nearest-neighbor search between $\qrand$ and the tree is performed using the weighted 6D Euclidean metric computed using
 both 3D rotation and 3D translation.
-The main loop of the planner (Alg.~\ref{alg::main}) is similar to the original RRT, but we propose its three modifications.
+The main loop of the planner (Alg.~\ref{alg::main}) is similar to the original RRT, but with the following three proposed modifications.
 
 The aim of the first modification is to sample the configuration space along the tunnel being analyzed.
-To guide the growth of the tree using the tunnel, a moving virtual goal is used~\cite{vonasek2009rrt}.
+To guide the growth of the tree using the tunnel, a moving virtual goal is used. %~\cite{vonasek2009rrt}.
 The virtual goal $v, 1\le v \le n$, is the index of a sphere of the tunnel.
 At the beginning of the algorithm, $v=1$.
 The random samples $\qrand$ are generated around the sphere $c_v \in T$ with the probability $\gb$, and from the whole $\C$ otherwise.
