@@ -603,16 +603,18 @@ Traditionally, a line is constructed from $\qnear$ to $\qrand$ and the tree is e
 distance $\varepsilon$ from $\qnear$.
 This would however mostly lead to a collision in the case of ligands.
 
-Instead, we propose to expand the tree by considering all conformations and also by expanding the tree using the maximal possible scale that
-does not lead to a collision.
-For each ligand conformation $l \in \L$, the expansion procedure attempts to find a new collision-free configuration around $\qnear$ with a maximal scale.
+The expansion procedure attempts to expand the tree using all the conformations $\L$ and by preferring larger scales than the smaller ones.
+For each $l \in \L$, the expansion procedure attempts to find a new collision-free configuration around $\qnear$ with a maximal scale.
 First, the maximal scale $\smax \in \S$ is selected and $m$ random samples are generated around $\qnear$ (in the distance $\varepsilon$) 
 and tested for collisions.
+The random samples are generated similarly as in the case of $\qrand$ samples, only their translation
+part $(x,y,z)$ is generated around $\qnear$.
 The nearest collision-free sample towards $\qrand$ is selected and added to the tree.
 If none of the tested samples is collision-free, the scale is reduced to $\smax-\sdelta$ and the search continues
 until a collision-free sample is found or until the minimal reduced-scale $\smin$ is reached.
-The random samples are generated similarly as in the case of $\qrand$ samples, only their translation
-part $(x,y,z)$ is generated around $\qnear$.
+By testing first the largest scale ($\smax$), the expansion procedure preffers expanding the tree by larger scales.
+This forces the planner to automatically use smaller scaled in the difficult (narrow) parts of the tunnels, while prefering
+large scales if possible.
 
 The third modification is the utilization of another metric during the expansion procedure (line~\ref{alg::expand:a} in Alg.~\ref{alg::expand}).
 This metric is denoted $\da(\cdot,\cdot)$ and it is referred to as atom-based metric in the rest of the paper.
@@ -869,7 +871,7 @@ For the purpose of the following experiments, we used $\Imax=5,000$ as a comprom
 %\end{figure}
 %
 
-\subsection{Influence of conformation selection}
+\subsection{Influence of the conformation selection}
 
 The aim of this experiment is to verify the procedure to select ligand conformations for the motion planning.
 The experiment was performed with the ligand DCP (Dichloropropanol), for which $1300$ conformations where available and for the ligand
