@@ -569,7 +569,7 @@ $v = 1$; // index of the virtual goal\\
 $iteration = 0$\;
 \While{$iteration < \Imax$ {\bf and}  $v < n$}{
     \eIf{$rand() < \gb$}{
-        $\qrand$ = random sample around actual virtual goal $c_v \in T$\;
+        $\qrand$ = random sample around virtual goal $c_v\!\in\!T$\;
     }{
         $\qrand$ = random sample from $\C$\;
     }
@@ -605,14 +605,14 @@ part $(x,y,z)$ is generated around $\qnear$.
 
 The third modification is the utilization of another metric during the expansion procedure (line~\ref{alg::expand:a} in Alg.~\ref{alg::expand}).
 This metric is denoted $\da(\cdot,\cdot)$ and it is referred to as atom-based metric in the rest of the paper.
-To evaluate $\da(q_1,q_2)$, the absolute positions of atoms of the ligand defined by $q_1$ and $q_2$ are computed.
+To evaluate $\da(q_1,q_2)$, the absolute positions of the atoms of the ligand defined by $q_1$ and $q_2$ are computed.
 The minimal 3D Euclidean distance from the first set of atoms (defined by $q_1$) to the second set of atoms (defined by $q_2$) is the value of 
 $\da(q_1,q_2)$.
 By computing the atom-based metric using the absolute positions of atoms, this metric considers the shape of the ligands, which
 is useful when multiple conformations are utilized.
-By employing this metric in the expansion procedure, the tree is expanded by such a new configurations, whose atoms maximally approach
+By employing this metric in the expansion procedure, the tree is expanded by such a new configuration, which atoms maximally approach
 the atoms of the configuration $\qrand$.
-We observed that this leads to a better construction of the configuration tree inside the proteins and it increases probability
+We observed that this leads to a better construction of the configuration tree inside the proteins and it increases the probability
 of reaching the active site.
 
 %While the nearest neighbors are searched using 6D Euclidean metric, which can be efficiently realized using KD-trees, the expansion
@@ -621,7 +621,7 @@ of reaching the active site.
 %To minimize the distance between $\qrand$ and the ligand, the shape of the ligand should be considered.
 
 %Therefore, we propose to measure the distance as the smallest 3D Euclidean distance between atoms placed at $\qrand$ and a configuration $q$ being tested.
-The atom-based metric can be evaluated fast with complexity $O(\log n)$, where $n$ is the number of atoms of the ligand, using KD-trees.
+The atom-based metric can be evaluated fast using KD-trees with complexity $\mathcal{O}(\log n)$, where $n$ is the number of atoms of the ligand.
 For each conformation $\l \in \L$ of the ligand, a KD-tree is built for the ligand at the configuration $q=(0,0,0,0,0,0,l,\smax)$
 (i.e., for ligand with no translation and no rotation).
 To find the nearest atom to $\qrand$ for a ligand at the configuration $q=(x,y,z,r_x,r_y,r_z,l,s)$, the translation vector $T=(x,y,z)$ and
@@ -680,23 +680,28 @@ between $\qinit$ (root of the tree) and $q'$ is found, where
 %The path $P=(q_i), q_i \in \C$ is represented as a sequence of collision-free configurations.
 The path is found in the tree even if the tree does not approach $\qgoal$ close enough.
 Considering also these non-feasible solutions is necessary to evaluate difficult areas of the tunnels, e.g. bottlenecks.
-The utilization of all computed paths for evaluation of tunnel difficulty is described in the next section.
+%The utilization of all computed paths for evaluation of tunnel difficulty is described in the next section.
 
 \subsection{Selection of Conformations for Motion Planning}
 \label{sec::strat}
 
 In the expansion step, each conformation from $\L$ is tested in order to approach $\qrand$.
-By using more conformations, there is a bigger chance that at least one of them can expand the tree towards the random sample $\qrand$.
+By using more conformations, there is a higher chance that at least one of them can expand the tree towards the random sample $\qrand$.
 On the other hand, using a large number of conformations also increases the time complexity of the expansion step.
 Selection of a suitable set of conformations $\L$ is therefore crucial.
 Depending on the ligand, some conformations can be considered as more packed i.e., the atoms in such conformations are close to each other, but 
 the atoms can also form a more longer shape (Fig.~\ref{fig::m040c}).
 
 From motion planning point of view, both types of conformations are useful.
-The `longer' conformations can better fit in a narrow passage, while the `packed' conformations can be better rotated at place 
-To select the suitable conformations, a simple technique is proposed.  
+The longer conformations can better fit in a narrow passage, while the packed conformations can be rotated more at a place.
+In the narrow parts of the tunnels, the tree can be extended by the longer conformations, while in the more open regions, also the
+packed configurations can be used.
+
+To select the suitable set $\L$ of conformations from a pool of available conformations, a simple technique is proposed.  
 For each conformation, the geometric center is calculated and the deviation of the distances of the atoms from the center is calculated.
-The conformations are sorted according to this deviation and then the desired number of conformations are selected from this sorted list uniformly.
+The low value of the deviation is characteristic for the packed conformations, while larger deviations correspond to the longer conformations.
+To select $n$ conformations from all $m$ available conformations, they are sorted according to the deviation.
+Each $k-$th conformation, where $k={m\over n}$ is added to $\L$.
 
 \begin{figure}
 \centering
