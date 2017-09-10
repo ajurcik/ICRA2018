@@ -776,57 +776,56 @@ Each $k-$th conformation from the sorted list, where $k=\lfloor{m\over n}\rfloor
 
 \section{Experimental Verification}
 
-The proposed approach was used to analyze tunnel traversability towards the active site of the Haloalkane dehalogenase protein (PDB ID 1CQW).
+The proposed approach was used to analyze the ligand traversability towards the active site using the main tunnel in the Haloalkane dehalogenase protein (PDB ID 1CQW).
 The active site was defined using residues 38 (Asparagine), 102 (Histidine), and 103 (Aspartic Acid).
 The molecular dynamics of the protein was computed using the AMBER tool~\cite{amber}.
 In each frame, tunnels for the spherical probe 0.9~\AA\ were detected using CAVER 3.0~\cite{caver3}. 
 In most of the frames, two tunnels were detected.
-The average bottleneck of the tunnels are $1.48$~\AA\ and $1.2$~\AA\ for the first and the second tunnel, resp.
-The tunnel traversability was analyzed in 100 frames.
+The average bottleneck sizes of these tunnels are $1.48$~\AA\ and $1.2$~\AA\ for the main and the side tunnel, respectively.
+The tunnel traversability was analyzed in 100 time steps (frames) of MD simulation.
 
 Four different scaling-down factors were used: $\S=\{0.5,0.6,0.7,0.8\}$.
 For each scale, $|\QI|=20$ collision-free initial configurations were found in the $\RI=2$~\AA\ radius around the first sphere of the tunnel (outside the protein).
-For each frame, minimal scale $\smin$ and each initial configuration, 10 trajectories were computed, which resulted
+For each initial configuration, 10 trajectories were computed, which resulted
 in $100 \times 4 \times 20 \times 10 = 80,000$ trajectories per ligand.
 
-Two motion planners were utilized: the proposed planner (described in Alg.~\ref{alg::main} and Alg.~\ref{alg::expand}), 
-    denoted as \RA\ in the rest of the paper, and the Retraction-based RRT~\cite{zhangRetraction} denoted as \RB\ in the rest of the paper.
+Two motion planners were utilized: the proposed planner (described in Alg.~\ref{alg::main} and Alg.~\ref{alg::expand}), denoted as \RA\ in the rest of the paper, and the Retraction-based RRT~\cite{zhangRetraction}, denoted as \RB\ in the rest of the paper.
 The \RA\ method was run with the following parameters:
 $\Imax=5,000$, $m=100$, $\gb=0.9$, $\dt=1.5$~\AA, $\rv=2$~\AA\ and $\varepsilon=0.05$~\AA.
-Both methods were implemented in the same software framework and they utilized the same data structures and routines for collision detection and nearest-neighbor search.
-The nearest-neighbor search of both planners is based on the 6D Euclidean metric with the same weights for rotation and translation parts.
+Both methods were implemented in the same software framework and they utilized the same data structures and routines for the collision detection and nearest-neighbor search.
+The nearest-neighbor search of both planners was based on the 6D Euclidean metric with the same weights for rotation and translation parts.
 This metric was selected based on preliminary experiments with both planners as it resulted in the success rates.
 
 The tested methods differ in the expansion step (lines \ref{alg::expa}--\ref{alg::expb} in Alg.~\ref{alg::expand}).
-In these lines, the \RB\ method employs the retraction step in order to find a new collision-free configurations $\qnew$ that approaches $\qrand$.
+In these lines, the \RB\ method employs the retraction step in order to find a new collision-free configuration $\qnew$ that approaches $\qrand$.
 The retraction step is realized by sampling the vicinity of the configuration $\qnear$ in the distance $0.05$~\AA\ using 20 samples.
 A collision-free sample that maximally approaches $\qrand$ is selected and added to the tree, and the retraction continues from this sample.
 The retraction step is repeated 5 times.
-The \RB\ method can therefore expand the tree by at most 5 new nodes per conformation, while \RA\ extends the tree only by one configuration.
-The larger number of nodes in \RB\ method is not problematic, as the KD-trees were used for nearest-neighbor search and the time to solve these queries is significantly less than computing collision detection.
-Parameters of the methods were selected in such a way that the number of collision detection queries in each expansion step is same.
-For each conformation and tested scale, the \RA\ methods attempts to find $m=100$ collision-free configurations, and \RB\ attempts to perform $5 \times 20$ collision-detection queries.
-Other parameters of the \RB\ planner were same as for \RA.
-Planning was terminated after $\Imax$ iterations, or if the tree approached the active site to the distance less than 0.5~\AA.
+The \RB\ method can therefore expand the tree by at most 5 new nodes per configuration, while \RA\ extends the tree only by one configuration.
+The larger number of nodes in \RB\ method is not problematic, as the KD-trees were used for the nearest-neighbor search and the time to solve these queries is significantly smaller than the computing collision detection.
+The parameters of the methods were selected in such a way that the number of collision detection queries in each expansion step is the same.
+For each conformation and tested scale, the \RA\ method attempts to find $m=100$ collision-free configurations, and \RB\ attempts to perform $5 \times 20$ collision-detection queries.
+Other parameters of the \RB\ planner were the same as for \RA.
+The planning was terminated after $\Imax$ iterations or if the tree approached the active site to the distance less than 0.5~\AA.
 
-In the following experiments, we measure performance of the methods using the traversability rate, which is the percentage of frames of the protein dynamic that are traversable by the tested ligand.
-A frame is considered traversable, if at least one trajectory out of 20 (the number of initial configurations $|\QI|$) $\times$ 10 trials approaches the active site to the distance less than 2~\AA.~\footnote{We refer to~\url{http://mrs.felk.cvut.cz/icra2018protein} for additional material}
+In the following experiments, we measured the performance of the methods using the traversability rate, which is the percentage of frames of the protein dynamics that are traversable by the tested ligand.
+A frame is considered traversable if at least one trajectory out of 20 (the number of initial configurations $|\QI|$) $\times$ 10 trials approaches the active site to the distance less than 2~\AA.~\footnote{We refer to~\url{http://mrs.felk.cvut.cz/icra2018protein} for additional material.}
 
-\subsection{Traversability of one atom}
+\subsection{Traversability of One Atom}
 
-The aim of the first experiment is to measure performance of both planner in the simplest scenario: finding path for one sphere towards the active site.
-The radius of the sphere is $1.7$~\AA. 
+The aim of the first experiment is to measure the performance of both planners in the simplest scenario, i.e., finding a path for one sphere heading towards the active site.
+The radius of the sphere is set to $1.7$~\AA. 
 
 The computed traversability rates are shown in Tab.~\ref{tab::one}.
-The maximum percentage of traversable frames (the row Maximum in Tab.~\ref{tab::one}) is computed as the percentage of tunnels with bottleneck larger than the tested radius.
-The row Planning shows the traversable rate computed by the planners.
+The maximum percentage of traversable frames (the row Maximum in Tab.~\ref{tab::one}) is computed as the percentage of tunnels with the bottleneck larger than the tested radius.
+The row 'Planning' shows the traversable rate computed by the planners.
 This rate decreases with the increasing radius and it is lower than the maximum traversable rate.
-The rates provided by \RA\ and \RB\ are similar which is a good indicator that the methods have been programmed correctly.
+The rates provided by \RA\ and \RB\ are similar which is a good indicator that the methods have been implemented correctly.
 Higher traversability rate can be achieved by increasing the maximum number of planning iterations $\Imax$, which would also
 increase the planning time.
 For the purpose of the following experiments, we used $\Imax=5,000$ as a compromise between the performance and the runtime.
 
-\begin{table}
+\begin{table}[ht]
 \centering
 \caption{\label{tab::one}Traversability for one atom.}
 \renewcommand{\tabcolsep}{4.3pt}
@@ -879,27 +878,27 @@ For the purpose of the following experiments, we used $\Imax=5,000$ as a comprom
 %\end{figure}
 %
 
-\subsection{Influence of the conformation selection}
+\subsection{Influence of the Conformation Selection}
 
-The aim of this experiment is to verify the procedure to select ligand conformations for the motion planning.
-The experiment was performed with the ligand DCP (Dichloropropanol), for which $1300$ conformations where available and for the ligand
+The aim of this experiment was to verify the procedure to select feasible ligand conformations for the motion planning task.
+The experiment was performed with the ligand DCP (Dichloropropanol), for which $1300$ conformations were available, and for the ligand
 m040 (1,5-Dichloropentane) with $7560$ available conformations.
-Two strategies were tested: the strategy described in Sec.~\ref{sec::strat} (denoted `S') and a strategy that prefers smaller conformations (denoted `P').
-The `P' method selects such conformations where the deviation of the atomic distance from the geometric center are lowest, which leads 
-to selection of the packed conformations (Fig.~\ref{fig::m040c}).
+Two strategies were tested: the strategy described in Sec.~\ref{sec::strat} (denoted `S') and the strategy that prefers smaller conformations (denoted `P').
+The `P' method selects such conformations where the deviations of the atomic distance from the geometric center are the lowest, which leads 
+to the selection of packed conformations (Fig.~\ref{fig::m040c}).
 
 The traversability rates are shown in Tab.~\ref{tab::selection}, where the subscript of each ligand's 
 name shows the number of the selected conformations (5 or 50) and the used method (S or P).
 The number after the slash in the ligand's name denotes the number of atoms of the ligand.
-In the case of both tested ligands and 50 selected conformations, the `S' strategy leads to higher traversability rate than the `P' strategy.
-For the ligand DCP, a higher traversability rate was achieved when 50 conformations were selected.
-This experiments shows that selecting 50 conformations using the `S' strategy (Sec.~\ref{sec::strat}) leads to better results
-than using less number of conformations or when preferring the packed conformations.
+In the case of both tested ligands and 50 selected conformations, the `S' strategy leads to a higher traversability rate than the `P' strategy.
+For the DCP ligand, a higher traversability rate was achieved when 50 conformations were selected.
+This experiment shows that selecting 50 conformations using the `S' strategy (Sec.~\ref{sec::strat}) leads to better results
+than using a less number of conformations or when preferring the packed conformations.
 
-\begin{table}
+\begin{table}[ht]
 \centering
 \caption{\label{tab::selection}
-    Influence of the conformation selection method to the traversability rates in the first tunnel.
+    The influence of the conformation selection method to the traversability rates in the first tunnel.
     The number after~`$/$' denotes the number of atoms.
 }
 \small
@@ -910,50 +909,18 @@ than using less number of conformations or when preferring the packed conformati
 \end{table}
 
 
+\subsection{Traversability of Ligands}
 
-
-
-\subsection{Traversability of ligands}
-
-Based on the results of the previous experiment, 50 conformations using the `S' strategy were selected for the following
-ligands: m037t (1,2-Dichloroethane), m038t (1,3-Dichloropropane), m056 (2-Chlorobutane) and m080 (Trichloropropane), and
-the task was to compute trajectories for these ligands in the MD sequence.
+Based on the results of the previous experiment, 50 conformations using the `S' strategy were selected for ligands m037t (1,2-Dichloroethane), m038t (1,3-Dichloropropane), m056 (2-Chlorobutane), and m080 (Trichloropropane), and
+the task was to compute the trajectories for these ligands in a given molecular dynamics simulation.
 
 The results are summarized in Tab.~\ref{tab::main}.
-The table shows the traversability rate only for the first tunnel, as no trajectory was found in the second tunnel for most of the tested ligands.
-The only exception is the ligand m037t, which was the smallest tested ligand (with 8 atoms), and therefore it can fit even inside the second tunnel.
+The table shows the traversability rate only for the main tunnel, as no trajectory was found in the side tunnel for most of the tested ligands.
+The only exception is the ligand m037t, which was the smallest tested one (with 8 atoms), and therefore it could fit even inside the side tunnel.
 The traversability rate is higher for the most scaled-down ligands ($\smin=0.5$) and it decreases with the increasing scale.
 For the scale $\smin=0.8$, the most traversable frames were detected for ligands DCP (8~\%), m037t (20~\%) and m038t (16~\%).
 
-{\bf doufam, ze toto neni moc drze:}
-The traversability of the DCP ligand to active site was approved by the MD simulation.
-The observed trajectory of the DCP ligand in the MD simulation followed the first tunnel.
-Based on the traversability rates with $\smin=0.8$, we expect that at least ligands m037t and m038t can also reach the active site, as
-they have same (or even larger) traversability rate than DCP.
-However, this hypothesis hasn't been tested against MD simulations yet.
-
-The proposed \RA\ planner provides higher traversability rate than \RB.
-The distances of the configuration trees (measured using 3D Euclidean metric) to the active site and the runtimes in each frame
-are shown in Fig.~\ref{fig::comparison}.
-The runtimes of both algorithms increase in those frames, where the tunnel is not traversable, i.e., where the distance
-to the active site is more than 2~\AA\ (for example,in the frame number 60).
-
-
-
-The most time consuming part of the planners is the collision detection. 
-Although the both methods can utilize the same number of collision detection queries in the expansion step, \RB\ is slower than \RA.
-The reason is, that \RA\ expands the tree more closer to the random samples $\qrand$ than \RB.
-This results in a faster exploration of the configuration space and therefore, \RA\ needs less number of iterations to reach the active site.
-The better performance of \RA\ is caused by the proposed atom-based metric, because this distance depends on the actual shape of the ligand and 
-it allows the ligands to retract more toward $\qrand$.
-Contrary, \RB\ utilizes the single 6D Euclidean weighted metric in the expansion, where the weights are same for all conformations.
-Depending on these weights, the metric favors samples that differ from $\qrand$ more in rotation or translation part.
-However, the weights between rotation/translation parts should depends on the shape of the ligand, which is different in each conformation.
-By using single set of weights in the 6D Euclidean metric, we implicitely favor either the packed or the longer conformations.
-%To improve performance of \RB, the weights of the 6D Euclidean metric should differ for each conformation, but it would
-%prevent the usage KD-tree for the nearest-neighbor search.
-
-\begin{table}
+\begin{table}[ht]
 \centering
 \caption{\label{tab::main}
     Traversability of the tunnels for ligands with 50 conformations. 
@@ -966,54 +933,76 @@ By using single set of weights in the 6D Euclidean metric, we implicitely favor 
 }
 \end{table}
 
+%{\bf doufam, ze toto neni moc drze:}
+In conclusion, the traversability of the DCP ligand to active site was approved by the MD simulation.
+The observed trajectory of the DCP ligand in the MD simulation followed the main tunnel, as expected.
+Based on the traversability rates with $\smin=0.8$, we expect that at least ligands m037t and m038t can also reach the active site, as
+they have the same (or even larger) traversability rate than the DCP.
+However, this hypothesis has not been approved yet by testing it on MD simulations.
+
+The proposed \RA\ planner provides higher traversability rate than \RB.
+The distances of the configuration trees (measured using the 3D Euclidean metric) to the active site and the runtimes in each frame
+are shown in Fig.~\ref{fig::comparison}.
+The runtimes of both algorithms increase in those frames, where the tunnel is not traversable, i.e., where the distance
+to the active site is more than 2~\AA\ (for example, in the frame no. 60).
 
 {\def\a{270}
-\begin{figure}
+\begin{figure}[hb]
 \centering
 \includegraphics[width=0.25\textwidth,angle=\a]{fig/m037tmins-03tunnel-1rrt_path_time-2}
 \includegraphics[width=0.25\textwidth,angle=\a]{fig/m037tmins-03tunnel-1trajDistToGoal-2}
 \caption{\label{fig::comparison}
-    Runtimes and distance to the active site for the m037 ligand at scale 0.6.
+    Runtimes and the distance to the active site for the m037 ligand at scale 0.6.
     The values are computed from all 200 trials (20 initial configurations $\times$ 10 trials).
     Only each second frame is shown in the graph.
 }
 \end{figure}
 }
 
+The most time-consuming part of the planners is the collision detection. 
+Although both methods can utilize the same number of collision detection queries in the expansion step, \RB\ is slower than \RA.
+The reason is that \RA\ expands the tree more closer to the random samples $\qrand$ than \RB.
+This results in a faster exploration of the configuration space and therefore, \RA\ needs less number of iterations to reach the active site.
+The better performance of \RA\ is caused by the proposed atom-based metric, because this distance depends on the actual shape of the ligand and 
+it allows the ligands to retract more towards $\qrand$.
+On the contrary, \RB\ utilizes the single 6D Euclidean weighted metric in the expansion, where the weights are the same for all conformations.
+Depending on these weights, the metric favors samples that differ from $\qrand$ more in the rotation or translation part.
+However, the weights between the rotation/translation parts should depend on the shape of the ligand, which is different in each conformation.
+By using a single set of weights in the 6D Euclidean metric, we implicitly favor either the packed or the longer conformations.
+%To improve performance of \RB, the weights of the 6D Euclidean metric should differ for each conformation, but it would
+%prevent the usage KD-tree for the nearest-neighbor search.
+
+
+\section{Discussion and Utilization of the Results}
+
+The work presented in the paper was motivated by the current needs of biochemists who need to analyze the traversability of selected ligands through protein tunnels.
+To find the feasible ligand trajectories, it is often required to shrink the atomic radii of the ligand, as utilized also in other existing tools.
+Finding trajectories for the scaled-down ligands enables to solve the problem with narrow passages, but it can be questionable how biochemically relevant such trajectories are.
+
+Judging the accessibility of the active site by a ligand based only on the traversability rates may be problematic if the ligand is scaled too much.
+Instead of using a single version of the scaled-down ligand, we only limit the minimal scale used by the planner (the parameter $\smin$).
+The expansion step always prefers to expand the tree with the maximal scale, that leads to a new collision-free configuration.
+The information about the scales used at the trajectory points (which can be extracted from the configuration tree of the proposed planner) brings the biochemists new knowledge about the tunnels, which was impossible to get using the previous solutions.
+Our proposed visualization allows the biochemists to easily observe those parts of the tunnel where the ligand had to be scaled-down significantly (red parts of trajectories in Fig.~\ref{fig::dcp}), and parts where the ligand could be enlarged again (green parts in Fig.~\ref{fig::dcp}).
+According to the results of the motion planing, the DCP needs to shrink down to ca. 75~\% of its size (Fig.~\ref{fig::dcp}, point B).
+However, as both the protein and ligand are mutually influence each other, it is possible that even a very narrow part of the tunnel is traversable.
+This was observed in the MD simulation of the DCP ligand in the 1CQW protein, which revealed that DCP can pass the main tunnel.
 
 \begin{figure}
 \centering
 \includegraphics[width=0.4\textwidth]{fig/dcp-image1Label}\\
 \includegraphics[width=0.2\textwidth]{fig/colormap}
 \caption{\label{fig::dcp}
-Visualization of trajectories for the ligand DCP   in the two examined tunnels.  
+Visualization of trajectories for the ligand DCP in the two examined tunnels.  
 The color of the trajectories corresponds to the scale, that was needed to pass the given part of the tunnel.
-The ligand can enter the first tunnel with a high scale (almost 1=100~\%) (A), but then it has to scale-down (to $\sim75$~\%) to pass the
-next part of the tunnel (B). After this narrow passage, the tunnel is larger and the ligand can traverse to the narrow passage with
+The ligand can enter the first tunnel with a high scale (almost 1=100~\%) (A), but then it has to be scaled-down (to $\sim75$~\%) to pass the
+next part of the tunnel (B). After this narrow passage, the tunnel is larger again and the ligand can traverse to the narrow passage with
 scale $>75$~\% (C).
 The second tunnel can also be entered with the high scale (green), but then the narrow part is traversable only with a low scale ($\sim50$~\%) (D). 
-For the purpose of the visualization, even more scale-down to 0.3=30~\% was allowed (E) to see how the ligand pass the tunnel.
-However, the ligand can reach the active site only with very low scale ($\sim0.4=40$~\%) using the second tunnel.
+For the purpose of the visualization, even more scale-down to 0.3=30~\% was allowed (E) to see how the ligand passed the tunnel.
+However, the ligand can reach the active site only with very low scale ($\sim0.4=40$~\%) using the side tunnel.
 }
 \end{figure}
-
-
-\section{Discussion and utilization of the results}
-
-The work in the paper is motivated by real needs of bio-chemists who need to analyze traversability of selected ligands in the tunnels.
-To enable finding the trajectories, it is necessary to shrink the atomic radii of the ligands which has been utilized also in other tools~\cite{cortes2005path,guieysse2008structure}.
-Finding trajectories for scaled-down ligands on one hand helps to cope with the narrow passages, but the question is, how realistic
-such trajectories are.
-
-Judging the accessibility of the active sites by the ligands based only on the traversability rates may be problematic if the ligands are scaled too much.
-Instead of using a single version of the scale-down ligand, we only limit the minimal scale used by the planner (the parameter $\smin$).
-The expansion step always prefers to expand the tree with the maximal scale, that leads to a new collision-free configuration.
-The information about the scales used at the trajectory points (which can be extracted from the configuration tree of the proposed planner) brings the chemists new knowledge about the tunnels.
-It allows them to detect parts of the tunnels, where the ligand has to scale-down significantly, and parts, where the ligand can be again
-larger (Fig.~\ref{fig::dcp}).
-According to the results of the motion planinng, DCP needs to shrink down to ca. 75~\% of its size (Fig.~\ref{fig::dcp}, point B).
-However, as both the protein and the ligand adapt to each other, it is possible, that even a narrow part of the tunnel is traversable.
-This was observed in the MD simulation of the DCP ligand in the 1CQW protein, which revealed that DCP can pass the first tunnel.
 
 %The computed trajectories cannot be considered as `real', they should rather be considered as a hint for the biochemists.
 %One of the reason is that the trajectories are computed inside a static protein and static tunnels.
@@ -1056,20 +1045,16 @@ This was observed in the MD simulation of the DCP ligand in the 1CQW protein, wh
 
 \section{Conclusion}
 
-In this paper, we presented a modification of the RRT planner for trajectory computation of ligands inside protein tunnels.
-The tunnels are pathways leading from an outer environment toward the active sites, where chemical interactions may undergo.
-So far, the tunnels have been detected using Voronoi diagrams, which does not take into account shape of the ligand neither the possible 
-conformation changes.
-In the proposed work, we compute trajectories using modified RRT for whole ligands and we model the conformation changes of the
-ligands using a predefined set of conformations.
-The atomic radii of the ligands can be scaled down up to a certain predefined factor.
-The planner generates the random samples along a tunnel computed by Voronoi diagram and it attempts to expand the configuration
-tree using all conformations. 
-The expansion prefers atoms with a higher scale, which ensures that the ligand shrinks down only if traversing narrow parts of the tunnels.
-To further boost exploration of the configuration space, a novel metric suitable for measuring distances between various shapes
-of the ligands, is used in the expansion step.
-The proposed method has been used to  evaluate trajectories of several ligands in a sequence of protein dynamics.
-Traversability of one of the tested ligands has been already approved in MD simulations.
+In this paper, we presented a novel modification of the RRT planner for computation of ligand trajectory inside protein tunnels.
+So far, tunnels have been mostly detected using Voronoi diagrams which do not take into account the shape and flexibility of the ligand.
+In our solution, we compute the trajectories using the modified RRT which takes into account the ligand shape and we model the ligand flexibility using a predefined set of its conformations.
+To simulate the real behavior of ligand passing through a tunnel, we enable scaling down the atomic radii of the ligands up to a certain predefined factor.
+Furthermore, our planner is localized as it generates random samples only along a tunnel computed by Voronoi diagram, and it attempts to expand the configuration
+tree using all ligand conformations. 
+The expansion prefers atoms with a higher scale, which ensures that the ligand shrinks down only if necessary, i.e., when traversing the narrow parts of the tunnel.
+To further boost the exploration of the configuration space, a novel metric suitable for measuring the distances between various ligand shapes is used in the expansion step.
+The proposed method has been used to evaluate the trajectories of several ligands in a sequence of frames capturing protein dynamics.
+The traversability of one of the tested ligands has been already approved in the MD simulations.
 
 \bibliographystyle{plain}
 \bibliography{paper}
