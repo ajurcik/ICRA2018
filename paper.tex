@@ -564,7 +564,6 @@ We propose to set this parameter to the average width of the tunnel.
 \KwIn{
     tunnel $T=( (c_i, r_i) )$, $i=1,\ldots,n$, with spheres centers $c_i \in \R^3$ and radii $r_i$,
     initial configuration $\qinit$
-%    goal configuration $\qgoal$,
 }
 \KwData{
    ligand conformations $\L$,
@@ -576,6 +575,7 @@ We propose to set this parameter to the average width of the tunnel.
 \hrule
 $v = 1$; // index of the virtual goal\\
 $iteration = 0$\;
+$\T$.addNode($\qinit$)\;
 \While{$iteration < \Imax$ {\bf and}  $v < n$}{
     \eIf{$rand() < \gb$}{
         $\qrand$ = random sample around virtual goal $c_v\!\in\!T$\;
@@ -599,13 +599,15 @@ $iteration = 0$\;
 
 The second proposed modification is the expansion procedure (Alg.~\ref{alg::expand}), which expands the tree from $\qnear$ towards $\qrand$.
 The expansion towards $\qrand$ is crucial for the growth of the tree towards unexplored areas of the configuration space.
-Traditionally, a line is constructed from $\qnear$ to $\qrand$ and the tree is expanded by a configuration located on this line.
+Traditionally, a line is constructed from $\qnear$ to $\qrand$ and the tree is expanded by a configuration located on this line in the 
+distance $\varepsilon$ from $\qnear$.
 This would however mostly lead to a collision in the case of ligands.
 
 Instead, we propose to expand the tree by considering all conformations and also by expanding the tree using the maximal possible scale that
 does not lead to a collision.
 For each ligand conformation $l \in \L$, the expansion procedure attempts to find a new collision-free configuration around $\qnear$ with a maximal scale.
-First, the maximal scale $\smax \in \S$ is selected and $m$ random samples are generated around $\qnear$ and tested for collisions.
+First, the maximal scale $\smax \in \S$ is selected and $m$ random samples are generated around $\qnear$ (in the distance $\varepsilon$) 
+and tested for collisions.
 The nearest collision-free sample towards $\qrand$ is selected and added to the tree.
 If none of the tested samples is collision-free, the scale is reduced to $\smax-\sdelta$ and the search continues
 until a collision-free sample is found or until the minimal reduced-scale $\smin$ is reached.
@@ -675,7 +677,7 @@ is also the nearest point of the ligand at $q$ to $\qrand$.
         \If{$\qnew \ne \emptyset$} {
             $\T$.addNode($\qnew$)\;
             $\T$.addEdge($\qnear,\qnew$)\;
-            {\bf break;} // go to next conformation
+            {\bf break;} // go to the next conformation
         }
     }
 }
@@ -686,8 +688,8 @@ The result of each planning trial is the tree $\T$ of collision-free configurati
 between $\qinit$ (root of the tree) and $q'$ is found, where
  $q'$ is the nearest node to the end of the tunnel (measured using the 3D Euclidean metric). 
 %The path $P=(q_i), q_i \in \C$ is represented as a sequence of collision-free configurations.
-The path is found in the tree even if the tree does not approach $\qgoal$ close enough.
-Considering also these non-feasible solutions is necessary to evaluate difficult areas of the tunnels, e.g. bottlenecks.
+%The path is found in the tree even if the tree does not approach $\qgoal$ close enough.
+%Considering also these non-feasible solutions is necessary to evaluate difficult areas of the tunnels, e.g. bottlenecks.
 %The utilization of all computed paths for evaluation of tunnel difficulty is described in the next section.
 
 \subsection{Selection of Conformations for Motion Planning}
@@ -701,7 +703,7 @@ Depending on the ligand, some conformations can be considered as more packed i.e
 the atoms can also form a more longer shape (Fig.~\ref{fig::m040c}).
 
 From motion planning point of view, both types of conformations are useful.
-The longer conformations can better fit in a narrow passage, while the packed conformations can be rotated more at a place.
+The longer conformations can better fit in a narrow passage, while the packed conformations better rotate at a place.
 In the narrow parts of the tunnels, the tree can be extended by the longer conformations, while in the more open regions, also the
 packed configurations can be used.
 
@@ -709,55 +711,55 @@ To select the suitable set $\L$ of conformations from a pool of available confor
 For each conformation, the geometric center is calculated and the deviation of the distances of the atoms from the center is calculated.
 The low value of the deviation is characteristic for the packed conformations, while larger deviations correspond to the longer conformations.
 To select $n$ conformations from all $m$ available conformations, they are sorted according to the deviation.
-Each $k-$th conformation, where $k={m\over n}$ is added to $\L$.
+Each $k-$th conformation from the sorted list, where $k=\lfloor{m\over n}\rfloor$, is added to $\L$.
 
 \begin{figure}
 \centering
 %\includegraphics[width=0.25\textwidth]{fig/m040-conformations}
-\includegraphics[width=0.15\textwidth]{fig/m040-conf1} \hskip 25pt
-\includegraphics[width=0.12\textwidth]{fig/m040-conf2}
+\includegraphics[width=0.14\textwidth]{fig/m040-conf1} \hskip 25pt
+\includegraphics[width=0.11\textwidth]{fig/m040-conf2}
 \caption{\label{fig::m040c}
  The examples of a `long' conformation (left) and a `packed' one for the ligand m040 (1,5-Dichloropentane).
 }
 \end{figure}
 
 
-\subsection{Visualization of Results}
+%\subsection{Visualization of Results}
+%
+%TODO Bara: prepsat/motivace/jak se visuazlizuje
+%toto je cast textu z toho posledniho paperu. Kdyztak to vyhod.
+%
+%%In order to fursupport the tunnel exploration process performed by biochemists.
+%The above defined characteristics can be shown even as a graph, or better, presented visually by mapping them using colors to the tunnel spheres.
+% Alternatively, the surface representation can be used to visualize the tunnel.
+%In this case, a 3D point on the tunnel surface is colored according to the property value in its nearest tunnel part $i$,  i.e., such part $i$ whose center $c_i$ is the closest to the point among all tunnel parts.
+%
+%The examples of the color mapping are shown in Fig.~\ref{fig:properties}.
+%The accessibility (Fig.~\ref{fig:properties}a) shows that more than the half of the tunnel is not accessible (red part of the tunnel).
+%The throughput shows (Fig.~\ref{fig:properties}b) that the only difficult is the part around the bottleneck (red color in Fig.~\ref{fig:properties}b), and the second half of the tunnel is also traversable.
+%
+%\begin{figure*}[h]
+%\centering
+%\begin{tabular}{ccc}
+%\includegraphics[width=0.3\textwidth]{fig/accessibility} &
+%\includegraphics[width=0.3\textwidth]{fig/throughput} &
+%\includegraphics[width=0.3\textwidth]{fig/ligand-scale} \\
+%  (a) & (b) & (c) \\                     
+%\end{tabular}
+%\caption{Tunnel properties mapped onto its surface. The tunnel begins at the top left corner.
+%(a) Accessibility --- green denotes the parts that were accessed by the ligand easily ($A(i) > 80$~\%), 
+%    while red denotes parts that were accessible  in $<10$~\% of cases.
+%(b) Throughput --- green denotes parts that are highly probable to be passed by the ligand ($T(i) > 80$~\%), 
+%    while red denotes those that were hard to pass ($T(i) < 20$~\%).
+%(c) Ligand scale --- the average scale of the ligand was \tylde 50\% in orange parts, \tylde 60\% in yellow parts, \tylde 80\% in yellow to green parts and \tylde 100\% in green parts.
+%\label{fig:properties}
+%}
+%\end{figure*}
+%
+%
 
-TODO Bara: prepsat/motivace/jak se visuazlizuje
-toto je cast textu z toho posledniho paperu. Kdyztak to vyhod.
-
-%In order to fursupport the tunnel exploration process performed by biochemists.
-The above defined characteristics can be shown even as a graph, or better, presented visually by mapping them using colors to the tunnel spheres.
- Alternatively, the surface representation can be used to visualize the tunnel.
-In this case, a 3D point on the tunnel surface is colored according to the property value in its nearest tunnel part $i$,  i.e., such part $i$ whose center $c_i$ is the closest to the point among all tunnel parts.
-
-The examples of the color mapping are shown in Fig.~\ref{fig:properties}.
-The accessibility (Fig.~\ref{fig:properties}a) shows that more than the half of the tunnel is not accessible (red part of the tunnel).
-The throughput shows (Fig.~\ref{fig:properties}b) that the only difficult is the part around the bottleneck (red color in Fig.~\ref{fig:properties}b), and the second half of the tunnel is also traversable.
-
-\begin{figure*}[h]
-\centering
-\begin{tabular}{ccc}
-\includegraphics[width=0.3\textwidth]{fig/accessibility} &
-\includegraphics[width=0.3\textwidth]{fig/throughput} &
-\includegraphics[width=0.3\textwidth]{fig/ligand-scale} \\
-  (a) & (b) & (c) \\                     
-\end{tabular}
-\caption{Tunnel properties mapped onto its surface. The tunnel begins at the top left corner.
-(a) Accessibility --- green denotes the parts that were accessed by the ligand easily ($A(i) > 80$~\%), 
-    while red denotes parts that were accessible  in $<10$~\% of cases.
-(b) Throughput --- green denotes parts that are highly probable to be passed by the ligand ($T(i) > 80$~\%), 
-    while red denotes those that were hard to pass ($T(i) < 20$~\%).
-(c) Ligand scale --- the average scale of the ligand was \tylde 50\% in orange parts, \tylde 60\% in yellow parts, \tylde 80\% in yellow to green parts and \tylde 100\% in green parts.
-\label{fig:properties}
-}
-\end{figure*}
-
-
-
-\def\cstart{\overline{c_{start}}}
-\def\cend{\overline{c_{end}}}
+%\def\cstart{\overline{c_{start}}}
+%\def\cend{\overline{c_{end}}}
 
 
 
@@ -780,14 +782,14 @@ in $100 \times 4 \times 20 \times 10 = 80,000$ trajectories per ligand.
 Two motion planners were utilized: the proposed planner (described in Alg.~\ref{alg::main} and Alg.~\ref{alg::expand}), 
     denoted as \RA\ in the rest of the paper, and the Retraction-based RRT~\cite{zhangRetraction} denoted as \RB\ in the rest of the paper.
 The \RA\ method was run with the following parameters:
-$\Imax=5,000$, $m=100$, $\gb=0.9$, $\dt=1.5$~\AA, $\rv=3$~\AA.
+$\Imax=5,000$, $m=100$, $\gb=0.9$, $\dt=1.5$~\AA, $\rv=2$~\AA\ and $\varepsilon=0.05$~\AA.
 Both methods were implemented in the same software framework and they utilized the same data structures and routines for collision detection and nearest-neighbor search.
 The nearest-neighbor search of both planners is based on the 6D Euclidean metric with the same weights for rotation and translation parts.
-This metric was selected based on preliminary experiments with both planners as it resulted in the higher success rates.
+This metric was selected based on preliminary experiments with both planners as it resulted in the success rates.
 
 The tested methods differ in the expansion step (lines \ref{alg::expa}--\ref{alg::expb} in Alg.~\ref{alg::expand}).
 In these lines, the \RB\ method employs the retraction step in order to find a new collision-free configurations $\qnew$ that approaches $\qrand$.
-The retraction step is realized by sampling the vicinity of the configuration $\qnear$ in the distance $0.1$~\AA\ using 20 samples.
+The retraction step is realized by sampling the vicinity of the configuration $\qnear$ in the distance $0.05$~\AA\ using 20 samples.
 A collision-free sample that maximally approaches $\qrand$ is selected and added to the tree, and the retraction continues from this sample.
 The retraction step is repeated 5 times.
 The \RB\ method can therefore expand the tree by at most 5 new nodes per conformation, while \RA\ extends the tree only by one configuration.
@@ -795,7 +797,7 @@ The larger number of nodes in \RB\ method is not problematic, as the KD-trees we
 Parameters of the methods were selected in such a way that the number of collision detection queries in each expansion step is same.
 For each conformation and tested scale, the \RA\ methods attempts to find $m=100$ collision-free configurations, and \RB\ attempts to perform $5 \times 20$ collision-detection queries.
 Other parameters of the \RB\ planner were same as for \RA.
-Planning was terminated after $\Imax$ iterations, or if the tree approached the active site to less than 0.5~\AA.
+Planning was terminated after $\Imax$ iterations, or if the tree approached the active site to the distance less than 0.5~\AA.
 
 In the following experiments, we measure performance of the methods using the traversability rate, which is the percentage of frames of the protein dynamic that are traversable by the tested ligand.
 A frame is considered traversable, if at least one trajectory out of 20 (the number of initial configurations $|\QI|$) $\times$ 10 trials approaches the active site to the distance less than 2~\AA.~\footnote{We refer to~\url{http://mrs.felk.cvut.cz/icra2018protein} for additional material}
@@ -805,9 +807,9 @@ A frame is considered traversable, if at least one trajectory out of 20 (the num
 The aim of the first experiment is to measure performance of both planner in the simplest scenario: finding path for one sphere towards the active site.
 The radius of the sphere is $1.7$~\AA. 
 
-The results are shown in Tab.~\ref{tab::one} which shows traversability rate. 
+The computed traversability rates are shown in Tab.~\ref{tab::one}.
 The maximum percentage of traversable frames (the row Maximum in Tab.~\ref{tab::one}) is computed as the percentage of tunnels with bottleneck larger than the tested radius.
-The row Planners shows traversable rate detected by the planners.
+The row Planning shows the traversable rate computed by the planners.
 This rate decreases with the increasing radius and it is lower than the maximum traversable rate.
 The rates provided by \RA\ and \RB\ are similar which is a good indicator that the methods have been programmed correctly.
 Higher traversability rate can be achieved by increasing the maximum number of planning iterations $\Imax$, which would also
@@ -817,7 +819,7 @@ For the purpose of the following experiments, we used $\Imax=5,000$ as a comprom
 \begin{table}
 \centering
 \caption{\label{tab::one}Traversability for one atom.}
-\renewcommand{\tabcolsep}{3.5pt}
+\renewcommand{\tabcolsep}{4.3pt}
 {\small
 \input graphProbe.tex
 }
@@ -877,7 +879,7 @@ The `P' method selects such conformations where the deviation of the atomic dist
 to selection of the packed conformations (Fig.~\ref{fig::m040c}).
 
 The traversability rates are shown in Tab.~\ref{tab::selection}, where the subscript of each ligand's 
-name shows the number of selected conformations (5 or 50) and the used method (S or P).
+name shows the number of the selected conformations (5 or 50) and the used method (S or P).
 The number after the slash in the ligand's name denotes the number of atoms of the ligand.
 In the case of both tested ligands and 50 selected conformations, the `S' strategy leads to higher traversability rate than the `P' strategy.
 For the ligand DCP, a higher traversability rate was achieved when 50 conformations were selected.
@@ -891,7 +893,7 @@ than using less number of conformations or when preferring the packed conformati
     The number after~`$/$' denotes the number of atoms.
 }
 \small
-\renewcommand{\tabcolsep}{3pt}
+\renewcommand{\tabcolsep}{4.3pt}
 {\small
 \input graphSel.tex
 }
@@ -904,7 +906,7 @@ than using less number of conformations or when preferring the packed conformati
 \subsection{Traversability of ligands}
 
 Based on the results of the previous experiment, 50 conformations using the `S' strategy were selected for the following
-ligands: m037t (1,2-Dichloroethane), m038t (1,3-Dichloropropane), m056 ( 2-Chlorobutane) and m080 (Trichloropropane), and
+ligands: m037t (1,2-Dichloroethane), m038t (1,3-Dichloropropane), m056 (2-Chlorobutane) and m080 (Trichloropropane), and
 the task was to compute trajectories for these ligands in the MD sequence.
 
 The results are summarized in Tab.~\ref{tab::main}.
@@ -918,13 +920,13 @@ The traversability of the DCP ligand to active site was approved by the MD simul
 The observed trajectory of the DCP ligand in the MD simulation followed the first tunnel.
 Based on the traversability rates with $\smin=0.8$, we expect that at least ligands m037t and m038t can also reach the active site, as
 they have same (or even larger) traversability rate than DCP.
-However, this hypothesis hasn't been tested agains MD simulations yet.
+However, this hypothesis hasn't been tested against MD simulations yet.
 
 The proposed \RA\ planner provides higher traversability rate than \RB.
 The distances of the configuration trees (measured using 3D Euclidean metric) to the active site and the runtimes in each frame
 are shown in Fig.~\ref{fig::comparison}.
 The runtimes of both algorithms increase in those frames, where the tunnel is not traversable, i.e., where the distance
-to the active site is more than 2~\AA (e.g., the frame number 60).
+to the active site is more than 2~\AA\ (for example,in the frame number 60).
 
 
 
@@ -932,14 +934,14 @@ The most time consuming part of the planners is the collision detection.
 Although the both methods can utilize the same number of collision detection queries in the expansion step, \RB\ is slower than \RA.
 The reason is, that \RA\ expands the tree more closer to the random samples $\qrand$ than \RB.
 This results in a faster exploration of the configuration space and therefore, \RA\ needs less number of iterations to reach the active site.
-The better performance of \RA\ is caused by the proposed atom-based metric, because this distance between two configurations depends on the actual shape of the ligand.
-This shape is different in each configuration.
-Contrary, the \RB\ utilizes only the single 6D Euclidean metric which is same for all conformations.
-To improve performance of \RB, the weights of the 6D Euclidean metric should differ for each conformation, but it would
-prevent the usage KD-tree for the nearest-neighbor search.
-
-
-
+The better performance of \RA\ is caused by the proposed atom-based metric, because this distance depends on the actual shape of the ligand and 
+it allows the ligands to retract more toward $\qrand$.
+Contrary, \RB\ utilizes the single 6D Euclidean weighted metric in the expansion, where the weights are same for all conformations.
+Depending on these weights, the metric favors samples that differ from $\qrand$ more in rotation or translation part.
+However, the weights between rotation/translation parts should depends on the shape of the ligand, which is different in each conformation.
+By using single set of weights in the 6D Euclidean metric, we implicitely favor either the packed or the longer conformations.
+%To improve performance of \RB, the weights of the 6D Euclidean metric should differ for each conformation, but it would
+%prevent the usage KD-tree for the nearest-neighbor search.
 
 \begin{table}
 \centering
@@ -948,7 +950,7 @@ prevent the usage KD-tree for the nearest-neighbor search.
     The number after '$/$' denotes the number of atoms.
 }
 \small
-\renewcommand{\tabcolsep}{3pt}
+\renewcommand{\tabcolsep}{4.3pt}
 {\small
 \input graph.tex
 }
@@ -986,7 +988,29 @@ However, the ligand can reach the active site only with very low scale ($\sim0.4
 \end{figure}
 
 
-\section{Discussion - TODO prepsat}
+\section{Discussion}
+
+The experiments show the advantage of the proposed motion planner. 
+The planner outperforms the Retraction-based planner not only in the `easy' problems (with $\smin=0.5$), but also
+in the case of difficult scenarios with larger ligands ($\smin=0.8$).
+
+It is worth to mention, that the performance of both planners is influenced by their parameters, namely by
+$\Imax$.
+By increasing this parameter, we can expect better performance in finding the trajectories and consequently higher 
+traversability rates, but with the increased computational time.
+
+The internal performance of the planners is however not the main criteria.
+Fom bio-chemical point of view, the main contribution of using motion planning for detecting the ligand trajectories is the ability to
+consider 
+
+The proposed planner is very simple and it can be improved in many ways: by using a less aggressive scaling-down technique (in order
+to obtain better trajectories) or by using only a subset of conformations and a better expansion (in order to speed it up).
+Having a better motion planner (in the term of the speed or even success rate) however does not automatically mean that the resulting trajectories will help the biochemists more.
+The presented work shows possible advantages of the analysis based on ligand trajectories.
+By comparing the planned trajectories with trajectories observed in MD simulations, thresholds for the success rate or minimal tunnel throughput can be set, which will help biochemists to make decisions.
+
+
+
 
 
 %The computed trajectories cannot be considered as `real', they should rather be considered as a hint for the biochemists.
@@ -995,32 +1019,22 @@ However, the ligand can reach the active site only with very low scale ($\sim0.4
 %Contrary, usually static tunnels are used in protein engineering.
 %Despite such a simplification, researches often used information about the static tunnels  to estimate the possibility of chemical reactions
 %at the active sites.
+%The second limitation is caused by the utilization of scaled-down ligands.
+%The protein atoms fill the internal void space therefore the tunnels identified inside proteins without ligand tend
+%to be very narrow.
+%To enable at least some motion of the ligands inside such narrow tunnels, the scaling-down of the ligand atoms is necessary.
+%It is used also in other related tool, e.g.~\cite{cortes2005path}.
 
-
-The second limitation is caused by the utilization of scaled-down ligands.
-The protein atoms fill the internal void space therefore the tunnels identified inside proteins without ligand tend
-to be very narrow.
-To enable at least some motion of the ligands inside such narrow tunnels, the scaling-down of the ligand atoms is necessary.
-It is used also in other related tool, e.g.~\cite{cortes2005path}.
-
-Due to these reasons, the computed trajectories can be considered either as too optimistic
-(e.g. because they are computed on a wide tunnel that can be in fact closed due to molecular dynamics),
-or too pessimistic (e.g. the trajectory is not found because of narrow passage around the tunnel, which can be 
-opened due to the molecular dynamics).
-Despite these limitations, testing the tunnel traversability using motion planning technique can provide chemists more information
-than the simple bottleneck radius, which is used nowadays.
-For example, possible detours from the tunnel can be identified, which indicates that even a tunnel with a small
-bottleneck can be traversed (Fig.~\ref{fig::detail}).
+%Due to these reasons, the computed trajectories can be considered either as too optimistic
+%(e.g. because they are computed on a wide tunnel that can be in fact closed due to molecular dynamics),
+%or too pessimistic (e.g. the trajectory is not found because of narrow passage around the tunnel, which can be  opened due to the molecular dynamics).
+%Despite these limitations, testing the tunnel traversability using motion planning technique can provide chemists more information
+%than the simple bottleneck radius, which is used nowadays.
+%For example, possible detours from the tunnel can be identified, which indicates that even a tunnel with a small
+%bottleneck can be traversed (Fig.~\ref{fig::detail}).
 
 %Most related works, e.g. those based on motion planning, are usually focused on protein folding, or finding arbitrary pathways
 %from proteins~\cite{cortes2010simulating,guieysse2008structure}.
-
-The proposed planner is very simple and it can be improved in many ways: by using a less aggressive scaling-down technique (in order
-to obtain better trajectories) or by using only a subset of conformations and a better expansion (in order to speed it up).
-Having a better motion planner (in the term of the speed or even success rate) however does not automatically mean that the resulting trajectories will help the biochemists more.
-The presented work shows possible advantages of the analysis based on ligand trajectories.
-By comparing the planned trajectories with trajectories observed in MD simulations, thresholds for the success rate or minimal tunnel throughput can be set, which will help biochemists to make decisions.
-
 
 
 %The runtime of the planner is currently given mainly by the collision-detection.
