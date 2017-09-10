@@ -113,17 +113,11 @@ Faculty of Informatics,   Masaryk University, Botanick\'a 68a, 602~00 Brno, Czec
 \begin{abstract}
 Chemical interactions between proteins and other molecules (ligands) take place in specific locations, called active sites, that are often deeply buried inside the protein structure.
 These active sites are accessible through one or more void paths, called tunnels.
-The passage of a ligand through a tunnel is directly influenced by the tunnel geometric properties, such as its length, width, and bottleneck.
-The task of the biochemists is to evaluate these properties and thus estimate the reactivity of the protein, i.e., the possibility of the ligand to reach the protein active site.
-%The knowledge about a tunnel (e.g. the length, bottleneck or physico-chemical properties) can help chemists to estimate possible interactions between the protein and the ligand.
-Nowadays, tunnels are mostly computed using Voronoi diagrams. 
-This approach helps to predict the interactions between proteins and small ligands, whose shape is approximated by a bounding sphere.
-Such approximation usually leads to highly imprecise results.
-Computing the transportation path of non-spherical ligands including their conformation changes (i.e., when the atoms of the ligand move relatively to each other) leads to the motion planning task in high-dimensional configuration space, which can be solved using sampling-based planning methods.
-This planning problem necessarily includes narrow passages, as the movements of ligands are limited by the protein atoms surrounding the ligand path.
-Considering flexible ligands increases the number of degrees of freedom, and consequently also the dimension of the configuration space.
-To address this problem, in this paper we propose a modification of the Rapidly Exploring Random Tree planner for the purpose of trajectory computations of flexible ligands, heading from the protein outside environment to its active site.
-The detected trajectory then defines the centerline of the searched tunnel.
+Nowadays, tunnels are mostly computed using Voronoi diagrams which approximate the ligand by a bounding sphere.
+This leads to highly imprecise results.
+To address this problem, we define the computation of the transportation path of non-spherical ligands including their conformation changes (i.e., when the atoms of the ligand move relatively to each other) as a motion planning task in high-dimensional configuration space.
+This can be solved using sampling-based planning methods.
+We propose a modification of the Rapidly Exploring Random Tree planner for the purpose of trajectory computations of flexible ligands.
 To cope with the narrow passage problem, the random samples are generated around a Voronoi-based tunnel, which serves us for better localization of the searched space.
 The flexibility of the ligand is modeled using a fixed set of known conformations, which does not increase the number of dimensions of the configuration space.
 The proposed method has been evaluated in a virtual screening scenario to estimate the traversability of tunnels for several ligands.
@@ -132,6 +126,15 @@ The proposed method has been evaluated in a virtual screening scenario to estima
 
 \section{Introduction \& Motivation}
 
+
+Reactivity of proteins with other molecules plays a crucial role in many research disciplines, including protein engineering and drug design.
+Protein reactivity is tightly connected with the presence of the void space between its amino acids. 
+This space, forming a path called tunnel, can be utilized by a small molecule (ligand) which can enter the protein inner space and react with its amino acids surrounding a specific site, called the active site~\cite{gora2013gates}.
+The size and location of tunnels determine the ligand size and shape which can enter the active site.
+%The tunnel has to be wide enough and also the physico-chemical properties of the surrounding amino acids have to be compatible with the ligand.
+Biochemists are currently using computational methods for tunnel detection in order to estimate the possibility of interactions between a protein and a ligand without the need to perform laboratory experiments (Fig.~\ref{fig::motiv}).
+The most common methods detect tunnels using Voronoi diagrams~\cite{yaffe2008,caver3} assuming a spherical ligand (probe), i.e., the ligand is approximated by a bounding sphere.
+However, as the ligands are typically non-spherical and flexible, these methods can often skip possible candidate tunnels.
 
 \begin{figure}[t]
 \centering
@@ -160,14 +163,6 @@ Protein 1CQW & Active site & Detected tunnels \\ %& Example of a  \\
 }
 \end{figure}
 
-Reactivity of proteins with other molecules plays a crucial role in many research disciplines, including protein engineering and drug design.
-Protein reactivity is tightly connected with the presence of the void space between its amino acids. 
-This space, forming a path called tunnel, can be utilized by a small molecule (ligand) which can enter the protein inner space and react with its amino acids surrounding a specific site, called the active site~\cite{gora2013gates}.
-The size and location of tunnels determine the ligand size and shape which can enter the active site.
-%The tunnel has to be wide enough and also the physico-chemical properties of the surrounding amino acids have to be compatible with the ligand.
-Biochemists are currently using computational methods for tunnel detection in order to estimate the possibility of interactions between a protein and a ligand without the need to perform laboratory experiments (Fig.~\ref{fig::motiv}).
-The most common methods detect tunnels using Voronoi diagrams~\cite{yaffe2008,caver3} assuming a spherical ligand (probe), i.e., the ligand is approximated by a bounding sphere.
-However, as the ligands are typically non-spherical and flexible, these methods can often skip possible candidate tunnels.
 
 To provide the biochemists with a solution which detects also candidate tunnels omitted by the traditional methods, it is necessary take into account also the ligand shape and its conformation changes when the ligand moves, i.e., changes its conformation.
 Such a ligand changing the mutual position of its atoms within a molecular dynamics is denoted as a flexible ligand.
