@@ -191,7 +191,6 @@ The potential tunnel is represented by a set of consecutive spheres surrounding 
 This optimization allows us to find trajectories along the given tunnel, which is faster than searching for any trajectory in the whole protein.
 To enable the movement of the ligand in the narrow parts of the tunnel, the free-space can be dilated by shrinking the atom radii, similarly, e.g., to~\cite{cortes2005path,hsu06multilevel}. 
 The ligand flexibility is modeled using a fixed set of predefined conformations which the ligand can occupy.
-
 Our proposed method was tested by the biochemists who compared the results with trajectories of ligands determined experimentally in the lab.
 
 %or protein folding combined with ligand diffusion~\cite{cortes2010simulating}.
@@ -391,7 +390,7 @@ To address the problems of the existing solutions for computing the non-spherica
 Our approach takes into account the shape and flexibility of the ligand and localizes the searched configuration space using the information about tunnels detected by the Voronoi-based approach.
 The input is therefore formed by a set of tunnels computed using Voronoi diagrams and the task is to find trajectories for a ligand along these tunnels
 leading from outside the protein to the active site.
-The tunnels are detected in a sequence time steps capturing protein dynamic behavior that is computed using molecular dynamics (MD) simulations. 
+The tunnels are detected in a sequence time steps capturing protein dynamic behavior computed using MD simulations. 
 
 In contrast to~\cite{cortes2010simulating}, which searches for any exit path from the protein, we localize the searching and compute the trajectories only along each tunnel separately.
 This is motivated by the practical needs of biochemists that are interested in the actual traversability the ligand through a selected tunnel.
@@ -631,7 +630,7 @@ The minimal 3D Euclidean distance from the first set of atoms (defined by $q_1$)
 $\da(q_1,q_2)$.
 By computing the atom-based metric using the absolute positions of atoms, this metric considers the shape of the ligands, which
 is useful when multiple conformations are utilized.
-By employing this metric in the expansion procedure, the tree is expanded by such a new configuration, whose atoms maximally approach
+This metric ensures that the tree is expanded by such configurations, whose atoms maximally approach
 the atoms of the configuration $\qrand$.
 We observed that this leads to a better construction of the configuration tree inside the proteins and it increases the probability
 of reaching the active site.
@@ -711,8 +710,13 @@ On the other hand, using a large number of conformations also increases the time
 Selection of a suitable set of conformations $\L$ is therefore crucial.
 Depending on the ligand, some conformations can be considered as more packed i.e., the atoms in such conformations are closer to each other, but 
 the atoms can also form a more elongated shape (Fig.~\ref{fig::m040c}).
+From the motion planning point of view, both types of conformations are useful.
+The longer conformations can better fit in a narrow passage, while the packed conformations can be better rotated at a given position.
+In the narrow parts of the tunnel, the tree can be extended by the longer conformations, while in the wider regions, also the
+packed conformations can be used.
 
-\begin{figure}[bh]
+
+\begin{figure}[b]
 \centering
 %\includegraphics[width=0.25\textwidth]{fig/m040-conformations}
 \includegraphics[width=0.14\textwidth]{fig/m040-conf1} \hskip 25pt
@@ -721,11 +725,6 @@ the atoms can also form a more elongated shape (Fig.~\ref{fig::m040c}).
  The examples of a `long' conformation (left) and a `packed' one for the ligand m040 (1,5-Dichloropentane).
 }
 \end{figure}
-
-From the motion planning point of view, both types of conformations are useful.
-The longer conformations can better fit in a narrow passage, while the packed conformations can be better rotated at a given position.
-In the narrow parts of the tunnel, the tree can be extended by the longer conformations, while in the wider regions, also the
-packed conformations can be used.
 
 To select the suitable set $\L$ of conformations from a pool of available conformations, a simple technique is proposed.  
 For each conformation, the geometric center is calculated and the deviation of the distances of the atoms from the center is calculated.
