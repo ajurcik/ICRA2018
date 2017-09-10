@@ -1046,15 +1046,18 @@ This was observed in the MD simulation of the DCP ligand in the 1CQW protein, wh
 
 In this paper, we presented a modification of the RRT planner for trajectory computation of ligands inside protein tunnels.
 The tunnels are pathways leading from an outer environment toward the active sites, where chemical interactions may undergo.
-So far, the tunnels have been detected using Voronoi diagrams and analyzed based on their length, bottleneck and the list of residues along them.
-Such an analysis is however useful only for small spherical ligands and it is difficult to estimate behavior of a large, non-spherical ligands.
+So far, the tunnels have been detected using Voronoi diagrams, which does not take into account shape of the ligand neither the possible 
+conformation changes.
 In the proposed work, we compute trajectories using modified RRT for whole ligands and we model the conformation changes of the
 ligands using a predefined set of conformations.
-The main idea of the proposed planner is to generate the random samples around the Voronoi-based tunnels.
-The probability of sampling is increased around so called virtual goal, which is a point moving along the tunnel. 
-The virtual goal is moved forward, if the tree approaches it close enough.
-To enable movements in narrow tunnels, the atomic radii of the ligands are scaled down.
-
+The atomic radii of the ligands can be scaled down up to a certain predefined factor.
+The planner generates the random samples along a tunnel computed by Voronoi diagram and it attempts to expand the configuration
+tree using all conformations. 
+The expansion prefers atoms with a higher scale, which ensures that the ligand shrinks down only if traversing narrow parts of the tunnels.
+To further boost exploration of the configuration space, a novel metric suitable for measuring distances between various shapes
+of the ligands, is used in the expansion step.
+The proposed method has been used to  evaluate trajectories of several ligands in a sequence of protein dynamics.
+Traversability of one of the tested ligands has been already approved in MD simulations.
 
 \bibliographystyle{plain}
 \bibliography{paper}
