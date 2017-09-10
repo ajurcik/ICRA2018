@@ -243,10 +243,10 @@ The resulting tunnels are represented as a sequence of spheres and characterized
 More details can be found in the recently published state-of-the-art report about analysis and visualization of biomolecular cavities~\cite{Krone_2016}.
 The main disadvantage of both grid-based and VD-based methods is that the shape of the ligand is not taken into account during the tunnel detection and it is therefore not easy to estimate if (and how) a non-spherical ligand might traverse the tunnel.
 Moreover, the ligand flexibility cannot be principally considered by these approaches.
-Simulations based on molecular dynamics (MD) can directly evaluate migration of a ligand into a protein, but they are significantly more computationally demanding~\cite{kingsley2014including}. 
+Simulations based on molecular dynamics (MD) can directly evaluate the migration of a ligand into a protein, but they are significantly more computationally demanding~\cite{kingsley2014including}. 
 Moreover, MD simulations have to be prepared for a specific ligand/protein pair, which is not practical for testing a large number of ligands.
-The geometric-based methods are therefore still preferable due to their fast speed.
-In order to determine if the ligand can pass the tunnel using the geometric-based methods, it is necessary to compute a trajectory considering the shape of the ligand and its 3D translation and rotation.
+The geometric-based methods are therefore still preferable due to their speed.
+%In order to determine if the ligand can pass the tunnel using the geometric-based methods, it is necessary to compute a trajectory considering the shape of the ligand and its 3D translation and rotation.
 
 %This can be formulated as a motion planning problem in a high-dimensional configuration space $\C$.
 %In this case, the configuration space $\C$ has at least $6+n$ dimensions (3D rotation + 3D translation + additional degrees of freedom
@@ -294,11 +294,11 @@ In order to determine if the ligand can pass the tunnel using the geometric-base
 %The free samples are stored in a roadmap (a graph structure), in which a path can be searched using standard graph-search methods.
 
 Rapidly Exploring Random Tree (RRT)~\cite{lavalleRRT} is a single-query sampling-based motion planning method that 
-incrementally builds a configuration tree $\T$ rooted at the initial configuration $\qinit$.
-In each iteration of RRT, a random configuration $\qrand \in \C$ is generated and its nearest node $\qnear \in \T$ in the tree is found.
-A new configuration $\qnew$ is constructed on the line connecting $\qnear$ and $\qrand$ in the distance $\varepsilon$ from $\qnear$.
-If $\qnew$ is collision-free, it is added to the tree.
-The algorithm terminates if the tree approaches the goal configuration close enough.
+incrementally builds a configuration tree rooted at the initial configuration.
+%In each iteration of RRT, a random configuration $\qrand \in \C$ is generated and its nearest node $\qnear \in \T$ in the tree is found.
+%A new configuration $\qnew$ is constructed on the line connecting $\qnear$ and $\qrand$ in the distance $\varepsilon$ from $\qnear$.
+%If $\qnew$ is collision-free, it is added to the tree.
+%The algorithm terminates if the tree approaches the goal configuration close enough.
 
 %rrt for molecular: \cite{al2012motion}
 %survey \cite{gipson2012computational}
@@ -309,7 +309,6 @@ The algorithm terminates if the tree approaches the goal configuration close eno
 %protein folding~\cite{amato2002using,raveh2009rapid,novinskaya2015improving,songPFintro},
 %protein folding~\cite{raveh2009rapid,novinskaya2015improving},
 %or protein folding combined with ligand diffusion~\cite{cortes2010simulating}.
-
 The well known issue of the sampling-based planners is the narrow passage problem.
 Narrow passage is a small region in the configuration space, whose removal changes the connectivity of the space.
 Due to its low volume, the probability of sampling the narrow passage is low.
@@ -1051,15 +1050,15 @@ However, the ligand can reach the active site only with very low scale ($\sim0.4
 \section{Conclusion}
 
 In this paper, we presented a novel modification of the RRT planner for computation of ligand trajectory inside protein tunnels.
-So far, tunnels have been mostly detected using Voronoi diagrams which do not take into account the shape and flexibility of the ligand.
+%So far, tunnels have been mostly detected using Voronoi diagrams which do not take into account the shape and flexibility of the ligand.
 In our solution, we compute the trajectories using the modified RRT which takes into account the ligand shape and we model the ligand flexibility using a predefined set of its conformations.
 To simulate the real behavior of ligand passing through a tunnel, we enable scaling down the atomic radii of the ligands up to a certain predefined factor.
 Furthermore, our planner is localized as it generates random samples only along a tunnel computed by Voronoi diagram, and it attempts to expand the configuration
 tree using all ligand conformations. 
 The expansion prefers atoms with a higher scale, which ensures that the ligand shrinks down only if necessary, i.e., when traversing the narrow parts of the tunnel.
 To further boost the exploration of the configuration space, a novel metric suitable for measuring the distances between various ligand shapes is used in the expansion step.
-The proposed method has been used to evaluate the trajectories of several ligands in a sequence of frames capturing protein dynamics.
-The traversability of one of the tested ligands has been already approved in the MD simulations.
+The proposed method has been used to test and evaluate the trajectories of several ligands in a sequence of frames capturing protein dynamics.
+%The traversability of one of the tested ligands has been already approved in the MD simulations.
 
 \bibliographystyle{plain}
 \bibliography{paper}
