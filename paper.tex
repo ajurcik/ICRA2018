@@ -111,18 +111,22 @@ Faculty of Informatics,   Masaryk University, Botanick\'a 68a, 602~00 Brno, Czec
 \pagestyle{empty}
 
 \begin{abstract}
-Chemical interactions of proteins and other molecules (ligands) take place in actives sites that are usually deeply buried inside the proteins.
-The active sites are accessible through one or more pathways (called tunnels).
-Based on the tunnel properties like it's length and bottleneck, the chemists can estimate possibility of reaching the active site and therefore estimate the possibility of the interactions.
+Chemical interactions between proteins and other molecules (ligands) take place in specific locations, called active sites, that are often deeply buried inside the protein structure.
+These active sites are accessible through one or more void paths, called tunnels.
+The passage of a ligand through a tunnel is directly influenced by the tunnel geometric properties, such as its length, width, and bottleneck.
+The task of the biochemists is to evaluate these properties and thus estimate the reactivity of the protein, i.e., the possibility of the ligand to reach the protein active site.
 %The knowledge about a tunnel (e.g. the length, bottleneck or physico-chemical properties) can help chemists to estimate possible interactions between the protein and the ligand.
-Nowadays, tunnels are computed using Voronoi diagrams, which helps to predict interactions only with small spherical ligands.
-Computing motions of non-spherical ligands including conformation changes (i.e., when atoms of the ligand move relatively to each other) leads to motion planning in high-dimensional configuration space, which can be solved using sampling-based planning methods.
-This planning problem necessarily includes narrow passages, as the movements of ligands are limited by many protein atoms.
-Considering flexible ligands increases the number of degrees of freedom, and consequently the dimension of the configuration space.
-In this paper, we propose a modification to the Rapidly Exploring Random Tree planner for the purpose of trajectory computations of ligands along protein tunnels.
-To cope with the narrow passage problem, the random samples are generated around a Voronoi-based tunnel.
-The flexibility of the ligand is modeled using a fixed set of known conformations which does not increase the number of dimensions of the configuration space.
-The proposed method has been evaluated in a virtual screening scenario to estimate traversability of tunnels for several ligands.
+Nowadays, tunnels are mostly computed using Voronoi diagrams. 
+This approach helps to predict the interactions between proteins and small ligands, whose shape is approximated by a bounding sphere.
+Such approximation usually leads to highly imprecise results.
+Computing the transportation path of non-spherical ligands including their conformation changes (i.e., when the atoms of the ligand move relatively to each other) leads to the motion planning task in high-dimensional configuration space, which can be solved using sampling-based planning methods.
+This planning problem necessarily includes narrow passages, as the movements of ligands are limited by the protein atoms surrounding the ligand path.
+Considering flexible ligands increases the number of degrees of freedom, and consequently also the dimension of the configuration space.
+To address this problem, in this paper we propose a modification of the Rapidly Exploring Random Tree planner for the purpose of trajectory computations of flexible ligands, heading from the protein outside environment to its active site.
+The detected trajectory then defines the centerline of the searched tunnel.
+To cope with the narrow passage problem, the random samples are generated around a Voronoi-based tunnel, which serves us for better localization of the searched space.
+The flexibility of the ligand is modeled using a fixed set of known conformations, which does not increase the number of dimensions of the configuration space.
+The proposed method has been evaluated in a virtual screening scenario to estimate the traversability of tunnels for several ligands.
 \end{abstract}
 
 
@@ -152,27 +156,49 @@ Protein 1CQW & Active site & Detected tunnels \\ %& Example of a  \\
 \end{tabular}
 }
 \caption{\label{fig::motiv}
-    Tunnels in haloalkane dehalogenase (1CQW) with possible trajectories of 1-chlorpropan ligand (bottom left) and 1,2-Dichloroethane (bottom right).
+    Tunnels in the DhaA haloalkane dehalogenase protein (PDB ID 1CQW) with possible trajectories of 1-Chlorpropan ligand (bottom left) and 1,2-Dichloroethane (bottom right).
 }
 \end{figure}
 
-The idea of sampling-based motion planning is to randomly sample the configuration space of the robot and connect the collision-free samples
+Reactivity of proteins with other molecules plays a crucial role in many research disciplines, including protein engineering and drug design.
+Protein reactivity is tightly connected with the presence of the void space between its amino acids. 
+This space, forming a path called tunnel, can be utilized by a small molecule (ligand) which can enter the protein inner space and react with its amino acids surrounding a specific site, called the active site~\cite{gora2013gates}.
+The size and location of tunnels determine the ligand size and shape which can enter the active site.
+%The tunnel has to be wide enough and also the physico-chemical properties of the surrounding amino acids have to be compatible with the ligand.
+Biochemists are currently using computational methods for tunnel detection in order to estimate the possibility of interactions between a protein and a ligand without the need to perform laboratory experiments (Fig.~\ref{fig::motiv}).
+The most common methods detect tunnels using Voronoi diagrams~\cite{yaffe2008,caver3} assuming a spherical ligand (probe), i.e., the ligand is approximated by a bounding sphere.
+However, as the ligands are typically non-spherical and flexible, these methods can often skip possible candidate tunnels.
+
+To provide the biochemists with a solution which detects also candidate tunnels omitted by the traditional methods, it is necessary take into account also the ligand shape and its conformation changes when the ligand moves, i.e., changes its conformation.
+Such a ligand changing the mutual position of its atoms within a molecular dynamics is denoted as a flexible ligand.
+To address this, we can formulate the task as a motion planning problem.
+It is also necessary to cope with the narrow passage problem, as the proteins are dense structures and the movements of the ligand are limited by the surrounding amino acids.
+
+The idea of the sampling-based motion planning is to randomly sample the configuration space of the robot and to connect the collision-free samples
 into a graph structure (roadmap).
 A path in the roadmap then corresponds to a motion in the workspace.
 %The random samples are classified as free or non-free using black-box collision detection which allows the sampling-based methods to find paths for robots of various shapes. 
 %The sampling-based planners can cope with robots with many degrees of freedom (DOF).
-The two most used sampling-based techniques are Probabilistic Roadmaps (PRM)~\cite{kavrakiForPP} and Rapidly Exploring Random Trees (RRT)~\cite{lavalleRRT}.
-The sampling-based planners can cope with many-DOF (Degrees of Freedom) robots of arbitrary shape and therefore they have been used for motion planning of various robotic systems.
-Besides many applications in robotics, sampling-based planners have been used also in bio-chemistry 
+Two most commonly used sampling-based techniques are Probabilistic Roadmaps (PRM)~\cite{kavrakiForPP} and Rapidly Exploring Random Trees (RRT)~\cite{lavalleRRT}.
+The sampling-based planners can cope with many-DOF (Degrees of Freedom) robots of an arbitrary shape.
+Therefore, they have been used for motion planning of various robotic systems.
+Besides many applications in robotics, the sampling-based planners have been already used in biochemistry as well 
 %Sampling-based motion planners has been intensively studied in robotics, but they have been applied also in other research fields.
 %In bio-chemistry, the planners have been used to study
-to study loop motions~\cite{cortes2004geometric},
+to study loop motions~\cite{cortes2004geometric}
 %protein folding~\cite{amato2002using,raveh2009rapid,novinskaya2015improving,songPFintro},
 and for protein folding~\cite{raveh2009rapid,novinskaya2015improving}.
 %or for tunnel detection~\cite{vonasek2017tunnel}.
 
-One of the problems in protein engineering is the tunnel detection, where the task is to find a tunnel (pathway) 
-leading to a specific place (called active site) inside the protein~\cite{gora2013gates}.
+In this paper, we propose a modification to RRT to address the problem of planning a non-spherical flexible ligand passage through a given protein.
+We localize the generation of the random samples, i.e., instead of sampling the whole configuration space we focus only on the space surrounding a potential tunnel detected by the Voronoi-based method (using a smaller ligand probe in order to avoid omitting possibly feasible tunnel candidates).
+The potential tunnel is represented by a set of consecutive spheres surrounding the tunnel centerline.
+This optimization allows us to find trajectories along the given tunnel, which is faster than searching for any trajectory in the whole protein.
+To enable the movement of the ligand in the narrow parts of the tunnel, the free-space can be dilated by shrinking the atom radii, similarly, e.g., to~\cite{cortes2005path,hsu06multilevel}. 
+The ligand flexibility is modeled using a fixed set of predefined configurations which the ligand can occupy.
+
+Our proposed method was tested by the biochemists who compared the results with trajectories of ligands determined experimentally in the lab.
+
 %or protein folding combined with ligand diffusion~\cite{cortes2010simulating}.
 %rrt for molecular: \cite{al2012motion}
 %survey \cite{gipson2012computational}
@@ -181,14 +207,9 @@ leading to a specific place (called active site) inside the protein~\cite{gora20
 %Understanding of interactions between proteins and other small molecules is crucial in many research fields, including drug design and protein engineering. 
 %The knowledge about the existence of the tunnels and their properties (e.g., their bottleneck and chemical properties around the tunnel),
 %is important to understand interactions between proteins and other molecules (ligands)~\cite{Koudelakova2013}.
-As the interaction takes place in the active site, the existence of a tunnel connecting the active site with the outer environment
-is necessary for the interaction.
+%As the interaction takes place in the active site, the existence of a tunnel connecting the active site with the outer environment
+%is necessary for the interaction.
 %To get the ligand to the active site, a transportation tunnel connecting the protein outer environment with the active site has to exists.
-Such a  tunnel has to be wide enough and the physico-chemical properties of the surrounding amino acids have to be compatible with the ligand.
-Chemists are using the tunnel detection method in order to estimate possibility of interactions between a protein and a ligand without need to perform long Molecular Dynamics (MD) simulations or even real experiments (Fig.~\ref{fig::motiv}).
-The tunnels are detected mainly using Voronoi diagrams~\cite{yaffe2008,caver3} assuming 
-a spherical ligand (probe) and they are represented as a sequence of spheres.
-However, as the ligands typically non-spherical and flexible,  it is difficult to estimate their traversability through the tunnels computed for only one sphere.
 %Biochemists decide if a tunnel can be used to transport a given ligand mainly based on the tunnel length and bottleneck (i.e., the radius of the smallest sphere that forms the tunnel).
 %This is used for example in protein engineering, where the task is to change selected properties of a protein, e.g., its stability under different outer conditions~\cite{Koudelakova2013}. % or its activity of the protein towards other molecules~\cite{Pavlova2009}.
 %The design of suitable ligands causing the desired changes can be speeded up by detecting and analyzing the tunnels leading to the active sites.
@@ -197,18 +218,6 @@ However, as the ligands typically non-spherical and flexible,  it is difficult t
 %Whereas the tunnel computation is already a well established research field, the simulation of ligand transportation through the detected tunnels is rather new.
 %Ligands are typically of non-spherical shape, therefore it is difficult to estimate their traversability through tunnels computed for a spherical probe.
 %The decision based only on spherical tunnels requires previous expertise in the domain and yet it may be imprecise.
-
-To provide biochemists  a better insight into the behavior of non-spherical ligands, it is necessary to compute the trajectories of the ligand considering its shape and also conformation changes (flexible ligands).
-This can be formulated as a motion planning problem.
-It is necessary to cope with the narrow passage problem, as the proteins are dense structures and the movements of the ligands are limited, and to efficiently model the flexible ligands.
-
-In this paper, we propose a modification to RRT to cope with these issues.
-The random samples are not generated from the whole configuration space, but the sampling is guided using
-the spheres of the tunnel.
-This allows us to find trajectories along the given tunnel, which is faster than searching any trajectory in the whole protein.
-To increase movements of the ligands in the narrow tunnels, the free-space is dilated by 
-shrinking the atom radii, similarly, e.g., to~\cite{cortes2005path,hsu06multilevel}.
-The ligand flexibility is modelled using a fixed set of predefined conformations.
 
 %Proteins are dense structures which limits movements of the ligand insider the tunnels, which leads to the narrow passage problem.
 %To cope with this problem, we propose to utilize the principle of guided sampling~\cite{vonasek2009rrt,denny2016dynamic}.
