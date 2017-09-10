@@ -295,6 +295,11 @@ The geometric-based methods are therefore still preferable due to their speed.
 
 Rapidly Exploring Random Tree (RRT)~\cite{lavalleRRT} is a single-query sampling-based motion planning method that 
 incrementally builds a configuration tree rooted at the initial configuration.
+In each iteration of RRT, a random configuration $\qrand \in \C$ is generated and its nearest node $\qnear \in \T$ in the tree is found.
+A new configuration $\qnew$ is constructed on the line connecting $\qnear$ and $\qrand$ in the distance $\varepsilon$ from $\qnear$.
+If $\qnew$ is collision-free, it is added to the tree.
+The algorithm terminates if the tree approaches the goal configuration close enough.
+
 %In each iteration of RRT, a random configuration $\qrand \in \C$ is generated and its nearest node $\qnear \in \T$ in the tree is found.
 %A new configuration $\qnew$ is constructed on the line connecting $\qnear$ and $\qrand$ in the distance $\varepsilon$ from $\qnear$.
 %If $\qnew$ is collision-free, it is added to the tree.
