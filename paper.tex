@@ -630,7 +630,7 @@ The minimal 3D Euclidean distance from the first set of atoms (defined by $q_1$)
 $\da(q_1,q_2)$.
 By computing the atom-based metric using the absolute positions of atoms, this metric considers the shape of the ligands, which
 is useful when multiple conformations are utilized.
-By employing this metric in the expansion procedure, the tree is expanded by such a new configuration, whose atoms maximally approach
+This metric ensures that the tree is expanded by such configurations, whose atoms maximally approach
 the atoms of the configuration $\qrand$.
 We observed that this leads to a better construction of the configuration tree inside the proteins and it increases the probability
 of reaching the active site.
@@ -710,6 +710,11 @@ On the other hand, using a large number of conformations also increases the time
 Selection of a suitable set of conformations $\L$ is therefore crucial.
 Depending on the ligand, some conformations can be considered as more packed i.e., the atoms in such conformations are closer to each other, but 
 the atoms can also form a more elongated shape (Fig.~\ref{fig::m040c}).
+From the motion planning point of view, both types of conformations are useful.
+The longer conformations can better fit in a narrow passage, while the packed conformations can be better rotated at a given position.
+In the narrow parts of the tunnel, the tree can be extended by the longer conformations, while in the wider regions, also the
+packed conformations can be used.
+
 
 \begin{figure}[b]
 \centering
@@ -720,11 +725,6 @@ the atoms can also form a more elongated shape (Fig.~\ref{fig::m040c}).
  The examples of a `long' conformation (left) and a `packed' one for the ligand m040 (1,5-Dichloropentane).
 }
 \end{figure}
-
-From the motion planning point of view, both types of conformations are useful.
-The longer conformations can better fit in a narrow passage, while the packed conformations can be better rotated at a given position.
-In the narrow parts of the tunnel, the tree can be extended by the longer conformations, while in the wider regions, also the
-packed conformations can be used.
 
 To select the suitable set $\L$ of conformations from a pool of available conformations, a simple technique is proposed.  
 For each conformation, the geometric center is calculated and the deviation of the distances of the atoms from the center is calculated.
