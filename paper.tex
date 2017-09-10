@@ -9,7 +9,7 @@
 \usepackage{multirow}
 \usepackage{flushend}
 \usepackage[bookmarks=false]{hyperref}
-%\usepackage{setspace}
+\usepackage{setspace} % for setstretch in algorithm
 \pdfminorversion=4
 
 \IEEEoverridecommandlockouts                              % This command is only
@@ -550,7 +550,7 @@ We propose to set this parameter to the average width of the tunnel.
 \linesnumbered
 \begin{algorithm}[h]
 {\small
-%\setstretch{0.88}
+\setstretch{0.88}
 \caption{\label{alg::main}Main loop of the RRT planner}
 \KwIn{
     tunnel $T=( (c_i, r_i) )$, $i=1,\ldots,n$, with spheres centers $c_i \in \R^3$ and radii $r_i$,
@@ -632,8 +632,7 @@ is also the nearest point of the ligand at $q$ to $\qrand$.
 
 \begin{algorithm}[h]
 {\small
-%\setstretch{0.88}
-%\setstretch{\straa}
+\setstretch{0.88}
 \caption{\label{alg::expand}expand}
 \KwIn{
    configuration $\qnear$ to be expanded,
