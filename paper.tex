@@ -199,10 +199,12 @@ The geometric-based methods are therefore still preferable due to their speed.
 
 Rapidly Exploring Random Tree (RRT)~\cite{lavalleRRT} is a single-query sampling-based motion planning method that 
 incrementally builds a configuration tree rooted at the initial configuration.
-In each iteration of RRT, a random configuration $\qrand \in \C$ is generated and its nearest node $\qnear \in \T$ in the tree is found.
-A new configuration $\qnew$ is constructed on the line connecting $\qnear$ and $\qrand$ in the distance $\varepsilon$ from $\qnear$.
-If $\qnew$ is collision-free, it is added to the tree.
-The algorithm terminates if the tree approaches the goal configuration close enough.
+Sampling-based planners can cope with many-DOF systems and they have been successfully employed also beoynd robotics, e.g. to
+identify binding sites~\cite{bayazit2001ligand} or to determine ligand exit pathway~\cite{cortes2010simulating}.
+%In each iteration of RRT, a random configuration $\qrand \in \C$ is generated and its nearest node $\qnear \in \T$ in the tree is found.
+%A new configuration $\qnew$ is constructed on the line connecting $\qnear$ and $\qrand$ in the distance $\varepsilon$ from $\qnear$.
+%If $\qnew$ is collision-free, it is added to the tree.
+%The algorithm terminates if the tree approaches the goal configuration close enough.
 
 %rrt for molecular: \cite{al2012motion}
 %survey \cite{gipson2012computational}
@@ -217,8 +219,10 @@ The well known issue of the sampling-based planners is the narrow passage proble
 Narrow passage is a small region in the configuration space, whose removal changes the connectivity of the space.
 Due to its low volume, the probability of sampling the narrow passage is low.
 Consequently, many iterations are needed in order to put enough samples into the passages, which increases the computation time.
-PRM-based planners can cope with the narrow passage problem by increasing the probability of sampling in given regions.
-These regions can be estimated using workspace information, such as by medial axis~\cite{amatoOBRRT,amato2002using,wilmarthMAPRM}, 
+PRM-based planners can cope with the narrow passage problem by increasing the probability of sampling in difficult regions, e.g.
+by sampling along medial axis~\cite{amatoOBRRT,amato2002using,wilmarthMAPRM}.
+In~\cite{bergWIG}, workspace is represented by a grid in which difficult regions are identifed using watershed labeling.
+by indetifying them in a grid-based represnetation of the workspace~
 or they can be identified, e.g., based on the number of collision-free samples around a given configuration~\cite{overmarsGauss,hsuBridge}.
 The narrow passages are however located in the configuration space and it is generally not easy to estimate their location
 based only on the features of the workspace~\cite{hannaWIS}.
@@ -241,7 +245,7 @@ based only on the features of the workspace~\cite{hannaWIS}.
 %Despite the simplicity of these two modifications, they were proven to significantly improve performance of PRM~\cite{hsuOnProb,geraertsRA,geraertsPRMA,wang10adaptive}.
 
 RRT-based planners cannot cope with the narrow passage problem simply by increasing the probability of sampling in them, as the
-growth of the configuration tree towards the random samples may be blocked by obstacles~\cite{vonasekphd}.
+growth of the configuration tree towards the random samples may be blocked by obstacles. %~\cite{vonasekphd}.
 To prevent this blocking, DD-RRT~\cite{yershovaDDRRT} limits the selection of nodes for expansion to a small ball. 
 The radius of the ball is set to infinity for new nodes, and decreases to a predefined radius if the node cannot be successfully expanded.
 The disadvantage of DD-RRT is the sensitivity to the predefined radius.
@@ -264,8 +268,10 @@ In Retraction-based RRT~\cite{zhangRetraction}, the tree is retracted along the 
 This requires the analysis of the contact space, which leads to the generalized penetration depth computation of high complexity~\cite{he2016efficient}. %\cite{he2016efficient} in RAL!! + zhang2008fast
 Selective Retraction-based RRT~\cite{lee2012srrrt} avoids the expensive growth in the open areas of the configuration space and focuses 
 the retractions only on the narrow passages.
-Obstacle-based RRT~\cite{amatoOBRRT} utilizes several expansion procedures based on, e.g., random vectors, obstacle vectors, or medial axis in order to improve the growth in the narrow passages.
+Obstacle-based RRT~\cite{amatoOBRRT} utilizes several expansion procedures based on, e.g., random vectors, obstacle vectors, or medial axis.
 In MARRT~\cite{denny2014marrt}, the newly generated samples are pushed towards the medial axis.
+Difficult regions can be also identified manually by a human operator~\cite{denny2018general}. 
+%The operator can also select a suitable planner for the region.<F12>
 %Therefore, many algorithms uses a heuristic to compute the samples near boundary of the configuration space~\cite{amatoOBPRM,amatoOBRRT}.
 
 The probability of sampling of the narrow passages can be increased by dilating the free-space, e.g., by shrinking the geometry of 
@@ -276,7 +282,17 @@ The flexible ligand is modeled as a kinematic chain, which increases the dimensi
 To cope with these many-DOF ligands, the RRT-ML~\cite{cortes2007mlrrt} approach is employed as the basic planner in~\cite{cortes2010simulating}.
 RRT-ML expands the tree primarily using those DOF that are essential for achieving the motion of the ligand (i.e., rotation
 and translation) and it employs the other DOFs (i.e., those that are responsible for conformation changes) if they hinder the growth of the tree.
+In~\cite{singhLIG}, the pathways for a flexible ligand are found using Probabilistic Roadmaps.
+Each configuration in the roadmap is also evaluated using electorstatic energy.
+The high-energy configurations are discared, while low-energy conformations (and their vicinity) are sampled more dense.
+The approach~\cite{singhLIG} can be also used to predict ligand binding sites.
 
+%From reviews: vojta will solve
+%\cite{hsuBridge} uz tam je
+%\cite{bergWIG}
+%\cite{denny2018general}
+%\cite{singhLIG}
+%\cite{bayazit2001ligand} - it's in the text already.
 
 
 \section{Proposed Method}
