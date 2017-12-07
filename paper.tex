@@ -166,13 +166,19 @@ Such a ligand, changing the mutual position of its atoms within a molecular dyna
 We can formulate this task as a motion planning problem and employ sampling-based methods to solve it.
 %The proposed solution needs also to cope with the narrow passage problem, as proteins are dense structures limiting the ligand movements inside.
 
-Sampling-based planners randomly sample the configuration space of the robot and to connect the collision-free samples
+Sampling-based planners randomly sample the configuration space of the robot and connect the collision-free samples
 into a graph structure (roadmap).
-A path in the roadmap then corresponds to a motion in the workspace.
-The sampling-based planners can cope with many-DOF (Degrees of Freedom) robots of an arbitrary shape.
+%A path in the roadmap then corresponds to a motion in the workspace.
+Rapidly Exploring Random Tree (RRT)~\cite{lavalleRRT} is one of the most used sampling-based planners.
+%The sampling-based planners can cope with many-DOF (Degrees of Freedom) robots of an arbitrary shape.
+%Rapidly Exploring Random Tree (RRT)~\cite{lavalleRRT} is a single-query sampling-based motion planning method that 
+%It incrementally builds a configuration tree rooted at the initial configuration.
 Besides many applications in robotics, the sampling-based planners have been already used in biochemistry as well, 
-to study loop motions~\cite{cortes2004geometric}
-and for protein folding~\cite{raveh2009rapid,amato2002using}. %novinskaya2015improving
+to study loop motions~\cite{cortes2004geometric}, to identify binding sites~\cite{bayazit2001ligand}, for exit
+pathway detection~\cite{cortes2010simulating} and especially for protein folding~\cite{raveh2009rapid,amato2002using}. %novinskaya2015improving
+
+%Sampling-based planners can cope with many-DOF systems and they have been successfully employed also beoynd robotics, e.g. to
+%identify binding sites~\cite{bayazit2001ligand} or to determine ligand exit pathway~\cite{cortes2010simulating}.
 %The random samples are classified as free or non-free using black-box collision detection which allows the sampling-based methods to find paths for robots of various shapes. 
 %The sampling-based planners can cope with robots with many degrees of freedom (DOF).
 %Two most commonly used sampling-based techniques are Probabilistic Roadmaps (PRM)~\cite{kavrakiForPP} and Rapidly Exploring Random Trees (RRT)~\cite{lavalleRRT}.
@@ -182,7 +188,7 @@ and for protein folding~\cite{raveh2009rapid,amato2002using}. %novinskaya2015imp
 %protein folding~\cite{amato2002using,raveh2009rapid,novinskaya2015improving,songPFintro},
 %or for tunnel detection~\cite{vonasek2017tunnel}.
 
-In this paper, we propose a modification to Rapidly Exploring Random Tree (RRT)~\cite{lavalleRRT} planner  to address the problem of planning a non-spherical flexible ligand passage through a given protein.
+In this paper, we propose a modification of the RRT planner to address the problem of planning a non-spherical flexible ligand passage through a given protein.
 We localize the generation of the random samples, i.e., instead of sampling the whole configuration space we focus only on the space surrounding a potential tunnel detected by the Voronoi-based method (using a smaller ligand probe in order to avoid omitting possibly feasible tunnel candidates).
 The potential tunnel is represented by a set of consecutive spheres surrounding the tunnel centerline.
 This optimization allows us to find trajectories along the given tunnel, which is faster than searching for any trajectory in the whole protein.
@@ -206,18 +212,15 @@ Moreover, the ligand flexibility cannot be principally considered by these appro
 Simulations based on molecular dynamics (MD) can directly evaluate the migration of a ligand into a protein, but they are significantly more computationally demanding~\cite{kingsley2014including}. 
 Moreover, MD simulations have to be prepared for a specific ligand/protein pair, which is not practical for testing a large number of ligands.
 The geometric-based methods are therefore still preferable due to their speed.
+
+The task of finding the trajectories for ligand inside the proteins can be formulated as a motion planning problem.
+Sampling-based planners like RRT can be used to find the trajectories even for flexible ligands, as they can cope with many-DOF systems and they can consider arbitrary shape.
+%The computation of the ligand trajectories can be solved also using motion 
 %In order to determine if the ligand can pass the tunnel using the geometric-based methods, it is necessary to compute a trajectory considering the shape of the ligand and its 3D translation and rotation.
-
-
-Rapidly Exploring Random Tree (RRT)~\cite{lavalleRRT} is a single-query sampling-based motion planning method that 
-incrementally builds a configuration tree rooted at the initial configuration.
-Sampling-based planners can cope with many-DOF systems and they have been successfully employed also beoynd robotics, e.g. to
-identify binding sites~\cite{bayazit2001ligand} or to determine ligand exit pathway~\cite{cortes2010simulating}.
 %In each iteration of RRT, a random configuration $\qrand \in \C$ is generated and its nearest node $\qnear \in \T$ in the tree is found.
 %A new configuration $\qnew$ is constructed on the line connecting $\qnear$ and $\qrand$ in the distance $\varepsilon$ from $\qnear$.
 %If $\qnew$ is collision-free, it is added to the tree.
 %The algorithm terminates if the tree approaches the goal configuration close enough.
-
 %rrt for molecular: \cite{al2012motion}
 %survey \cite{gipson2012computational}
 %Solutions for tunnel detection using sampling-based methods however have not been discussed yet.
@@ -236,8 +239,8 @@ by sampling along medial axis~\cite{amatoOBRRT,amato2002using,wilmarthMAPRM}.
 In~\cite{bergWIG}, workspace is represented by a grid in which difficult regions are identifed using watershed labeling.
 by indetifying them in a grid-based represnetation of the workspace~
 or they can be identified, e.g., based on the number of collision-free samples around a given configuration~\cite{overmarsGauss,hsuBridge}.
-The narrow passages are however located in the configuration space and it is generally not easy to estimate their location
-based only on the features of the workspace~\cite{hannaWIS}.
+%The narrow passages are however located in the configuration space and it is generally not easy to estimate their location
+%based only on the features of the workspace~\cite{hannaWIS}.
 %.g. based on amount of collision-free samples around a given sample~\cite{overmarsGauss} or e.g. based
 %~\cite{hsuBridge,overmarsGauss}.
 
@@ -658,7 +661,7 @@ For the purpose of the following experiments, we used $\Imax=5,000$ as a comprom
     Traversability for one atom.
 }
 \renewcommand{\tabcolsep}{4.3pt}
-{\small
+{\footnotesize
 \renewcommand{\arraystretch}{0.7}
 \input graphProbe.tex
 }
@@ -710,7 +713,7 @@ than using a less number of conformations or when preferring the packed conforma
 }
 \small
 \renewcommand{\tabcolsep}{4.3pt}
-{\small
+{\footnotesize
 \renewcommand{\arraystretch}{0.7}
 \input graphSel.tex
 }
@@ -748,7 +751,7 @@ The table shows the traversability rate only for the main tunnel, as no trajecto
 }
 \small
 \renewcommand{\tabcolsep}{4.3pt}
-{\small
+{\footnotesize
 \renewcommand{\arraystretch}{0.7}
 \input graph.tex
 }
