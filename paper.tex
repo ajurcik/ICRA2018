@@ -762,17 +762,11 @@ The only exception is the ligand m037t, which was the smallest tested one (with 
 The traversability rate is higher for the most scaled-down ligands ($\smin=0.5$) and it decreases with the increasing scale.
 For the scale $\smin=0.8$, the most traversable frames were detected for ligands DCP (8~\%), m037t (20~\%) and m038t (16~\%).
 
-In conclusion, the traversability of the DCP ligand to active site was approved by the MD simulation.
+In conclusion, the traversability of the DCP ligand to active site was approved by the MD simulation~\cite{marques2017catalytic}.
 The observed trajectory of the DCP ligand in the MD simulation followed the main tunnel, as expected.
 Based on the traversability rates with $\smin=0.8$, we expect that at least ligands m037t and m038t can also reach the active site, as
 they have the same (or even larger) traversability rate than the DCP.
 However, this hypothesis has not been approved yet by testing it on MD simulations.
-
-The proposed \RA\ planner provides higher traversability rate than \RB.
-The distances of the configuration trees (measured using the 3D Euclidean metric) to the active site and the runtimes in each frame
-are shown in Fig.~\ref{fig::comparison}.
-The runtimes of both algorithms increase in those frames, where the tunnel is not traversable, i.e., where the distance
-to the active site is more than 2~\AA\ (for example, in the frame no. 60).
 
 {\def\a{270}
 \begin{figure}[hb]
@@ -790,18 +784,6 @@ to the active site is more than 2~\AA\ (for example, in the frame no. 60).
 \end{figure}
 }
 
-\vspace{-3mm}
-The most time-consuming part of the planners is the collision detection. 
-Although both methods can utilize the same number of collision detection queries in the expansion step, \RB\ is slower than \RA.
-The reason is that \RA\ expands the tree more closer to the random samples $\qrand$ than \RB.
-This results in a faster exploration of the configuration space and therefore, \RA\ needs less number of iterations to reach the active site.
-The better performance of \RA\ is caused by the proposed atom-based metric, because this distance depends on the actual shape of the ligand and 
-it allows the ligands to retract more towards $\qrand$.
-On the contrary, \RB\ utilizes the single 6D Euclidean weighted metric in the expansion, where the weights are the same for all conformations.
-Depending on these weights, the metric favors samples that differ from $\qrand$ more in the rotation or translation part.
-However, the weights between the rotation/translation parts should depend on the shape of the ligand, which is different in each conformation.
-By using a single set of weights in the 6D Euclidean metric, we implicitly favor either the packed or the longer conformations.
-
 
 \section{Discussion and Utilization of the Results}
 
@@ -817,7 +799,31 @@ The information about the scales used at the trajectory points (which can be ext
 Our proposed visualization allows the biochemists to easily observe those parts of the tunnel where the ligand had to be scaled-down significantly (red parts of trajectories in Fig.~\ref{fig::dcp}), and parts where the ligand could be enlarged again (green parts in Fig.~\ref{fig::dcp}).
 According to the results of the motion planing, the DCP needs to shrink down to ca. 75~\% of its size (Fig.~\ref{fig::dcp}, point B).
 However, as both the protein and ligand are mutually influence each other, it is possible that even a very narrow part of the tunnel is traversable.
-This was observed in the MD simulation of the DCP ligand in the 1CQW protein, which revealed that DCP can pass the main tunnel.
+This was observed in the MD simulation of the DCP ligand in the 1CQW protein, which revealed that DCP can pass the main tunnel~\cite{marques2017catalytic}.
+
+
+
+%originally last two paragraphs in the experiment section, for resubmition, they are moved here to discussion
+
+The proposed \RA\ planner provides higher traversability rate than \RB.
+The distances of the configuration trees (measured using the 3D Euclidean metric) to the active site and the runtimes in each frame
+are shown in Fig.~\ref{fig::comparison}.
+The runtimes of both algorithms increase in those frames, where the tunnel is not traversable, i.e., where the distance
+to the active site is more than 2~\AA\ (for example, in the frame no. 60).
+
+
+The most time-consuming part of the planners is the collision detection. 
+Although both methods can utilize the same number of collision detection queries in the expansion step, \RB\ is slower than \RA.
+The reason is that \RA\ expands the tree more closer to the random samples $\qrand$ than \RB.
+This results in a faster exploration of the configuration space and therefore, \RA\ needs less number of iterations to reach the active site.
+The better performance of \RA\ is caused by the proposed atom-based metric, because this distance depends on the actual shape of the ligand and 
+it allows the ligands to retract more towards $\qrand$.
+On the contrary, \RB\ utilizes the single 6D Euclidean weighted metric in the expansion, where the weights are the same for all conformations.
+Depending on these weights, the metric favors samples that differ from $\qrand$ more in the rotation or translation part.
+However, the weights between the rotation/translation parts should depend on the shape of the ligand, which is different in each conformation.
+By using a single set of weights in the 6D Euclidean metric, we implicitly favor either the packed or the longer conformations.
+
+
 
 \begin{figure}
 \centering
