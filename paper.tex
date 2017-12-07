@@ -5,6 +5,7 @@
 \usepackage{subfig}
 \usepackage[ruled,lined]{algorithm2e}
 \usepackage{multirow}
+\usepackage{color}
 \usepackage{flushend}
 \usepackage[bookmarks=false]{hyperref}
 \usepackage{setspace} % for setstretch in algorithm
@@ -132,7 +133,10 @@ The size and location of tunnels determine the ligand size and shape which can e
 Currently the biochemists are using various computational methods for tunnel detection (Fig.~\ref{fig::motiv}) in order to estimate the possibility of interactions between a protein and a ligand.
 This helps them to reduce the number of necessary in-vitro lab experiments.
 The most common methods detect the tunnels using Voronoi diagrams~\cite{yaffe2008,caver3}, assuming a spherical ligand (probe), i.e., the approximation of the ligand by a bounding sphere.
-However, as the ligands are typically non-spherical, these methods can often skip possible candidate tunnels.
+\textcolor{blue}{However, the ligands are typically of a non-spherical shape which is completely ignored by these methods. 
+Additionally, when studying the tunnel evolution and behavior over time, the traditional methods detect tunnels in individual time frames and perform their clustering to reveal their temporal correspondence. 
+In other words, they do not take into account the ligand position in the previous step, which leads to situations, when the information about a given tunnel is completely missing in few or many frames.}
+
 
 \begin{figure}[t]
 \centering
@@ -155,7 +159,7 @@ Protein 1CQW & Active site & Detected tunnels \\ %& Example of a  \\
 }
 \end{figure}
 
-To provide the biochemists with a solution which detects also the candidate tunnels omitted by the traditional methods, it is necessary to take into account not only the ligand shape but also its conformation changes when the ligand moves.
+\textcolor{blue}{To provide the biochemists with a solution which detects tunnels also in these frames and understand the ligand passage, it is necessary to take into account not only the ligand shape but also its conformation changes when the ligand moves.}
 Such a ligand, changing the mutual position of its atoms within a molecular dynamics, is denoted as a flexible ligand.
 We can formulate this task as a motion planning problem.
 The proposed solution needs also to cope with the narrow passage problem, as proteins are dense structures limiting the ligand movements inside.
@@ -182,10 +186,13 @@ The potential tunnel is represented by a set of consecutive spheres surrounding 
 This optimization allows us to find trajectories along the given tunnel, which is faster than searching for any trajectory in the whole protein.
 To enable the movement of the ligand in the narrow parts of the tunnel, the free-space can be dilated by shrinking the atom radii, similarly, e.g., to~\cite{cortes2005path,hsu06multilevel}. 
 The ligand flexibility is modeled using a fixed set of predefined conformations which the ligand can occupy.
+
+\textcolor{blue}{Another advantage of our method in comparison with the existing approaches is that we enable the users to trace the ligand path leading from the outside solvent towards the protein active site.}
+
 Our proposed method was tested by the biochemists who compared the results with trajectories of ligands determined experimentally in the lab.
+\textcolor{blue}{In the following we first mention several approaches and methods related to our solution and then describe our proposed method in detail.}
 
 \section{Related Work}
-
 
 Most of the available tools for tunnel detection are based on Voronoi diagrams~\cite{yaffe2008,caver3} or they utilize a grid-based computation~\cite{sehnal2013mole}.
 %The tunnels are pathways computed for a single atom (spherical probe) using Voronio-diagrams~\cite{yaffe2008,caver3} or 
