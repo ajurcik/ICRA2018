@@ -31,16 +31,17 @@
     Martin Saska$^{1}$
 \thanks{$^{1}$ Faculty of Electrical Engineering,  Czech Technical University in Prague, 
 Technick\'a 2, 166 27 Prague, Czech Republic,
-{\tt vonasek@labe.felk.cvut.cz}}
-\thanks{$^{2}$        
-Faculty of Informatics, Masaryk University, Botanick\'a 68a, 602~00 Brno, Czech Republic}
-\thanks{$^{3}$        
-Faculty of Informatics, Masaryk University, Botanick\'a 68a, 602~00 Brno, Czech Republic}
+{\tt vonasek@labe.felk.cvut.cz} $^{2}$        
+Faculty of Informatics, Masaryk University, Botanick\'a 68a, 602~00 Brno, Czech Republic 
+$^{3}$        
+Loschmidt Laboratories, Department of Experimental Biology RECETOX,Faculty of Science, Masaryk University
+    Kamenice 5, 625 00 Brno, Czech Republic}
+    }
 %The presented work has been supported by the Czech Science Foundation (GA{\v C}R) under research project No. 17-07690S.
 %Access to computing and storage facilities owned by parties and projects contributing to the National Grid Infrastructure MetaCentrum, provided under the programme "Projects of Large Infrastructure for Research, Development, and Innovations" (LM2010005), is greatly appreciated.
 %}%
 %}
-}
+%}
 
 
 
@@ -144,9 +145,9 @@ In other words, they do not take into account the ligand position in the previou
 \renewcommand{\arraystretch}{-0.5}
 \renewcommand{\tabcolsep}{-1pt}
 \begin{tabular}{ccc}
-\includegraphics[width=0.15\textwidth]{fig/motiv1} &
-\includegraphics[width=0.17\textwidth]{fig/motiv2lab} &
-\includegraphics[width=0.16\textwidth]{fig/motiv3}  \\
+\includegraphics[width=0.14\textwidth]{fig/motiv1} &
+\includegraphics[width=0.15\textwidth]{fig/motiv2lab} &
+\includegraphics[width=0.14\textwidth]{fig/motiv3}  \\
 Protein 1CQW & Active site & Detected tunnels \\ %& Example of a  \\
              &            & (orange)         \\  %& trajectory
 \multicolumn{3}{c}{%
@@ -155,32 +156,33 @@ Protein 1CQW & Active site & Detected tunnels \\ %& Example of a  \\
 \end{tabular}
 }
 \caption{\label{fig::motiv}
+    \small
     Tunnels in the DhaA haloalkane dehalogenase protein (PDB ID 1CQW) with possible trajectories of 1-Chlorpropan ligand (bottom left) and 1,2-Dichloroethane (bottom right).
 }
 \end{figure}
 
 \textcolor{blue}{To provide the biochemists with a solution which detects tunnels also in these frames and understand the ligand passage, it is necessary to take into account not only the ligand shape but also its conformation changes when the ligand moves.}
 Such a ligand, changing the mutual position of its atoms within a molecular dynamics, is denoted as a flexible ligand.
-We can formulate this task as a motion planning problem.
-The proposed solution needs also to cope with the narrow passage problem, as proteins are dense structures limiting the ligand movements inside.
+We can formulate this task as a motion planning problem and employ sampling-based methods to solve it.
+%The proposed solution needs also to cope with the narrow passage problem, as proteins are dense structures limiting the ligand movements inside.
 
-The idea of the sampling-based motion planning is to randomly sample the configuration space of the robot and to connect the collision-free samples
+Sampling-based planners randomly sample the configuration space of the robot and to connect the collision-free samples
 into a graph structure (roadmap).
 A path in the roadmap then corresponds to a motion in the workspace.
+The sampling-based planners can cope with many-DOF (Degrees of Freedom) robots of an arbitrary shape.
+Besides many applications in robotics, the sampling-based planners have been already used in biochemistry as well, 
+to study loop motions~\cite{cortes2004geometric}
+and for protein folding~\cite{raveh2009rapid,amato2002using}. %novinskaya2015improving
 %The random samples are classified as free or non-free using black-box collision detection which allows the sampling-based methods to find paths for robots of various shapes. 
 %The sampling-based planners can cope with robots with many degrees of freedom (DOF).
-Two most commonly used sampling-based techniques are Probabilistic Roadmaps (PRM)~\cite{kavrakiForPP} and Rapidly Exploring Random Trees (RRT)~\cite{lavalleRRT}.
-The sampling-based planners can cope with many-DOF (Degrees of Freedom) robots of an arbitrary shape.
-Therefore, they have been used for motion planning of various robotic systems.
-Besides many applications in robotics, the sampling-based planners have been already used in biochemistry as well, 
+%Two most commonly used sampling-based techniques are Probabilistic Roadmaps (PRM)~\cite{kavrakiForPP} and Rapidly Exploring Random Trees (RRT)~\cite{lavalleRRT}.
+%Therefore, they have been used for motion planning of various robotic systems.
 %Sampling-based motion planners has been intensively studied in robotics, but they have been applied also in other research fields.
 %In bio-chemistry, the planners have been used to study
-to study loop motions~\cite{cortes2004geometric}
 %protein folding~\cite{amato2002using,raveh2009rapid,novinskaya2015improving,songPFintro},
-and for protein folding~\cite{raveh2009rapid,novinskaya2015improving,amato2002using}.
 %or for tunnel detection~\cite{vonasek2017tunnel}.
 
-In this paper, we propose a modification to RRT to address the problem of planning a non-spherical flexible ligand passage through a given protein.
+In this paper, we propose a modification to Rapidly Exploring Random Tree (RRT)~\cite{lavalleRRT} planner  to address the problem of planning a non-spherical flexible ligand passage through a given protein.
 We localize the generation of the random samples, i.e., instead of sampling the whole configuration space we focus only on the space surrounding a potential tunnel detected by the Voronoi-based method (using a smaller ligand probe in order to avoid omitting possibly feasible tunnel candidates).
 The potential tunnel is represented by a set of consecutive spheres surrounding the tunnel centerline.
 This optimization allows us to find trajectories along the given tunnel, which is faster than searching for any trajectory in the whole protein.
@@ -197,7 +199,7 @@ Our proposed method was tested by the biochemists who compared the results with 
 Most of the available tools for tunnel detection are based on Voronoi diagrams~\cite{yaffe2008,caver3} or they utilize a grid-based computation~\cite{sehnal2013mole}.
 %The tunnels are pathways computed for a single atom (spherical probe) using Voronio-diagrams~\cite{yaffe2008,caver3} or 
 %grid-based approaches~\cite{sehnal2013mole,petrek2006caver}.
-The resulting tunnels are represented as a sequence of spheres and characterized by their bottleneck, length, curvature, and a list of surrounding residues, whose physico-chemical properties are crucial for assessing the interaction possibilities between the protein and ligand.
+The tunnels are represented as a sequence of spheres and characterized by their bottleneck, length, curvature, and a list of surrounding residues, whose physico-chemical properties are crucial for assessing the interaction possibilities between the protein and ligand.
 More details can be found in the recently published state-of-the-art report about analysis and visualization of biomolecular cavities~\cite{Krone_2016}.
 The main disadvantage of both grid-based and VD-based methods is that the shape of the ligand is not taken into account during the tunnel detection and it is therefore not easy to estimate if (and how) a non-spherical ligand might traverse the tunnel.
 Moreover, the ligand flexibility cannot be principally considered by these approaches.
@@ -306,19 +308,20 @@ The approach~\cite{singhLIG} can be also used to predict ligand binding sites.
 
 
 \section{Proposed Method}
-To address the problems of the existing solutions for computing the non-spherical flexible ligand trajectories through protein tunnels, we propose a modification of the RRT planner. 
-Our approach takes into account the shape and flexibility of the ligand and localizes the searched configuration space using the information about tunnels detected by the Voronoi-based approach.
-The input is therefore formed by a set of tunnels computed using Voronoi diagrams and the task is to find trajectories for a ligand along these tunnels
+%To address the problems of the existing solutions for computing the non-spherical flexible ligand trajectories through protein tunnels, we propose a modification of the RRT planner. 
+We propose a modification of RRT to compute trajectories for non-spherical flexible ligands through protein tunnels.
+%Our approach takes into account the shape and flexibility of the ligand and localizes the search around given tunnels. configuration space to 
+%using the information about tunnels detected by the Voronoi-based approach.
+The input is formed by a set of tunnels computed using Voronoi diagrams and the task is to find trajectories for a ligand along these tunnels
 leading from outside the protein to the active site.
 The tunnels are detected in a sequence time steps capturing protein dynamic behavior computed using MD simulations. 
 
-In contrast to~\cite{cortes2010simulating}, which searches for any exit path from the protein, we localize the searching and compute the trajectories only along each tunnel separately.
-This is motivated by the practical needs of biochemists that are interested in the actual traversability the ligand through a selected tunnel.
+In contrast to~\cite{cortes2010simulating}, which searches for any exit path from the protein, we localize the searching and compute the trajectories only along each tunnel separately which allows biochemists to analyze selected tunnels.
+%This is motivated by the practical needs of biochemists that are interested in the actual traversability the ligand through a selected tunnel.
 Computing the trajectories along a single tunnel brings several advantages from the motion planning point of view as well.
 It decreases the volume of the configuration space to be searched and increases the relative volume of the narrow passages.
-To further cope with the narrow passage problem, the random samples are not generated in the whole configuration space, but only (mainly) around
-the tunnel in a user-defined distance.
-Therefore, the tunnels serve as a navigation path for the configuration tree~\cite{vonasek2009rrt}.
+The random samples are not generated in the whole configuration space, but only around the tunnel in a user-defined distance which helps to cope with the narrow passage problem.
+%The tunnels serve as a navigation path for the configuration tree~\cite{vonasek2009rrt}.
 
 Due to the protein dynamics, the tunnels move and merge, and their bottleneck can change in each time step.
 Therefore, it can be expected that the detected tunnels are rather narrow.
@@ -350,20 +353,21 @@ A protein tunnel is described by a sequence of collision-free spheres
 $T=( (c_1, r_1),\ldots,(c_n,r_n) )$, where $n$ denotes the number of spheres,
 $c_i \in \R^3$ is their 3D position, and $r_i > 0$ denotes the maximum collision-free radius of a sphere centered at $c_i$. 
 Tunnels serving as an input for our proposed method can be detected using some of the existing computational tools, such as CAVER 3.0~\cite{caver3}.
-
 %Conformations of the ligand may be generated in the absence of the receptor and subsequently docked[13] 
 %or conformations may be generated on-the-fly in the presence of the receptor binding cavity,[14] 
 %or with full rotational flexibility of every dihedral angle using fragment based docking.[15] 
 %Force field energy evaluation are most often used to select energetically reasonable conformations,[16] but 
 %knowledge-based methods have also been used.[17]
 %13 = https://link.springer.com/article/10.1007/BF00123666
-
 %The proteins are dense structures and the tunnels are typically narrow.
 %Depending on the protein, the tunnel bottlenecks can be even less than $1$~\AA, which is too narrow for ligands with more than 2 atoms.
-The flexibility of the ligand is modeled using the set $\L$ of its conformations.
-We assume that the library of all possible conformations in a considered resolution is available (e.g., ~\cite{dunbrack}) and we later show how to select a subset of conformations suitable for the motion planning.
-%The conformations $\L$ are used from a library (e.g.,~\cite{dunbrack}), or they can be prepared considering the potential energy.
-
+The ligand is modeled using the set $\L$ of its conformations.
+The conformations are prepared using the Rosetta tool and ranked according their potential energy. Only conformations
+with energy lower than a user-defined threshold are used.
+%The flexibility of the ligand is modeled using the set $\L$ of its conformations.
+%We assume that the library of all possible conformations in a considered resolution is available
+%(e.g., ~\cite{dunbrack}) 
+%and we later show how to select a subset of conformations suitable for the motion planning.
 To enable the motion of ligands in the narrow tunnels, the atomic radii of the ligand are scaled down by a factor $s, 0 < s \le 1$.
 In our solution we use a discrete set of scales, i.e., $s \in \S=\{\smin, \smin+\sdelta, \ldots, \smax\}$, where 
 $\smin$ is the minimal allowed scale, $\smax=1$ is the maximal allowed scale, and $\sdelta$ is the minimal difference between two scales.
@@ -375,6 +379,8 @@ All possible configurations form the configuration space $\C$ and the collision-
 form the subspace $\CF \subseteq \C$.
 A configuration $q$ is collision-free if none of the ligand atoms scaled by $s$ and placed at the
 position defined by $q$ collides with the protein atoms.
+We assume that the ligand can change from conformation $l_1$ at configuration $q_1$ to a conformation $l_2$ at configuration $q_2$
+if both $q_1$ and $q_2$ are collision-free and if the distance from $q_1$ to $q_2$ is less than the resolution of the planner ($\varepsilon=0.05$~\AA).
 
 
 \subsection{Computing Initial Configurations}
@@ -382,7 +388,7 @@ position defined by $q$ collides with the protein atoms.
 Depending on the chemical interactions between the ligand and the protein surface, the ligand may enter a tunnel with various rotations and in various spatial conformations.
 The traversability of the tunnel should therefore be evaluated using multiple starting configurations $\QI$.
 The initial configurations are searched around the beginning of the tunnel.
-To find a new initial configuration, a random sample $q$ is generated around the first sphere of the tunnel 
+A random sample $q$ is generated around the first sphere of the tunnel 
 $c_1$ in the distance $\RI$ (the translation and rotation parts of $q$ are generated randomly, the scale is set to $\smin$, and the conformation index is set randomly).
 If the sample $q$ is collision-free, it can be considered as a new starting configuration and it is added to $\QI$.
 %Similarly, a single goal configuration $\qgoal$ is found around the end of the tunnel. 
@@ -464,13 +470,15 @@ We propose to set this parameter to the average width of the tunnel.
 
 
 
-The second proposed modification is the expansion procedure (Alg.~\ref{alg::expand}), which expands the tree from $\qnear$ towards $\qrand$.
-The expansion towards $\qrand$ is crucial for the growth of the tree towards the unexplored areas of the configuration space.
-Traditionally, a line is constructed from $\qnear$ to $\qrand$ and the tree is expanded by a configuration located on this line in the 
-distance $\varepsilon$ from $\qnear$.
-However, in the case of ligands, this would mostly lead to a collision.
+The second modification is the expansion procedure (Alg.~\ref{alg::expand}). % which expands the tree from $\qnear$ towards $\qrand$.
+%The expansion towards $\qrand$ is crucial for the growth of the tree towards the unexplored areas of the configuration space.
+The traditional straight-line expansion (i.e., new configuration is constructed on line from $\qnear$ to $\qrand$ in the distance
+        $\varepsilon$ from $\qnear$) more likely lead to collisions, especially in narrow void space.
+%Traditionally, a line is constructed from $\qnear$ to $\qrand$ and the tree is expanded by a configuration located on this line in the 
+%distance $\varepsilon$ from $\qnear$.
+%However, in the case of ligands, this would mostly lead to a collision.
 
-The expansion procedure attempts to expand the tree using all the conformations $\L$ and by preferring larger scales than the smaller ones.
+The proposed expansion attempts to expand the tree using all the conformations $\L$ and by preferring larger scales than the smaller ones.
 For each $l \in \L$, the expansion procedure attempts to find a new collision-free configuration around $\qnear$ with a maximal scale.
 First, the maximal scale $\smax \in \S$ is selected and $m$ random samples are generated around $\qnear$ (in the distance $\varepsilon$) 
 and tested for collisions.
@@ -555,9 +563,9 @@ between $\qinit$ (root of the tree) and $q'$ is found, where
 \subsection{Selection of Conformations for Motion Planning}
 \label{sec::strat}
 
-In the expansion step, each conformation from $\L$ is tested in order to approach $\qrand$.
+Each conformation from $\L$ is tested during the tree expansion. %in order to approach $\qrand$.
 By using more conformations, there is a higher chance that at least one of them can expand the tree towards the random sample $\qrand$.
-On the other hand, using a large number of conformations also increases the time complexity of the expansion step.
+Using a large number of conformations also increases the time complexity of the expansion step.
 Selection of a suitable set of conformations $\L$ is therefore crucial.
 Depending on the ligand, some conformations can be considered as more packed i.e., the atoms in such conformations are closer to each other, but 
 the atoms can also form a more elongated shape (Fig.~\ref{fig::m040c}).
@@ -565,13 +573,14 @@ From the motion planning point of view, both types of conformations are useful.
 The longer conformations can better fit in a narrow passage, while the packed conformations can be better rotated at a given position.
 In the narrow parts of the tunnel, the tree can be extended by the longer conformations, while in the wider regions, also the
 packed conformations can be used.
-\vspace{-3mm}
+%\vspace{-3mm}
 	
 \begin{figure}[hb]
 \centering
 \includegraphics[width=0.14\textwidth]{fig/m040-conf1} \hskip 25pt
 \includegraphics[width=0.11\textwidth]{fig/m040-conf2}
 \caption{\label{fig::m040c}
+    \small
  The examples of a `long' conformation (left) and a `packed' one for the ligand m040 (1,5-Dichloropentane).
 }
 \end{figure}
@@ -590,23 +599,25 @@ Each $k-$th conformation from the sorted list, where $k=\lfloor{m\over n}\rfloor
 
 \section{Experimental Verification}
 
-The proposed approach was used to analyze the ligand traversability towards the active site using the main tunnel in the Haloalkane dehalogenase protein (PDB ID 1CQW).
+
+The proposed method was used to compute ligand traversability towards the active site using two main tunnels in the Haloalkane dehalogenase protein (PDB ID 1CQW) which consists of 4650 atoms.
 The active site was defined using residues 38 (Asparagine), 102 (Histidine), and 103 (Aspartic Acid).
-The molecular dynamics of the protein was computed using the AMBER tool~\cite{amber}.
+MD of the protein was computed using the AMBER tool (details about the MD simulations are described in~\cite{marques2017catalytic}).
 In each frame, tunnels for the spherical probe 0.9~\AA\ were detected using CAVER 3.0~\cite{caver3}. 
 In most of the frames, two tunnels were detected.
 The average bottleneck sizes of these tunnels are $1.48$~\AA\ and $1.2$~\AA\ for the main and the side tunnel, respectively.
-The tunnel traversability was analyzed in 100 time steps (frames) of MD simulation.
+The tunnel traversability was analyzed in 100 consecutive frames of MD simulation in part where the protein was stabilized.
 
 Four different scaling-down factors were used: $\S=\{0.5,0.6,0.7,0.8\}$.
 For each scale, $|\QI|=20$ collision-free initial configurations were found in the $\RI=2$~\AA\ radius around the first sphere of the tunnel (outside the protein).
 For each initial configuration, 10 trajectories were computed, which resulted
 in $100 \times 4 \times 20 \times 10 = 80,000$ trajectories per ligand.
 
-Two motion planners were utilized: the proposed planner (described in Alg.~\ref{alg::main} and Alg.~\ref{alg::expand}), denoted as \RA\ in the rest of the paper, and the Retraction-based RRT~\cite{zhangRetraction}, denoted as \RB\ in the rest of the paper.
+Two motion planners were compared: the proposed planner (described in Alg.~\ref{alg::main} and Alg.~\ref{alg::expand}), denoted as \RA\ in the rest of the paper, and the Retraction-based RRT~\cite{zhangRetraction}, denoted as \RB\ in the rest of the paper.
 The \RA\ method was run with the following parameters:
 $\Imax=5,000$, $m=100$, $\gb=0.9$, $\dt=1.5$~\AA, $\rv=2$~\AA\ and $\varepsilon=0.05$~\AA.
-Both methods were implemented in the same software framework and they utilized the same data structures and routines for the collision detection and nearest-neighbor search.
+Both methods utilize the same data structures and low-level routines (e.g., collision-detection) to enable fair comparison.
+%were implemented in the same software framework and they utilized the same data structures and routines for the collision detection and nearest-neighbor search.
 The nearest-neighbor search of both planners was based on the 6D Euclidean metric with the same weights for rotation and translation parts.
 This metric was selected based on preliminary experiments with both planners as it resulted in the highest success rates.
 
@@ -625,6 +636,7 @@ The planning was terminated after $\Imax$ iterations or if the tree approached t
 In the following experiments, we measured the performance of the methods using the traversability rate, which is the percentage of frames of the protein dynamics that are traversable by the tested ligand.
 A frame is considered traversable if at least one trajectory out of 200 ($\!|\QI|\!\times\!\!10$ trials) approaches the active site to the distance less than~2~\AA.~\footnote{We refer to~\url{http://mrs.felk.cvut.cz/icra2018protein} for additional material.}
 
+
 \subsection{Traversability of One Atom}
 
 The aim of the first experiment is to measure the performance of both planners in the simplest scenario, i.e., finding a path for one sphere heading towards the active site.
@@ -641,7 +653,10 @@ For the purpose of the following experiments, we used $\Imax=5,000$ as a comprom
 
 \begin{table}[ht]
 \centering
-\caption{\label{tab::one}Traversability for one atom.}
+\caption{\label{tab::one}
+    \small
+    Traversability for one atom.
+}
 \renewcommand{\tabcolsep}{4.3pt}
 {\small
 \renewcommand{\arraystretch}{0.7}
@@ -689,6 +704,7 @@ than using a less number of conformations or when preferring the packed conforma
 \begin{table}[ht]
 \centering
 \caption{\label{tab::selection}
+    \small
     The influence of the conformation selection method to the traversability rates in the first tunnel.
     The number after~`$/$' denotes the number of atoms.
 }
@@ -705,6 +721,20 @@ than using a less number of conformations or when preferring the packed conforma
 
 Based on the results of the previous experiment, 50 conformations using the `S' strategy were selected for ligands m037t (1,2-Dichloroethane), m038t (1,3-Dichloropropane), m056 (2-Chlorobutane), and m080 (Trichloropropane), and
 the task was to compute the trajectories for these ligands in a given molecular dynamics simulation.
+Models of the ligands in Mol2 in Mol2 formats were converted to param files~\cite{meiler2006rosettaligand} containing the topology, rotatable bonds, atom types and partial charges. 
+Rotamer library was created by rotation of all rotatable bonds with 30$^\circ$ step. 
+The energy cut-off for individual conformations was set to 0.075 %(-rot_ensemble_ecutoff 0.075) 
+and Rosetta database 3.2.1 was used during the conformers generation. 
+
+%\cite{meiler2006rosettaligand}
+%All substrates were prepared by XXXXXX program and saved in mol2 file. Mol2 formats were converted to param files [1] containing the topology, rotatable bonds, atom types and partial charges by molfile_to_params.py script supplemented in Rosetta Scripts [2]. 
+
+%Rotamer library was created by rotation of all rotatable bonds with 30$^{\circ}$ step. 
+%The energy cut-off for individual conformations was set to 0.075. % (-rot_ensemble_ecutoff 0.075) 
+%and Rosetta database 3.2.1 was used during the conformers generation.
+%Conformations passing the energy criteria were output as multi-pdb file.
+
+
 
 The results are summarized in Tab.~\ref{tab::main}.
 The table shows the traversability rate only for the main tunnel, as no trajectory was found in the side tunnel for most of the tested ligands.
@@ -712,6 +742,7 @@ The table shows the traversability rate only for the main tunnel, as no trajecto
 \begin{table}[bt]
 \centering
 \caption{\label{tab::main}
+    \small
     Traversability of the tunnels for ligands with 50 conformations. 
     The number after '$/$' denotes the number of atoms.
 }
@@ -748,6 +779,7 @@ to the active site is more than 2~\AA\ (for example, in the frame no. 60).
 \includegraphics[width=0.18\textwidth,angle=\a]{fig/crop1}
 \includegraphics[width=0.18\textwidth,angle=\a]{fig/crop2}
 \caption{\label{fig::comparison}
+    \small
     Runtimes and the distance to the active site for the m037 ligand at scale 0.6.
     The values are computed from all 200 trials (20 initial configurations $\times$ 10 trials).
     Only each third frame is shown in the graph.
@@ -789,6 +821,7 @@ This was observed in the MD simulation of the DCP ligand in the 1CQW protein, wh
 \includegraphics[width=0.4\textwidth]{fig/dcp-image1Label}\\
 %\includegraphics[width=0.2\textwidth]{fig/colormap}
 \caption{\label{fig::dcp}
+    \small
 Visualization of trajectories for the ligand DCP in the two examined tunnels.  
 The color of the trajectories corresponds to the scale, that was needed to pass the given part of the tunnel.
 The ligand can enter the first tunnel with a high scale (almost 1=100~\%) (A), but then it has to be scaled-down (to $\sim75$~\%) to pass the
