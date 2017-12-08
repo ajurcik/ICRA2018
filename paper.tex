@@ -461,37 +461,31 @@ $\T$.addNode($\qinit$)\;
 \end{algorithm}
 
 To generate the samples $\qrand$ around the virtual goal $v$, the translation part $(x,y,z)$ of $\qrand$ is generated
-from the Gaussian distribution $N(c_v,\Sigma)$, where $\Sigma$ is the diagonal matrix with diagonal entries equal to the parameter $\rv$, and the rotational
-part of $\qrand$ is generated using techniques described in~\cite{kuffnerES}.
-The other two parameters (ligand index $l$ and scale $s$) of $\qrand$ can be set to zero, as these are not used in the employed
-metric for the nearest-neighbor search.
+from the Gaussian distribution $N(c_v,\Sigma)$, where $\Sigma$ is the diagonal matrix with diagonal entries equal to the parameter $\rv$, 
+and the rotational part of $\qrand$ is generated using techniques described in~\cite{kuffnerES}.
+The ligand index $l$ and scale $s$ can be set to zero, as these are not used in the employed metric for the nearest-neighbor search.
 The parameter $\rv$ influences the distribution of the random samples around the tunnel centerline. 
-By setting $\rv$ to a small value, the planner attempts to find the trajectories inside the tunnel, while higher values
-of $\rv$ cause the exploration of paths around the tunnel.
 We propose to set this parameter to the average width of the tunnel.
+%By setting $\rv$ to a small value, the planner attempts to find the trajectories inside the tunnel, while higher values
+%of $\rv$ cause the exploration of paths around the tunnel.
 
 
 
 The second modification is the expansion procedure (Alg.~\ref{alg::expand}). % which expands the tree from $\qnear$ towards $\qrand$.
 %The expansion towards $\qrand$ is crucial for the growth of the tree towards the unexplored areas of the configuration space.
 The traditional straight-line expansion (i.e., new configuration is constructed on line from $\qnear$ to $\qrand$ in the distance
-        $\varepsilon$ from $\qnear$) more likely lead to collisions, especially in narrow void space.
-%Traditionally, a line is constructed from $\qnear$ to $\qrand$ and the tree is expanded by a configuration located on this line in the 
-%distance $\varepsilon$ from $\qnear$.
-%However, in the case of ligands, this would mostly lead to a collision.
-
-The proposed expansion attempts to expand the tree using all the conformations $\L$ and by preferring larger scales than the smaller ones.
-For each $l \in \L$, the expansion procedure attempts to find a new collision-free configuration around $\qnear$ with a maximal scale.
-First, the maximal scale $\smax \in \S$ is selected and $m$ random samples are generated around $\qnear$ (in the distance $\varepsilon$) 
+$\varepsilon$ from $\qnear$) more likely leads to collisions, especially in narrow void space.
+We expand the tree considering all $\L$ conformations.
+%The proposed expansion attempts to expand the tree using all the conformations $\L$ and by preferring larger scales than the smaller ones.
+For each $l \in \L$, the expansion procedure attempts to find a new collision-free configuration around $\qnear$ which the highest scale.
+First, the maximal scale $\smax \in \S$ is considered and $m$ random samples are generated around $\qnear$ (in the distance $\varepsilon$) 
 and tested for collisions.
-The random samples are generated similarly as in the case of $\qrand$ samples, only their translation
-part $(x,y,z)$ is generated around $\qnear$.
+The random samples are generated similarly as in the case of $\qrand$ samples, the translation part $(x,y,z)$ is generated around $\qnear$.
 The nearest collision-free sample towards $\qrand$ is selected and added to the tree.
 If none of the tested samples is collision-free, the scale is reduced to $\smax-\sdelta$ and the search continues
 until a collision-free sample is found or until the minimal reduced-scale $\smin$ is reached.
-By testing first the largest scale ($\smax$), the expansion procedure prefers expanding the tree by larger scales.
-This forces the planner to automatically use smaller scales in the difficult (narrow) parts of the tunnels, while preferring
-large scales if possible.
+By testing first the largest scale ($\smax$), the expansion procedure prefers expanding the tree by larger scales, and the
+smaller scales are used only in difficult (narrow) regions.
 
 The third modification is the utilization of another metric during the expansion procedure (line~\ref{alg::expand:a} in Alg.~\ref{alg::expand}).
 This metric is denoted as $\da(\cdot,\cdot)$ and it is referred to as atom-based metric in the rest of the paper.
@@ -572,9 +566,9 @@ Selection of a suitable set of conformations $\L$ is therefore crucial.
 Depending on the ligand, some conformations can be considered as more packed i.e., the atoms in such conformations are closer to each other, but 
 the atoms can also form a more elongated shape (Fig.~\ref{fig::m040c}).
 From the motion planning point of view, both types of conformations are useful.
-The longer conformations can better fit in a narrow passage, while the packed conformations can be better rotated at a given position.
-In the narrow parts of the tunnel, the tree can be extended by the longer conformations, while in the wider regions, also the
-packed conformations can be used.
+The longer conformations can better fit in a narrow passage, while the packed conformations can easily rotate on the spot.
+%In the narrow parts of the tunnel, the tree can be extended by the longer conformations, while in the wider regions, also the
+%packed conformations can be used.
 %\vspace{-3mm}
 	
 \begin{figure}[hb]
@@ -587,12 +581,12 @@ packed conformations can be used.
 }
 \end{figure}
 
-
-To select the suitable set $\L$ of conformations from a pool of available conformations, a simple technique is proposed.  
-For each conformation, the geometric center is calculated and the deviation of the distances of the atoms from the center is calculated.
-The low value of the deviation is characteristic for the packed conformations, while larger deviations correspond to the longer conformations.
-To select $n$ conformations from all $m$ available conformations, they are sorted according to the deviation.
-Each $k-$th conformation from the sorted list, where $k=\lfloor{m\over n}\rfloor$, is added to $\L$.
+The pool of available conformations $\L$ consists all conformations (upto some resolution) with energy lower than a user speficied threshold, which can still contain too many conformations (thousands or even more).
+To select a subset of conformation, the distance of the ligand atoms to the geometric center of the ligand is computed and 
+deviation of these distances is calculated.
+Low deviation is characteristic for the packed conformations, while larger deviations correspond to the longer conformations.
+To select $n$ conformations from all $|\L|$ available conformations, they are sorted according to the deviation.
+Each $k-$th conformation from the sorted list, where $k=\lfloor{|\L| / n}\rfloor$, is used.
 
 
 
@@ -604,7 +598,7 @@ Each $k-$th conformation from the sorted list, where $k=\lfloor{m\over n}\rfloor
 
 The proposed method was used to compute ligand traversability towards the active site using two main tunnels in the Haloalkane dehalogenase protein (PDB ID 1CQW) which consists of 4650 atoms.
 The active site was defined using residues 38 (Asparagine), 102 (Histidine), and 103 (Aspartic Acid).
-MD of the protein was computed using the AMBER tool (details about the MD simulations are described in~\cite{marques2017catalytic}).
+MD of the protein was computed using the AMBER 12 tool (details about the MD simulations are described in~\cite{marques2017catalytic}).
 In each frame, tunnels for the spherical probe 0.9~\AA\ were detected using CAVER 3.0~\cite{caver3}. 
 In most of the frames, two tunnels were detected.
 The average bottleneck sizes of these tunnels are $1.48$~\AA\ and $1.2$~\AA\ for the main and the side tunnel, respectively.
