@@ -591,9 +591,9 @@ Each $k-$th conformation from the sorted list, where $k=\lfloor{|\L| / n}\rfloor
 \section{Experimental Verification}
 
 
-The proposed method was used to compute ligand traversability towards the active site using two main tunnels in the Haloalkane dehalogenase protein (PDB ID 1CQW) which consists of 4650 atoms.
+The proposed method was used to compute ligand traversability towards the active site using two main tunnels in the Haloalkane dehalogenase protein (PDB ID 4E46) which consists of 4650 atoms.
 The active site was defined using residues 38 (Asparagine), 102 (Histidine), and 103 (Aspartic Acid).
-MD of the protein was computed using the AMBER 12 tool (details about the MD simulations are described in~\cite{marques2017catalytic}).
+MD of the protein was computed using the AMBER~12 (details about the MD simulations of DhaAwt/4E46 are described in~\cite{marques2017catalytic}).
 In each frame, tunnels for the spherical probe 0.9~\AA\ were detected using CAVER 3.0~\cite{caver3}. 
 In most of the frames, two tunnels were detected.
 The average bottleneck sizes of these tunnels are $1.48$~\AA\ and $1.2$~\AA\ for the main and the side tunnel, respectively.
@@ -847,8 +847,8 @@ This was observed in the MD simulation of the DCP ligand in the 1CQW protein, wh
 \centering
 %\includegraphics[width=0.17\textwidth,angle=\a]{fig/m037tmins-03tunnel-1rrt_path_time-2}
 %\includegraphics[width=0.17\textwidth,angle=\a]{fig/m037tmins-03tunnel-1trajDistToGoal-2}
-\includegraphics[width=0.2\textwidth,angle=\a]{fig/crop1}
-\includegraphics[width=0.2\textwidth,angle=\a]{fig/crop2}
+\includegraphics[width=0.22\textwidth,angle=\a]{fig/crop1}
+\includegraphics[width=0.22\textwidth,angle=\a]{fig/crop2}
 \caption{\label{fig::comparison}
     \small
     Runtimes and the distance to the active site for the m037 ligand at scale 0.7.
