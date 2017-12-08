@@ -30,11 +30,9 @@
     Ond\v{r}ej V\'{a}vra$^{3}$,
     Martin Saska$^{1}$
 \thanks{$^{1}$ Faculty of Electrical Engineering,  Czech Technical University in Prague, 
-Technick\'a 2, 166 27 Prague, Czech Republic,
-{\tt vonasek@labe.felk.cvut.cz} $^{2}$        
-Faculty of Informatics, Masaryk University, Botanick\'a 68a, 602~00 Brno, Czech Republic 
-$^{3}$        
-Loschmidt Laboratories, Department of Experimental Biology RECETOX,Faculty of Science, Masaryk University
+Technick\'a 2, 166 27 Prague, Czech Republic, {\tt vonasek@labe.felk.cvut.cz};
+$^{2}$ Faculty of Informatics, Masaryk University, Botanick\'a 68a, 602~00 Brno, Czech Republic;
+$^{3}$ Loschmidt Laboratories, Department of Experimental Biology RECETOX, Faculty of Science, Masaryk University
     Kamenice 5, 625 00 Brno, Czech Republic}
     }
 %The presented work has been supported by the Czech Science Foundation (GA{\v C}R) under research project No. 17-07690S.
@@ -136,7 +134,7 @@ This helps them to reduce the number of necessary in-vitro lab experiments.
 The most common methods detect the tunnels using Voronoi diagrams~\cite{yaffe2008,caver3}, assuming a spherical ligand (probe), i.e., the approximation of the ligand by a bounding sphere.
 \textcolor{blue}{However, the ligands are typically of a non-spherical shape which is completely ignored by these methods. 
 Additionally, when studying the tunnel evolution and behavior over time, the traditional methods detect tunnels in individual time frames and perform their clustering to reveal their temporal correspondence. 
-In other words, they do not take into account the ligand position in the previous step, which leads to situations, when the information about a given tunnel is completely missing in few or many frames.}
+Therefore, they do not take into account the ligand position in the previous step, which leads to situations, when the information about a given tunnel is completely missing in few or many frames.}
 
 
 \begin{figure}[t]
@@ -166,16 +164,12 @@ Such a ligand, changing the mutual position of its atoms within a molecular dyna
 We can formulate this task as a motion planning problem and employ sampling-based methods to solve it.
 %The proposed solution needs also to cope with the narrow passage problem, as proteins are dense structures limiting the ligand movements inside.
 
-Sampling-based planners randomly sample the configuration space of the robot and connect the collision-free samples
+Sampling-based planners randomly sample the configuration space of the robot (ligand) and connect the collision-free samples
 into a graph structure (roadmap).
-%A path in the roadmap then corresponds to a motion in the workspace.
 Rapidly Exploring Random Tree (RRT)~\cite{lavalleRRT} is one of the most used sampling-based planners.
-%The sampling-based planners can cope with many-DOF (Degrees of Freedom) robots of an arbitrary shape.
-%Rapidly Exploring Random Tree (RRT)~\cite{lavalleRRT} is a single-query sampling-based motion planning method that 
-%It incrementally builds a configuration tree rooted at the initial configuration.
 Besides many applications in robotics, the sampling-based planners have been already used in biochemistry as well, 
-to study loop motions~\cite{cortes2004geometric}, to identify binding sites~\cite{bayazit2001ligand}, for exit
-pathway detection~\cite{cortes2010simulating} and especially for protein folding~\cite{raveh2009rapid,amato2002using}. %novinskaya2015improving
+e.g., to study loop motions~\cite{cortes2004geometric}, to identify binding sites~\cite{bayazit2001ligand}, for exit
+pathway detection~\cite{cortes2010simulating,cortes2005path} and especially for protein folding~\cite{raveh2009rapid,amato2002using}. %novinskaya2015improving
 
 %Sampling-based planners can cope with many-DOF systems and they have been successfully employed also beoynd robotics, e.g. to
 %identify binding sites~\cite{bayazit2001ligand} or to determine ligand exit pathway~\cite{cortes2010simulating}.
@@ -189,12 +183,14 @@ pathway detection~\cite{cortes2010simulating} and especially for protein folding
 %or for tunnel detection~\cite{vonasek2017tunnel}.
 
 In this paper, we propose a modification of the RRT planner to address the problem of planning a non-spherical flexible ligand passage through a given protein.
-We localize the generation of the random samples, i.e., instead of sampling the whole configuration space we focus only on the space surrounding a potential tunnel detected by the Voronoi-based method (using a smaller ligand probe in order to avoid omitting possibly feasible tunnel candidates).
+The random samples are generated around a given tunnel instead in the whole configuration space.
+%We localize the generation of the random samples, i.e., instead of sampling the whole configuration space we focus only on the space surrounding a potential tunnel detected by the Voronoi-based method (using a smaller ligand probe in order to avoid omitting possibly feasible tunnel candidates).
 The potential tunnel is represented by a set of consecutive spheres surrounding the tunnel centerline.
-This optimization allows us to find trajectories along the given tunnel, which is faster than searching for any trajectory in the whole protein.
-To enable the movement of the ligand in the narrow parts of the tunnel, the free-space can be dilated by shrinking the atom radii, similarly, e.g., to~\cite{cortes2005path,hsu06multilevel}. 
+To enable the movement of the ligand in the narrow parts of the tunnel, the free-space is dilated by shrinking the atom radii, similarly, e.g., to~\cite{hsu06multilevel}.  %cortes2005path removed as it is not clear it they really rescale
 The ligand flexibility is modeled using a fixed set of predefined conformations which the ligand can occupy.
 
+Finding trajectories only along a given tunnel tunnel is faster than computing any exit-pathway from the protein due to decreased
+volume of the configuration space to be searched.
 \textcolor{blue}{Another advantage of our method in comparison with the existing approaches is that we enable the users to trace the ligand path leading from the outside solvent towards the protein active site.}
 
 Our proposed method was tested by the biochemists who compared the results with trajectories of ligands determined experimentally in the lab.
@@ -208,13 +204,16 @@ Most of the available tools for tunnel detection are based on Voronoi diagrams~\
 The tunnels are represented as a sequence of spheres and characterized by their bottleneck, length, curvature, and a list of surrounding residues, whose physico-chemical properties are crucial for assessing the interaction possibilities between the protein and ligand.
 More details can be found in the recently published state-of-the-art report about analysis and visualization of biomolecular cavities~\cite{Krone_2016}.
 The main disadvantage of both grid-based and VD-based methods is that the shape of the ligand is not taken into account during the tunnel detection and it is therefore not easy to estimate if (and how) a non-spherical ligand might traverse the tunnel.
-Moreover, the ligand flexibility cannot be principally considered by these approaches.
+The ligand flexibility cannot be principally considered by these approaches.
 Simulations based on molecular dynamics (MD) can directly evaluate the migration of a ligand into a protein, but they are significantly more computationally demanding~\cite{kingsley2014including}. 
 Moreover, MD simulations have to be prepared for a specific ligand/protein pair, which is not practical for testing a large number of ligands.
 The geometric-based methods are therefore still preferable due to their speed.
 
-The task of finding the trajectories for ligand inside the proteins can be formulated as a motion planning problem.
-Sampling-based planners like RRT can be used to find the trajectories even for flexible ligands, as they can cope with many-DOF systems and they can consider arbitrary shape.
+{\textcolor{blue}{The traversability of a tunnel by a flexible ligand can be formulated as a motion planning problem and solved using
+    sampling-based motion planners.
+These planners can cope with objects (robots) with many Degrees of Freedom (DOF)  and they can also consider arbitrary geometry.}
+Two widely used planners are Probabilistic Roadmaps (PRM)~\cite{kavrakiForPP} and Rapidly Exploring Random Tree (RRT)~\cite{lavalleRRT}.
+%Sampling-based planners like RRT can be used to find the trajectories even for flexible ligands, as they can cope with many-DOF systems and they can consider arbitrary shape.
 %The computation of the ligand trajectories can be solved also using motion 
 %In order to determine if the ligand can pass the tunnel using the geometric-based methods, it is necessary to compute a trajectory considering the shape of the ligand and its 3D translation and rotation.
 %In each iteration of RRT, a random configuration $\qrand \in \C$ is generated and its nearest node $\qnear \in \T$ in the tree is found.
@@ -237,8 +236,7 @@ Consequently, many iterations are needed in order to put enough samples into the
 PRM-based planners can cope with the narrow passage problem by increasing the probability of sampling in difficult regions, e.g.
 by sampling along medial axis~\cite{amatoOBRRT,amato2002using,wilmarthMAPRM}.
 In~\cite{bergWIG}, workspace is represented by a grid in which difficult regions are identifed using watershed labeling.
-by indetifying them in a grid-based represnetation of the workspace~
-or they can be identified, e.g., based on the number of collision-free samples around a given configuration~\cite{overmarsGauss,hsuBridge}.
+The regions can be estimated online, e.g., based on the number of collision-free samples around a given configuration~\cite{overmarsGauss,hsuBridge}.
 %The narrow passages are however located in the configuration space and it is generally not easy to estimate their location
 %based only on the features of the workspace~\cite{hannaWIS}.
 %.g. based on amount of collision-free samples around a given sample~\cite{overmarsGauss} or e.g. based
@@ -263,8 +261,9 @@ RRT-based planners cannot cope with the narrow passage problem simply by increas
 growth of the configuration tree towards the random samples may be blocked by obstacles. %~\cite{vonasekphd}.
 To prevent this blocking, DD-RRT~\cite{yershovaDDRRT} limits the selection of nodes for expansion to a small ball. 
 The radius of the ball is set to infinity for new nodes, and decreases to a predefined radius if the node cannot be successfully expanded.
-The disadvantage of DD-RRT is the sensitivity to the predefined radius.
-Therefore, the authors of ADD-RRT~\cite{jailletADRRT} proposed to adapt the ball radius according to the success rate of the expansion.
+Automatic adaptation of this radius was proposed in ADD-RRT~\cite{jailletADRRT}.
+%The disadvantage of DD-RRT is the sensitivity to the predefined radius.
+%Therefore, the authors of ADD-RRT~\cite{jailletADRRT} proposed to adapt the ball radius according to the success rate of the expansion.
 To attract the tree towards a given region, random samples have to be generated there only if the tree can expand to this region.
 In~\cite{kardossRRTKK}, the probability of sampling is increased in several waypoints close to narrow passages, but without specifying
 the method to find these waypoints.
