@@ -2,7 +2,7 @@
 
 EPS=$(wildcard *.eps)
 PDF=$(patsubst %.eps,%.pdf,$(wildcard *.eps))
-CONVERT=epstopdf
+CONVERT=epstopdf --autorotate=All
 
 all: $(EPS) $(PDF) 
 

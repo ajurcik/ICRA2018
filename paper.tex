@@ -697,7 +697,7 @@ than using a less number of conformations or when preferring the packed conforma
 \centering
 \caption{\label{tab::selection}
     \small
-    The influence of the conformation selection method to the traversability rates in the first tunnel.
+    The influence of the conformation selection method on the traversability rates in the first (main) tunnel.
     The number after~`$/$' denotes the number of atoms.
 }
 \small
@@ -811,7 +811,7 @@ The runtimes of both algorithms increase in those frames, where the tunnel is no
 to the active site is more than 2~\AA\ (for example, in the frame no. 60).
 The comparison between \RA\ and \RC\ shows that utilization of the  atom-based metric (used in \RA) leads to higher traversability rate
 in the case of large scales and larger ligands (e.g., m056 with $\smin=0.8$: 15~\% with the metric, but to only 6~\% without it).
-On the other hand, there is not practical difference between \RA\ and \RC\ in the case of more scaled-down ligands.
+Both \RA\ and \RC\ provided trajectories with the same traversability rate in the case of lower scales ($\smin<0.6$).
 
 %The most time-consuming part of the planners is the collision detection. 
 %Although both methods can utilize the same number of collision detection queries in the expansion step, 
@@ -842,16 +842,16 @@ However, as both the protein and ligand are mutually influence each other, it is
 This was observed in the MD simulation of the DCP ligand in the 1CQW protein, which revealed that DCP can pass the main tunnel~\cite{marques2017catalytic}.
 
 
-{\def\a{270}
+{\def\a{0}
 \begin{figure}[t]
 \centering
 %\includegraphics[width=0.17\textwidth,angle=\a]{fig/m037tmins-03tunnel-1rrt_path_time-2}
 %\includegraphics[width=0.17\textwidth,angle=\a]{fig/m037tmins-03tunnel-1trajDistToGoal-2}
-\includegraphics[width=0.18\textwidth,angle=\a]{fig/crop1}
-\includegraphics[width=0.18\textwidth,angle=\a]{fig/crop2}
+\includegraphics[width=0.2\textwidth,angle=\a]{fig/crop1}
+\includegraphics[width=0.2\textwidth,angle=\a]{fig/crop2}
 \caption{\label{fig::comparison}
     \small
-    Runtimes and the distance to the active site for the m037 ligand at scale 0.6.
+    Runtimes and the distance to the active site for the m037 ligand at scale 0.7.
     The values are computed from all 200 trials (20 initial configurations $\times$ 10 trials).
     Only each third frame is shown in the graph.
 }
