@@ -136,8 +136,7 @@ Currently the biochemists are using various computational methods for tunnel det
 This helps them to reduce the number of necessary in-vitro lab experiments.
 The most common methods detect the tunnels using Voronoi diagrams~\cite{yaffe2008,caver3}, assuming a spherical ligand (probe), i.e., the approximation of the ligand by a bounding sphere.
 \textcolor{blue}{However, the ligands are typically of a non-spherical shape which is completely ignored by these methods. 
-Additionally, when studying the tunnel evolution and behavior over time, the traditional methods detect tunnels in individual time frames and perform their clustering to reveal their temporal correspondence. 
-Therefore, they do not take into account the ligand position in the previous step, which leads to situations, when the information about a given tunnel is completely missing in few or many frames.}
+Our approach aims to overcome this problem by taking into account the actual shape of the ligand and additionally also its evolution over time, i.e. its flexibility.}
 
 
 \begin{figure}[t]
@@ -196,7 +195,7 @@ Finding trajectories only along a given tunnel tunnel is faster than computing a
 volume of the configuration space to be searched.
 \textcolor{blue}{Another advantage of our method in comparison with the existing approaches is that we enable the users to trace the ligand path leading from the outside solvent towards the protein active site.}
 
-Our proposed method was tested by the biochemists who compared the results with trajectories of ligands determined experimentally in the lab.
+Our proposed method was tested by the biochemists who compared the results with already known trajectories of ligands, determined by their traditional approaches.
 \textcolor{blue}{In the following we first mention several approaches and methods related to our solution and then describe our proposed method in detail.}
 
 \section{Related Work}
