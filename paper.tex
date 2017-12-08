@@ -401,7 +401,7 @@ For each starting configuration $\qinit \in \QI$, the trajectories are computed 
 
 \subsection{RRT for Computing Ligand's Trajectory along Tunnel}
 
-The proposed motion planning is based on the principle of the RRT~\cite{lavalleRRT} planner.
+The proposed algorithm is based on the principle of the RRT~\cite{lavalleRRT} planner.
 In each iteration, a random sample $\qrand$ is generated and its nearest node $\qnear\in\T$ in the tree is found.
 The nearest-neighbor search between $\qrand$ and the tree is performed using the weighted 6D Euclidean metric computed using
 both 3D rotation and 3D translation.
@@ -494,6 +494,8 @@ This metric is denoted as $\da(\cdot,\cdot)$ and it is referred to as atom-based
 To evaluate $\da(q_1,q_2)$, the absolute positions of the atoms of the ligand defined by $q_1$ and $q_2$ are computed.
 The minimal 3D Euclidean distance from the first set of atoms (defined by $q_1$) to the second set of atoms (defined by $q_2$) is the value of 
 $\da(q_1,q_2)$.
+This metric is sensitive to the shape of the ligand (that is given by it's conformation) as it computes the distance using the two nearest atoms of the two configurations.
+
 By computing the atom-based metric using the absolute positions of atoms, this metric considers the shape of the ligands, which
 is useful when multiple conformations are utilized.
 This metric ensures that the tree is expanded by such configurations, whose atoms maximally approach
@@ -566,23 +568,13 @@ By using more conformations, there is a higher chance that at least one of them 
 Using a large number of conformations also increases the time complexity of the expansion step.
 Selection of a suitable set of conformations $\L$ is therefore crucial.
 Depending on the ligand, some conformations can be considered as more packed i.e., the atoms in such conformations are closer to each other, but 
-the atoms can also form a more elongated shape (Fig.~\ref{fig::m040c}).
+the atoms can also form a more elongated shape (Tab.~\ref{fig::m040c}).
 From the motion planning point of view, both types of conformations are useful.
 The longer conformations can better fit in a narrow passage, while the packed conformations can easily rotate on the spot.
 %In the narrow parts of the tunnel, the tree can be extended by the longer conformations, while in the wider regions, also the
 %packed conformations can be used.
 %\vspace{-3mm}
 	
-\begin{figure}[hb]
-\centering
-\includegraphics[width=0.14\textwidth]{fig/m040-conf1} \hskip 25pt
-\includegraphics[width=0.11\textwidth]{fig/m040-conf2}
-\caption{\label{fig::m040c}
-    \small
- The examples of a `long' conformation (left) and a `packed' one for the ligand m040 (1,5-Dichloropentane).
-}
-\end{figure}
-
 The pool of available conformations $\L$ consists all conformations (upto some resolution) with energy lower than a user speficied threshold, which can still contain too many conformations (thousands or even more).
 To select a subset of conformation, the distance of the ligand atoms to the geometric center of the ligand is computed and 
 deviation of these distances is calculated.
@@ -651,14 +643,14 @@ Higher traversability rate can be achieved by increasing the maximum number of p
 increase the planning time.
 For the purpose of the following experiments, we used $\Imax=5,000$ as a compromise between the performance and the runtime.
 
-\begin{table}[ht]
+\begin{table}[t]
 \centering
 \caption{\label{tab::one}
     \small
     Traversability for one atom.
 }
 \renewcommand{\tabcolsep}{4.3pt}
-{\footnotesize
+{\scriptsize
 \renewcommand{\arraystretch}{0.7}
 \input graphProbe.tex
 }
@@ -709,7 +701,7 @@ than using a less number of conformations or when preferring the packed conforma
 }
 \small
 \renewcommand{\tabcolsep}{4.3pt}
-{\footnotesize
+{\scriptsize
 \renewcommand{\arraystretch}{0.7}
 \input graphSel.tex
 }
@@ -760,7 +752,7 @@ The energy cut-off for individual conformations was set to 0.075. %(-rot_ensembl
 %\end{table}
 %}
 
-The results are summarized in Tab.~\ref{tab::main}.
+The traversability rate is shown in Tab.~\ref{tab::main}. 
 The table shows the traversability rate only for the main tunnel, as no trajectory was found in the side tunnel for most of the tested ligands.
 The only exception is the ligand m037t, which was the smallest tested one (with 8 atoms), and therefore it could fit even inside the side tunnel.
 The traversability rate is higher for the most scaled-down ligands ($\smin=0.5$) and it decreases with the increasing scale.
@@ -771,13 +763,85 @@ to the active site was approved by a separate MD simulation~\cite{marques2017cat
 Based on the number of success rate, also other ligands (e.g., m037t with trav. rate 45~\% at $\smin$=0.8) seem to be promissing.
 However, their binding was not approved yet by MD dedicated simulations.
 
+Beside scaling-down the ligand, also the atoms of the protein can be scaled-down, which is used e.g. in~\cite{cortes2005path} which
+scales  atoms of both the ligand and the protein to 80~\% of their size.
+We tested also this case (column \RD\ in Tab.~\ref{tab::main}).
+The results are same as for ligand scale $\smin=0.6$ (except DCP and m040 which can be result of the randomization).
+
+
+
+%The number of conformations (out of 50 available) used in the successfull trajectories are shown in Tab.~\ref{tab::m040c}.
 %The observed trajectory of the DCP ligand in the MD simulation followed the main tunnel, as expected.
 %Based on the traversability rates with $\smin=0.8$, we expect that at least ligands m037t and m038t can also reach the active site, as
 %they have the same (or even larger) traversability rate than the DCP.
 %However, this hypothesis has not been approved yet by testing it on MD simulations.
 
+
+
+\begin{table}[t]
+\caption{\label{fig::m040c}
+\small
+Examples of elongated/packed conformation for m040 (1,5-Dichloropentane).
+The table shows the average number of conformations (out of 50) used in trajectories reaching the active site.
+}
+\centering
+{\footnotesize
+\def\arraystretch{0.9}
+\begin{tabular}{cc}
+\rotatebox{0}{\hskip 5pt Long} \\ \includegraphics[width=0.1\textwidth]{fig/m040-conf1} \\
+\rotatebox{0}{Packed} \\ \includegraphics[width=0.078\textwidth]{fig/m040-conf2}
+\end{tabular}
+}
+{\scriptsize
+\def\arraystretch{0.9}
+\input usedc.tex
+}
+\end{table}
+
+
+
+\section{Discussion and Utilization of the Results}
+
+%originally last two paragraphs in the experiment section, for resubmition, they are moved here to discussion
+The proposed \RA\ planner provides higher traversability rate than RRT-Retraction (\RB).
+The distances of the configuration trees (measured using the 3D Euclidean metric) to the active site and the runtimes in each frame
+are shown in Fig.~\ref{fig::comparison}.
+The runtimes of both algorithms increase in those frames, where the tunnel is not traversable, i.e., where the distance
+to the active site is more than 2~\AA\ (for example, in the frame no. 60).
+The comparison between \RA\ and \RC\ shows that utilization of the  atom-based metric (used in \RA) leads to higher traversability rate
+in the case of large scales and larger ligands (e.g., m056 with $\smin=0.8$: 15~\% with the metric, but to only 6~\% without it).
+On the other hand, there is not practical difference between \RA\ and \RC\ in the case of more scaled-down ligands.
+
+%The most time-consuming part of the planners is the collision detection. 
+%Although both methods can utilize the same number of collision detection queries in the expansion step, 
+%\RB\ is slower than \RA, because  \RA\ expands the tree more closer to the random samples $\qrand$ than \RB.
+%This results in a faster exploration of the configuration space and therefore, \RA\ needs less number of iterations to reach the active site.
+
+%The better performance of \RA\ is caused by the proposed atom-based metric, because this distance depends on the actual shape of the ligand and 
+%it allows the ligands to retract more towards $\qrand$.
+%On the contrary, \RB\ utilizes the single 6D Euclidean weighted metric in the expansion, where the weights are the same for all conformations.
+%Depending on these weights, the metric favors samples that differ from $\qrand$ more in the rotation or translation part.
+%However, the weights between the rotation/translation parts should depend on the shape of the ligand, which is different in each conformation.
+%By using a single set of weights in the 6D Euclidean metric, we implicitly favor either the packed or the longer conformations.
+
+The presented work was motivated by the current needs of biochemists who need to analyze the traversability of selected ligands through selected protein tunnels.
+Due to low bottleneck of the tunnels, it is often required to shrink the atomic radii of the ligand, as utilized also in other existing tools.
+Finding trajectories for the scaled-down ligands enables to solve the problem with narrow passages, but it can be questionable how biochemically relevant such trajectories~are.
+
+Judging the accessibility of the active site by a ligand based only on the traversability rates may be problematic if the ligand is scaled too much.
+Instead of using a single version of the scaled-down ligand, we only limit the minimal scale used by the planner (the parameter $\smin$) and
+the planner prefers to apply the large scales in possible.
+%The expansion step always prefers to expand the tree by a collision-free configuration with the maximal scale.
+%that leads to a new collision-free configuration.
+The information about the scales used at the trajectory points (which can be extracted from the configuration tree of the proposed planner) brings the biochemists new knowledge about the tunnels, which was impossible to get using the previous solutions.
+Our proposed visualization allows the biochemists to observe those parts of the tunnel where the ligand had to be scaled-down significantly (red parts of trajectories in Fig.~\ref{fig::dcp}), and parts where the ligand could be enlarged again (green parts in Fig.~\ref{fig::dcp}).
+According to the results of the motion planing, the DCP needs to shrink down to ca. 75~\% of its size (Fig.~\ref{fig::dcp}, point B).
+However, as both the protein and ligand are mutually influence each other, it is possible that even a very narrow part of the tunnel is traversable.
+This was observed in the MD simulation of the DCP ligand in the 1CQW protein, which revealed that DCP can pass the main tunnel~\cite{marques2017catalytic}.
+
+
 {\def\a{270}
-\begin{figure}[hb]
+\begin{figure}[t]
 \centering
 %\includegraphics[width=0.17\textwidth,angle=\a]{fig/m037tmins-03tunnel-1rrt_path_time-2}
 %\includegraphics[width=0.17\textwidth,angle=\a]{fig/m037tmins-03tunnel-1trajDistToGoal-2}
@@ -792,49 +856,6 @@ However, their binding was not approved yet by MD dedicated simulations.
 \end{figure}
 }
 
-Beside scaling-down the ligand, also the atoms of the protein can be scaled-down, which is used e.g. in~\cite{cortes2005path} which
-scales  atoms of both the ligand and the protein to 80~\% of their size.
-We tested also this case (column \RD\ in Tab.~\ref{tab::main}).
-The results are same as for ligand scale $\smin=0.6$ (except DCP and m040 which can be results of the randomization).
-
-
-\section{Discussion and Utilization of the Results}
-
-The presented work was motivated by the current needs of biochemists who need to analyze the traversability of selected ligands through protein tunnels.
-To find the feasible ligand trajectories, it is often required to shrink the atomic radii of the ligand, as utilized also in other existing tools.
-Finding trajectories for the scaled-down ligands enables to solve the problem with narrow passages, but it can be questionable how biochemically relevant such trajectories~are.
-
-Judging the accessibility of the active site by a ligand based only on the traversability rates may be problematic if the ligand is scaled too much.
-Instead of using a single version of the scaled-down ligand, we only limit the minimal scale used by the planner (the parameter $\smin$).
-The expansion step always prefers to expand the tree by a collision-free configuration with the maximal scale.
-%that leads to a new collision-free configuration.
-The information about the scales used at the trajectory points (which can be extracted from the configuration tree of the proposed planner) brings the biochemists new knowledge about the tunnels, which was impossible to get using the previous solutions.
-Our proposed visualization allows the biochemists to easily observe those parts of the tunnel where the ligand had to be scaled-down significantly (red parts of trajectories in Fig.~\ref{fig::dcp}), and parts where the ligand could be enlarged again (green parts in Fig.~\ref{fig::dcp}).
-According to the results of the motion planing, the DCP needs to shrink down to ca. 75~\% of its size (Fig.~\ref{fig::dcp}, point B).
-However, as both the protein and ligand are mutually influence each other, it is possible that even a very narrow part of the tunnel is traversable.
-This was observed in the MD simulation of the DCP ligand in the 1CQW protein, which revealed that DCP can pass the main tunnel~\cite{marques2017catalytic}.
-
-
-
-%originally last two paragraphs in the experiment section, for resubmition, they are moved here to discussion
-
-The proposed \RA\ planner provides higher traversability rate than \RB.
-The distances of the configuration trees (measured using the 3D Euclidean metric) to the active site and the runtimes in each frame
-are shown in Fig.~\ref{fig::comparison}.
-The runtimes of both algorithms increase in those frames, where the tunnel is not traversable, i.e., where the distance
-to the active site is more than 2~\AA\ (for example, in the frame no. 60).
-
-
-The most time-consuming part of the planners is the collision detection. 
-Although both methods can utilize the same number of collision detection queries in the expansion step, \RB\ is slower than \RA.
-The reason is that \RA\ expands the tree more closer to the random samples $\qrand$ than \RB.
-This results in a faster exploration of the configuration space and therefore, \RA\ needs less number of iterations to reach the active site.
-The better performance of \RA\ is caused by the proposed atom-based metric, because this distance depends on the actual shape of the ligand and 
-it allows the ligands to retract more towards $\qrand$.
-On the contrary, \RB\ utilizes the single 6D Euclidean weighted metric in the expansion, where the weights are the same for all conformations.
-Depending on these weights, the metric favors samples that differ from $\qrand$ more in the rotation or translation part.
-However, the weights between the rotation/translation parts should depend on the shape of the ligand, which is different in each conformation.
-By using a single set of weights in the 6D Euclidean metric, we implicitly favor either the packed or the longer conformations.
 
 
 
@@ -851,7 +872,7 @@ next part of the tunnel (B). After this narrow passage, the tunnel is larger aga
 scale $>75$~\% (C).
 The second tunnel can also be entered with the high scale (green), but then the narrow part is traversable only with a low scale ($\sim50$~\%) (D). 
 For the purpose of the visualization, even more scale-down to 0.3=30~\% was allowed (E) to see how the ligand passed the tunnel.
-However, the ligand can reach the active site only with very low scale ($\sim0.4=40$~\%) using the side tunnel.
+The ligand can reach the active site only at a very low scale ($\sim0.4=40$~\%) using the side tunnel.
 }
 \end{figure}
 
