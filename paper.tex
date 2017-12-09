@@ -790,8 +790,8 @@ However, their binding was not approved yet by dedicated MD simulations.
 
 Beside scaling-down the ligand, also the atoms of the protein can be scaled, which is used e.g. in~\cite{cortes2005path}.
 The tool~\cite{cortes2005path} uses the scale 0.8 for both the ligand and the protein.
-We tested also this case (the column \RD\ in Tab.~\ref{tab::main}).
-The results are same as for ligand scale $\smin=0.6$ (except DCP and m040 which can be a result of the randomization).
+We tested also this case using \RA\ (the column \RD\ in Tab.~\ref{tab::main}).
+The results are same as for ligand scale $\smin=0.6$  (except DCP and m040 which can be a result of the randomization).
 
 
 
@@ -837,7 +837,7 @@ The variant \RC\ is faster than \RA\ due to simple evaluation of the metric in t
 %to the active site is more than 2~\AA\ (for example, in the frame no. 60).
 The utilization of the  atom-based metric (used in \RA) leads to higher traversability rate
 in the case of large scales and larger ligands (e.g., m056 with $\smin=0.8$: 15~\% with the metric, but to only 6~\% without it).
-Both \RA\ and \RC\ provided trajectories with the same traversability rate in the case of lower scales ($\smin<0.6$).
+%Both \RA\ and \RC\ provided trajectories with the same traversability rate in the case of lower scales ($\smin<0.6$).
 
 %The most time-consuming part of the planners is the collision detection. 
 %Although both methods can utilize the same number of collision detection queries in the expansion step, 
@@ -864,8 +864,9 @@ The information about the scales used at the trajectory points % (which can be e
 brings the biochemists new knowledge about the tunnels, which was impossible to get using the VD-based computations.
 The  visualization allows the biochemists to observe those parts of the tunnel where the ligand had to be scaled-down significantly (red parts of trajectories in Fig.~\ref{fig::dcp}), and parts where the ligand could be enlarged again (green parts in Fig.~\ref{fig::dcp}).
 According to the results of the motion planing, the DCP needs to shrink down to ca. 75~\% of its size (Fig.~\ref{fig::dcp}, point B).
-However, as both the protein and ligand are mutually influence each other, it is possible that even a very narrow part of the tunnel is traversable.
-This was observed in the MD simulation of the DCP ligand in the 1CQW protein, which revealed that DCP can pass the main tunnel~\cite{marques2017catalytic}.
+As both the protein and the ligand mutually influence each other, it is possible that even a narrow part of the tunnel is traversable.
+This was observed in the MD simulation of the DCP ligand in the 4E46 protein, which revealed that DCP can pass the main tunnel~\cite{marques2017catalytic}.
+
 
 
 {\def\a{0}
@@ -907,15 +908,15 @@ The ligand can reach the active site only at a very low scale ($\sim0.4=40$~\%) 
 
 \section{Conclusion}
 
-In this paper, we presented a novel modification of the RRT planner for computation of ligand trajectory inside protein tunnels.
-%So far, tunnels have been mostly detected using Voronoi diagrams which do not take into account the shape and flexibility of the ligand.
-In our solution, we compute the trajectories using the modified RRT which takes into account the ligand shape and we model the ligand flexibility using a predefined set of its conformations.
+We presented a novel modification of the RRT planner to compute trajectories of ligands inside selected protein tunnels.
+In our solution, we take into account the ligand shape and we model the ligand flexibility using a predefined set of its conformations.
 To simulate the real behavior of ligand passing through a tunnel, we enable scaling down the atomic radii of the ligands up to a certain predefined factor.
-Furthermore, our planner is localized as it generates random samples only along a tunnel computed by Voronoi diagram, and it attempts to expand the configuration
+The planner generates the random samples only along a tunnel computed by Voronoi diagram, and it attempts to expand the configuration
 tree using all ligand conformations. 
 The expansion prefers atoms with a higher scale, which ensures that the ligand shrinks down only if necessary, i.e., when traversing the narrow parts of the tunnel.
 To further boost the exploration of the configuration space, a novel metric suitable for measuring the distances between various ligand shapes is used in the expansion step.
 The proposed method has been used to test and evaluate the trajectories of several ligands in a sequence of frames capturing protein dynamics.
+
 
 \bibliographystyle{plain}
 \bibliography{paper}
