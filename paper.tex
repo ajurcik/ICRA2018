@@ -368,8 +368,8 @@ Tunnels serving as an input for the proposed method can be detected using some o
 %The proteins are dense structures and the tunnels are typically narrow.
 %Depending on the protein, the tunnel bottlenecks can be even less than $1$~\AA, which is too narrow for ligands with more than 2 atoms.
 The ligand is modeled using the set $\L$ of its conformations.
-Candidate conformations are prepared by discrete sampling of degrees of freedom of the ligand.
-Each candidate conformation is ranked according its energy and only low-energy conformations are used in $\L$.
+The candidate conformations are prepared by discrete sampling of degrees of freedom of the ligand.
+Each candidate conformation is ranked according to its energy and only low-energy conformations are used in $\L$.
 %The conformations are prepared using the Rosetta tool and ranked according their potential energy. Only conformations
 %with energy lower than a user-defined threshold are used.
 %The flexibility of the ligand is modeled using the set $\L$ of its conformations.
@@ -400,7 +400,7 @@ A random sample $q$ is generated around the first sphere of the tunnel
 $c_1$ in the distance $\RI$ (the translation and rotation parts of $q$ are generated randomly, the scale is set to $\smin$, and the conformation index is set randomly).
 If the sample $q$ is collision-free, it is added to $\QI$ as a new starting configuration.
 %Similarly, a single goal configuration $\qgoal$ is found around the end of the tunnel. 
-The distance $\RI$ influences how far are the initial configurations from the start of the tunnel.
+The distance $\RI$ influences how far the initial configurations are from the start of the tunnel.
 By placing them too far, the planner would need more iterations to enter the tunnel, which would increase the runtime.
 Contrary, too low $\RI$ may disable to find any collision-free configurations, especially for large ligands.
 We suggest to set $\RI$ to the radius of the first sphere in the tunnel and increase it only if no collision-free configuration
@@ -429,11 +429,11 @@ This allows the tree to slightly detour from the tunnel and overcome its difficu
 The algorithm terminates after a predefined number of planning trials $\Imax$ or if the tree reaches
 the last sphere in the tunnel, i.e., when $v = n$.
 
-Movements of the ligands inside a tunnel are blocked by many atoms forming the tunnel.
+The movements of the ligands inside a tunnel are blocked by many atoms forming the tunnel.
 It is not always possible for the ligand to strictly follow the centerline of the tunnel and slight detours
-should be allowed, which is controlled by the parameter $\dt$.
-This parameter should be set considering existence of cavities or other tunnels around the tunnel being investigated.
-In the case of alone tunnels (which is very common), we recommend to use double of the tunnel average width.
+should be allowed, which is controlled by the $\dt$ parameter.
+This parameter should be set considering the existence of cavities or other tunnels around the tunnel being investigated.
+In the case of alone tunnels (which is very common), we recommend to use double value of the tunnel average width.
 
 \linesnumbered
 \begin{algorithm}[hb]
@@ -512,7 +512,7 @@ The minimal 3D Euclidean distance from the first set of atoms (defined by $q_1$)
 $\da(q_1,q_2)$.
 This metric is sensitive to the shape of the ligand (that depends on its conformation) as it computes the distance using the two nearest atoms of the two configurations.
 It allows us to expand the tree by a configuration whose nearest atom approaches its nearest atom in $\qrand$, which supports
-retraction of the ligands towards $\qrand$.
+the retraction of the ligands towards $\qrand$.
 
 %By computing the atom-based metric using the absolute positions of atoms, this metric considers the shape of the ligands, which
 %is useful when multiple conformations are utilized.
@@ -592,7 +592,7 @@ The longer conformations can better fit in a narrow passage, while the packed co
 %packed conformations can be used.
 %\vspace{-3mm}
 	
-The pool of available conformations $\L$ consists all conformations (upto some resolution) with energy lower than a user specified threshold, which can still contain too many conformations (thousands or even more).
+The pool of available conformations $\L$ consists all conformations (up to some resolution) with energy lower than a user specified threshold, which can still contain too many conformations (thousands or even more).
 We select a subset by computing how the atoms of the ligand are spread around its geometric mean.
 The distance of centers of ligand atoms to the geometric center of the ligand is computed, and the deviation of these
 distances then characterizes the spread.
@@ -608,7 +608,7 @@ Each $k-$th conformation from the sorted list, where $k=\lfloor{|\L| / n}\rfloor
 \section{Experimental Verification}
 
 
-The proposed method was used to compute ligand traversability towards the active site using two main tunnels in the Haloalkane dehalogenase protein (PDB ID 4E46) which consists of 4650 atoms.
+The proposed method was used to compute the ligand traversability towards the active site using two main tunnels in the Haloalkane dehalogenase protein (PDB ID 4E46) which consists of 4650 atoms.
 The active site was defined using residues 38 (Asparagine), 102 (Histidine), and 103 (Aspartic Acid).
 MD of the protein was computed using AMBER~12 (details about the used MD simulations of DhaAwt/4E46 are described in~\cite{marques2017catalytic}).
 In each frame, tunnels for the spherical probe 0.9~\AA\ were detected using CAVER 3.0~\cite{caver3}. 
@@ -646,7 +646,7 @@ geometric center of the ligand was closer than 2~\AA\ from the active site).
 
 The performance of the methods is evaluated using the traversability rate, which is the percentage of frames of the protein dynamics that are traversable by the tested ligand.
 A frame is considered traversable if at least one trajectory out of 200 ($\!|\QI|\!\times\!\!10$ trials) approaches the active site to the distance less than~2~\AA. 
-This distance is measured as 3D distance between geometric center of the ligand and the position of the active site.
+This distance is measured as 3D distance between the geometric center of the ligand and the position of the active site.
 %~\footnote{We refer to~\url{http://mrs.felk.cvut.cz/icra2018protein} for additional material.}
 
 
@@ -698,8 +698,8 @@ For the purpose of the following experiments, we used $\Imax=5,000$ as a comprom
 \subsection{Influence of the Conformation Selection}
 
 The aim of this experiment was to verify the procedure to select feasible ligand conformations from an available pool of conformations.
-Models  of the ligands in Mol2 formats were converted to param files~\cite{meiler2006rosettaligand} containing the topology, rotatable bonds, atom types and partial charges. 
-The pool of conformations $\L$ was created by rotation of all rotatable bonds with 30$^\circ$ step using Rosetta3.
+Models  of the ligands in Mol2 formats were converted to param files~\cite{meiler2006rosettaligand}, containing the topology, rotatable bonds, atom types, and partial charges. 
+The pool of conformations $\L$ was created by the rotation of all rotatable bonds with 30$^\circ$ step using Rosetta3.
 The energy cut-off for individual conformations was set to 0.075. %(-rot_ensemble_ecutoff 0.075) 
 Two strategies to select a subset from the $\L$ conformations were tested: 
 the strategy described in Sec.~\ref{sec::strat} (denoted `S') and the strategy that prefers smaller conformations (denoted `P').
