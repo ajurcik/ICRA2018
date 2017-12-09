@@ -317,7 +317,7 @@ The tunnels are detected in a sequence of time frames of MD simulations.
 %capturing protein dynamic behavior. 
 %The frames are computed using MD simulations. 
 
-In contrast to~\cite{cortes2010simulating}, which searches for any exit pathway from the protein, we localize the searching and compute the trajectories only along each tunnel separately which allows biochemists to analyze selected tunnels.
+In contrast to~\cite{cortes2010simulating}, which searches for any exit pathway from the protein, we localize the searching and compute the trajectories only along each tunnel separately which allows the biochemists to analyze selected tunnels.
 %This is motivated by the practical needs of biochemists that are interested in the actual traversability the ligand through a selected tunnel.
 Computing the trajectories along a single tunnel brings several advantages from the motion planning point of view as well.
 The random samples are not generated in the whole configuration space, but only around the tunnel in a user-defined distance which helps to cope with the narrow passage problem.
@@ -331,15 +331,15 @@ It can be expected that the tunnels in MD simulations without ligands are rather
 However, the tunnels adapt their shape to the passing ligands and vice versa.
 %Therefore, it can be expected that the detected tunnels are rather narrow.
 In consequence, even very narrow tunnels, being too small for the passage of a given ligand-approximating sphere, can serve as the transportation path for the ligand.
-Therefore, also the existing Voronoi-based methods enable the user to decrease the size of the approximating sphere which simulates shrinking of the ligand size.
+Therefore, also the existing Voronoi-based methods enable the user to decrease the size of the approximating sphere which simulates the shrinking of the ligand size.
 In our solution we simulate this by shrinking the atom radii of the ligand, used also by~\cite{cortes2010simulating,guieysse2008structure}.
 
 Molecular dynamics simulations of ligands passing through proteins show that the ligands can be highly flexible.
 However, ligands cannot form arbitrary conformations. 
-Ligand can contain several torsion and dihedral angles between its atoms which determine possible ligand conformations.
+The ligand can contain several torsion and dihedral angles between its atoms which determine possible ligand conformations.
 Therefore, the ligand flexibility can be modeled using only a predefined set of conformations.
 By using the set of predefined conformations, it is not necessary to model the additional degrees of freedom, so 
-the dimension of the conifguration space is not increased as in~\cite{cortes2010simulating}.
+the dimension of the configuration space is not increased as in~\cite{cortes2010simulating}.
 %So the number of dimensions of the configuration space does not depend on the DOF of the ligand as in~\cite{cortes2010simulating}.
 The libraries containing possible ligand conformations are used also in different types of calculations, e.g., in~\cite{kellogg}. 
 
@@ -584,7 +584,7 @@ Each conformation from $\L$ is tested during the tree expansion. %in order to ap
 By using more conformations, there is a higher chance that at least one of them can expand the tree towards the random sample $\qrand$.
 Using a large number of conformations also increases the time complexity of the expansion step.
 Selection of a suitable set of conformations $\L$ is therefore crucial.
-Depending on the ligand, some conformations can be considered as more packed i.e., the atoms in such conformations are closer to each other, but 
+Depending on the ligand, some conformations can be considered as more packed, i.e., the atoms in such conformations are closer to each other, but 
 the atoms can also form a more elongated shape (Tab.~\ref{fig::m040c}).
 From the motion planning point of view, both types of conformations are useful.
 The longer conformations can better fit in a narrow passage, while the packed conformations can easily rotate on the spot.
@@ -904,7 +904,7 @@ The ligand can reach the active site only at a very low scale ($\sim0.4=40$~\%) 
 We presented a novel modification of the RRT planner to compute trajectories of ligands inside selected protein tunnels.
 In our solution, we take into account the ligand shape and we model the ligand flexibility using a predefined set of its conformations.
 To simulate the real behavior of ligand passing through a tunnel, we enable scaling down the atomic radii of the ligands up to a certain predefined factor.
-The planner generates the random samples only along a tunnel computed by Voronoi diagram, and it attempts to expand the configuration
+The planner generates the random samples only along a tunnel computed by the Voronoi diagram, and it attempts to expand the configuration
 tree using all ligand conformations. 
 The expansion prefers atoms with a higher scale, which ensures that the ligand shrinks down only if necessary, i.e., when traversing the narrow parts of the tunnel.
 To further boost the exploration of the configuration space, a novel metric suitable for measuring the distances between various ligand shapes is used in the expansion step.
