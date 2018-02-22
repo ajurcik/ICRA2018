@@ -27,8 +27,8 @@
 \author{Vojt\v ech Von\' asek$^{1}$,
     Barbora Kozl\'\i kov\'a$^{2}$,
     Adam Jur\v{c}\'\i k$^{2}$,
-    Ond\v{r}ej V\'{a}vra$^{3}$,
-    Martin Saska$^{1}$
+    Ond\v{r}ej V\'{a}vra$^{3}$
+%    Martin Saska$^{1}$
 \thanks{$^{1}$ Faculty of Electrical Engineering,  Czech Technical University in Prague, 
 Technick\'a 2, 166 27 Prague, Czech Republic, {\tt vonasek@labe.felk.cvut.cz};
 $^{2}$ Faculty of Informatics, Masaryk University, Botanick\'a 68a, 602~00 Brno, Czech Republic;
@@ -57,6 +57,7 @@ The presented work has been supported by the Czech Science Foundation (GA{\v C}R
 \def\CFD{{\mathcal{C}^s_{free}}}
 \def\dt{d_{tunnel}}
 \def\da{d_{atom}}
+\def\dist{d}
 \def\R{\mathbb{R}}
 \def\QI{Q_{init}}
 \def\RI{R_{init}}
@@ -114,10 +115,10 @@ The presented work has been supported by the Czech Science Foundation (GA{\v C}R
 \begin{abstract}
 Chemical interactions between proteins and other molecules (ligands) take place in specific locations, called active sites, that are often deeply buried inside the protein structure.
 These active sites are accessible through one or more void paths, called tunnels.
-Nowadays, tunnels are mostly computed using Voronoi diagrams which approximate the ligand by a bounding sphere.
+Nowadays, tunnels are mostly computed using Voronoi diagrams which approximate the ligand by a bounding sphere and 
+the traversability of the tunnels is determined based only on the radial bottlenecks.
 This can lead to highly imprecise results.
 To address this problem, we define the computation of the transportation path of non-spherical ligands including their conformation changes (i.e., when the atoms of the ligand move relatively to each other) as a motion planning task in the high-dimensional configuration space.
-This can be solved using sampling-based planning methods.
 We propose a modification of the Rapidly Exploring Random Tree planner for the purpose of trajectory computations for flexible ligands.
 To cope with the narrow passage problem, the random samples are generated around a tunnel detected by a Voronoi-based approach.
 %which serves us for better localization of the searched space.
@@ -203,17 +204,30 @@ The proposed method was tested by the biochemists who compared the results with 
 In the following section, we first mention several approaches and methods related to our solution and then describe the proposed method in detail.
 
 \section{Related Work}
+{\color{red}
+Migration of the ligands into a protein can be directly evaluated using Molecular dynamics (MD) simulations, that consider both 
+the protein and the ligand flexible.
+However, MD simulations are considerably computational demanding~\cite{kingsley2014including} and they have to be prepared
+for particular ligand/protein pair, which is not practical for testing a large number of different ligands.
+Therefore, computational approaches that consider only geometry of the protein/ligand are still preferable due to their high speed.
 
+The widely used approaches to evaluate possiblity of ligand migration into the protein rely on the tunnel detection.
 Most of the available tools for tunnel detection are based on Voronoi diagrams~\cite{yaffe2008,caver3} or they utilize a grid-based computation~\cite{sehnal2013mole}.
-%The tunnels are pathways computed for a single atom (spherical probe) using Voronio-diagrams~\cite{yaffe2008,caver3} or 
-%grid-based approaches~\cite{sehnal2013mole,petrek2006caver}.
 Tunnels are represented as a sequence of spheres and characterized by their bottleneck, length, curvature, and the list of surrounding residues, whose physico-chemical properties are crucial for assessing the protein-ligand interaction possibilities.
-More details can be found in the recently published state-of-the-art report about the analysis and visualization of biomolecular cavities~\cite{Krone_2016}.
-The main disadvantage of both grid-based and VD-based methods is that the shape of the ligand is not taken into account during the tunnel detection and it is therefore not easy to estimate if (and how) a non-spherical ligand can traverse the tunnel.
-The ligand flexibility cannot be principally considered by these approaches.
-Simulations based on molecular dynamics (MD) can directly evaluate the migration of the ligand into the protein, but they are significantly more computationally demanding~\cite{kingsley2014including}. 
-Moreover, MD simulations have to be prepared for a specific ligand/protein pair, which is not practical for testing a large number of different ligands.
-The geometry-based methods are therefore still preferable due to their speed.
+The tunnels are detected either on a single conformation of the protein, or, on a set of protein conformations.
+The protein conformations can be prepared again using MD simulations.
+Computationally less costly approaches for generating protein conformations are based on constrained geometric simulations like
+ROCK~\cite{lei2004sampling}, FRODA~\cite{wells2005constrained} and tCONCOORD~\cite{seeliger2007geometry}.
+Examples of utilization of protein tunnels can be found in the recently published state-of-the-art report about the analysis and visualization of biomolecular cavities~\cite{Krone_2016}.
+
+The main disadvantage of both grid-based and VD-based tunnel detection methods is that the shape of the ligand is not taken into account during the tunnel detection and it is therefore not easy to estimate if (and how) a non-spherical ligand can traverse the tunnel.
+The ligand flexibility cannot be principally considered by Voronoi-based approaches.
+}
+
+%Simulations based on molecular dynamics (MD) can directly evaluate the migration of the ligand into the protein, but they are significantly more computationally demanding~\cite{kingsley2014including}. 
+%Moreover, MD simulations have to be prepared for a specific ligand/protein pair, which is not practical for testing a large number of different ligands.
+%The geometry-based methods are therefore still preferable due to their speed.
+
 
 The traversability of a tunnel by a flexible ligand can be formulated as a motion planning problem and solved using the sampling-based motion planners.
 These planners can cope with objects (robots) with many Degrees of Freedom (DOF) and they can also consider objects of an arbitrary shape.
@@ -287,7 +301,9 @@ In MARRT~\cite{denny2014marrt}, newly generated samples are pushed towards the m
 %The operator can also select a suitable planner for the region.<F12>
 %Therefore, many algorithms uses a heuristic to compute the samples near boundary of the configuration space~\cite{amatoOBPRM,amatoOBRRT}.
 
-The probability of sampling of the narrow passages can be increased by dilating the free-space, e.g., by shrinking the geometry of the robot~\cite{hsuOnProb} or the obstacles~\cite{bayazitIRC}.
+%The probability of sampling of the narrow passages can be increased by dilating the free-space, e.g., by shrinking the geometry of the robot~\cite{hsuOnProb} or the obstacles~\cite{bayazitIRC}.
+The probability of sampling of the narrow passages can be increased by dilating the free-space, e.g., by shrinking the geometry of the robot or the obstacles~\cite{bayazitIRC}.
+
 The shrinking technique has been used also in~\cite{cortes2010simulating}, where the exit pathways for a small flexible molecule are computed using a RRT-based method.
 The flexible ligand is modeled as a kinematic chain, which increases the dimension of the configuration space.
 To cope with these many-DOF ligands, the RRT-ML~\cite{cortes2007mlrrt} approach is employed as the basic planner in~\cite{cortes2010simulating}.
@@ -343,9 +359,9 @@ the dimension of the configuration space is not increased as in~\cite{cortes2010
 %So the number of dimensions of the configuration space does not depend on the DOF of the ligand as in~\cite{cortes2010simulating}.
 The libraries containing possible ligand conformations are used also in different types of calculations, e.g., in~\cite{kellogg}. 
 
-While the classic 6D Euclidean metric is used in the nearest-neighbor search of RRT, we propose to use another metric during the expansion step.
-This metric measures the distances between two configurations as the nearest distance of two atoms. 
-This enables the metric to consider the shape of the ligand and it supports the retraction of the ligand to the narrow passages.
+%While the classic 6D Euclidean metric is used in the nearest-neighbor search of RRT, we propose to use another metric during the expansion step.
+%This metric measures the distances between two configurations as the nearest distance of two atoms. 
+%This enables the metric to consider the shape of the ligand and it supports the retraction of the ligand to the narrow passages.
 
 
 
@@ -414,7 +430,7 @@ The proposed algorithm is based on the principle of the RRT~\cite{lavalleRRT} pl
 In each iteration, a random sample $\qrand$ is generated and its nearest node $\qnear\in\T$ in the tree is found.
 The nearest-neighbor search between $\qrand$ and the tree is performed using the weighted 6D Euclidean metric computed using
 both 3D rotation and 3D translation.
-The main loop of the planner (Alg.~\ref{alg::main}) is similar to the original RRT, but with the following three proposed modifications.
+The main loop of the planner (Alg.~\ref{alg::main}) is similar to the original RRT, but with the following two proposed modifications.
 
 The aim of the first modification is to sample the configuration space along the tunnel being analyzed.
 To guide the growth of the tree using the tunnel, a moving virtual goal is used. %~\cite{vonasek2009rrt}.
@@ -505,14 +521,15 @@ until a collision-free sample is found or until the minimal reduced-scale $\smin
 By testing first the largest scale ($\smax$), the expansion procedure prefers expanding the tree by larger scales, and the
 smaller scales are used only in difficult (narrow) regions.
 
-The third modification is the utilization of another metric during the expansion procedure (line~\ref{alg::expand:a} in Alg.~\ref{alg::expand}).
-This metric is denoted as $\da(\cdot,\cdot)$ and it is referred to as atom-based metric in the rest of the paper.
-To evaluate $\da(q_1,q_2)$, the absolute positions of the atoms of the ligand defined by $q_1$ and $q_2$ are computed.
-The minimal 3D Euclidean distance from the first set of atoms (defined by $q_1$) to the second set of atoms (defined by $q_2$) is the value of 
-$\da(q_1,q_2)$.
-This metric is sensitive to the shape of the ligand (that depends on its conformation) as it computes the distance using the two nearest atoms of the two configurations.
-It allows us to expand the tree by a configuration whose nearest atom approaches its nearest atom in $\qrand$, which supports
-the retraction of the ligands towards $\qrand$.
+%The third modification is the utilization of another metric during the expansion procedure (line~\ref{alg::expand:a} in Alg.~\ref{alg::expand}).
+%This metric is denoted as $\da(\cdot,\cdot)$ and it is referred to as atom-based metric in the rest of the paper.
+%To evaluate $\da(q_1,q_2)$, the absolute positions of the atoms of the ligand defined by $q_1$ and $q_2$ are computed.
+%The minimal 3D Euclidean distance from the first set of atoms (defined by $q_1$) to the second set of atoms (defined by $q_2$) is the value of 
+%$\da(q_1,q_2)$.
+%This metric is sensitive to the shape of the ligand (that depends on its conformation) as it computes the distance using the two nearest atoms of the two configurations.
+%It allows us to expand the tree by a configuration whose nearest atom approaches its nearest atom in $\qrand$, which supports
+%the retraction of the ligands towards $\qrand$.
+
 
 %By computing the atom-based metric using the absolute positions of atoms, this metric considers the shape of the ligands, which
 %is useful when multiple conformations are utilized.
@@ -520,14 +537,13 @@ the retraction of the ligands towards $\qrand$.
 %the atoms of the configuration $\qrand$.
 %We observed that this leads to a better construction of the configuration tree inside the proteins and it increases the probability of reaching the active site.
 
-The atom-based metric can be evaluated fast using KD-trees with complexity $\mathcal{O}(\log n)$, where $n$ is the number of atoms of the ligand.
-For each conformation $\l \in \L$ of the ligand, a KD-tree is built for the ligand at the configuration $q=(0,0,0,0,0,0,l,\smax)$
-(i.e., for ligand with no translation and no rotation).
-To find the nearest atom to $\qrand$ for a ligand at the configuration $q=(x,y,z,r_x,r_y,r_z,l,s)$, the translation vector $V=(x,y,z)$ and
-rotation matrix $R$ given by $r_x$, $r_y$ and $r_z$ are computed.
-Then, $\qrand$ is translated to $\qrand' = R^{-1}(\qrand-V)$ and the KD-tree search is used to find the nearest atom from $q$ towards atoms of $\qrand'$.
-%is also the nearest point of the ligand at $q$ to $\qrand$.
-
+%The atom-based metric can be evaluated fast using KD-trees with complexity $\mathcal{O}(\log n)$, where $n$ is the number of atoms of the ligand.
+%For each conformation $\l \in \L$ of the ligand, a KD-tree is built for the ligand at the configuration $q=(0,0,0,0,0,0,l,\smax)$
+%(i.e., for ligand with no translation and no rotation).
+%To find the nearest atom to $\qrand$ for a ligand at the configuration $q=(x,y,z,r_x,r_y,r_z,l,s)$, the translation vector $V=(x,y,z)$ and
+%rotation matrix $R$ given by $r_x$, $r_y$ and $r_z$ are computed.
+%Then, $\qrand$ is translated to $\qrand' = R^{-1}(\qrand-V)$ and the KD-tree search is used to find the nearest atom from $q$ towards atoms of $\qrand'$.
+%
 
 \begin{algorithm}[b]
 {\small
@@ -553,7 +569,7 @@ Then, $\qrand$ is translated to $\qrand' = R^{-1}(\qrand-V)$ and the KD-tree sea
             $q.l = l$\; 
             $q.s = s$\;
             \If{isCollisionFree($q$)}{
-                \If{$\qnew = \emptyset$ {\bf or} $\da(q, \qrand) < \da(\qnew,\qrand)$}{ \nllabel{alg::expand:a}
+                \If{$\qnew = \emptyset$ {\bf or} $\dist(q, \qrand) < \dist(\qnew,\qrand)$}{ \nllabel{alg::expand:a}
                     $\qnew = q$\;
                 }
             } 
@@ -628,8 +644,8 @@ Both methods utilize the same data structures and low-level routines (e.g., coll
 %were implemented in the same software framework and they utilized the same data structures and routines for the collision detection and nearest-neighbor search.
 The nearest-neighbor search of both planners was based on the 6D Euclidean metric with the same weights for rotation and translation parts.
 This metric was selected based on preliminary experiments with both planners as it resulted in the highest success rates.
-The \RA\ method was also tested without the atom-based metric.
-In this case (denoted \RC), the distance in the expansion step is measured using the 6D Euclidean metric.
+%The \RA\ method was also tested without the atom-based metric.
+%In this case (denoted \RC), the distance in the expansion step is measured using the 6D Euclidean metric.
 
 The methods \RA\ and \RB\ differ in the expansion step (lines \ref{alg::expa}--\ref{alg::expb} in Alg.~\ref{alg::expand}).
 In these lines, the \RB\ method employs the retraction step in order to find a new collision-free configuration $\qnew$ that approaches $\qrand$.
