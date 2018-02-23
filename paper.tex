@@ -862,16 +862,21 @@ The protein conformations were generated using default settings for tCONCOORD in
 The tunnels towards the active site (defined by residues 134 (Alanine) and 311 (Phenylalanine) for probe 0.9~\AA\ were calculated
 using CAVER 3.0.
 All 1000 conformations contained at least 5 tunnels, more than 900 conformations contained 9 tunnels.
-The ordering of the tunnels can slightly change due to conformational changes, so the traversability
-to the active site was computed for the first three tunnels (with average bottlenecks 1.22~\AA, 1.20~\AA and 1.19~\AA).
-Due to size of the ligand (which has 33 atoms) and the low bottlenecks of the tunnels, we 
+The detected the tunnels slightly differ due to conformational changes.
+Therefore, the traversability towards the active site was computed for the first three tunnels (with average bottlenecks 1.22~\AA, 1.20~\AA and 1.19~\AA with the average lengths 22.3~\AA, 25.3~\AA and 28.4~\AA respectively).
+The conformations of the ligand were prepared in the same way as in the previous section.
+From the available $|\L|=736$ conformations, 100 were selected using the `S' strategy.
+
+
+
 
 %R1: https://www.ncbi.nlm.nih.gov/pubmed/17997973
 %R2: https://www.ncbi.nlm.nih.gov/pubmed/26620784
 
 \begin{figure}
 \centering
-\caption{\label{fig::inhibitor}Example of inhibitor in 4L2L ... }
+\includegraphics[width=0.4\textwidth]{fig/4l2l-detail}
+\caption{\label{fig::inhibitor}Example of inhibitor in 4L2L ... TOOO some better image }
 \end{figure}
 
 
