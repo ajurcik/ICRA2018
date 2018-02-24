@@ -119,7 +119,7 @@ Nowadays, tunnels are mostly computed using Voronoi diagrams which approximate t
 the traversability of the tunnels is determined based only on the radial bottlenecks.
 This can lead to imprecise results as the shape of the ligand is not considered.
 To address this problem, we define the computation of the transportation path of non-spherical ligands including their conformation changes (i.e., when the atoms of the ligand move relatively to each other) as a motion planning task in the high-dimensional configuration space.
-We propose a modification of the Rapidly Exploring Random Tree planner for the purpose of trajectory computations for flexible ligands.
+We propose a modification of the Rapidly Exploring Random Tree planner for trajectory computations of flexible ligands.
 To cope with the narrow passage problem, the random samples are generated around a tunnel detected by a Voronoi-based approach.
 %which serves us for better localization of the searched space.
 The flexibility of the ligand is modeled using a fixed set of known conformations. 
@@ -274,7 +274,9 @@ The regions can be estimated online, e.g., based on the number of collision-free
 %Both Gaussian and Bridge-Test strategies have to be combined with the uniform sampling in order to ensure sampling of free-regions~\cite{sun2005narrow}.
 %Despite the simplicity of these two modifications, they were proven to significantly improve performance of PRM~\cite{hsuOnProb,geraertsRA,geraertsPRMA,wang10adaptive}.
 
-The RRT-based planners cannot cope with the narrow passage problem simply by increasing the probability of sampling in the difficult regions, as the growth of the configuration tree towards the random samples may be blocked by obstacles. %~\cite{vonasekphd}.
+In the case of RRT-based planners, increasing the probability of sampling in difficult regions does not need to bring any advantage
+if the growth of the tree is blocked by the obstacles.
+%The RRT-based planners cannot cope with the narrow passage problem by increasing the probability of sampling in the difficult regions, as the growth of the configuration tree towards the random samples may be blocked by obstacles. %~\cite{vonasekphd}.
 To prevent this blocking, DD-RRT~\cite{yershovaDDRRT} limits the selection of nodes for the expansion to a small ball. 
 The radius of this ball is set to infinity for new nodes, and decreases to a predefined radius if the node cannot be successfully expanded.
 An automatic adaptation of this radius was proposed in the ADD-RRT~\cite{jailletADRRT}.
@@ -303,7 +305,7 @@ In MARRT~\cite{denny2014marrt}, newly generated samples are pushed towards the m
 %The probability of sampling of the narrow passages can be increased by dilating the free-space, e.g., by shrinking the geometry of the robot~\cite{hsuOnProb} or the obstacles~\cite{bayazitIRC}.
 The probability of sampling of the narrow passages can be increased by dilating the free-space, e.g., by shrinking the geometry of the robot or the obstacles~\cite{bayazitIRC}.
 
-The shrinking technique has been used also in~\cite{cortes2010simulating}, where the exit pathways for a small flexible molecule are computed using a RRT-based method.
+The shrinking technique has also been used in~\cite{cortes2010simulating}, where the exit pathways for a small flexible molecule are computed using a RRT-based method.
 The flexible ligand is modeled as a kinematic chain, which increases the dimension of the configuration space.
 To cope with these many-DOF ligands, the RRT-ML~\cite{cortes2007mlrrt} approach is employed as the basic planner in~\cite{cortes2010simulating}.
 RRT-ML expands the tree primarily using those DOFs, that are essential for achieving the motion of the ligand (i.e., rotation
@@ -450,7 +452,7 @@ The tree can slightly detour from the tunnel and overcome difficult parts (e.g.,
 %should be allowed, which is controlled by the $\dt$ parameter.
 %parameter should be set considering the existence of cavities or other tunnels around the tunnel being investigated.
 The parameter $\dt$ determines how far can the tree detour from the tunnel centerline.
-In case of tunnels not having other tunnels in the close vicinity (which is very common), we recommend to use the double value of the tunnel average width.
+In case of tunnels not having other tunnels in the close vicinity (which is very common), we recommend using the double value of the tunnel average width.
 The algorithm terminates after a predefined number of planning trials $\Imax$ or if the tree reaches
 the last sphere in the tunnel, i.e., when $v = n$.
 
@@ -661,7 +663,7 @@ in $100 \times 4 \times 20 \times 10 = 80,000$ trajectories per ligand.
 Two motion planners were compared: the proposed planner (described in Alg.~\ref{alg::main} and Alg.~\ref{alg::expand}), denoted as \RA\ in the rest of the paper, and the Retraction-based RRT~\cite{zhangRetraction}, denoted as \RB\ in the rest of the paper.
 The \RA\ method was launched with the following parameters:
 $\Imax=5000$, $m=100$, $\gb=0.9$, $\dt=1.5$~\AA, $\rv=2$~\AA\ and $\varepsilon=0.05$~\AA.
-Both methods utilize the same data structures and low-level routines (e.g., collision-detection) to enable fair comparison.
+Both methods utilize the same data structures and low-level routines (e.g., collision-detection) to enable a fair comparison.
 %were implemented in the same software framework and they utilized the same data structures and routines for the collision detection and nearest-neighbor search.
 The nearest-neighbor search of both planners was based on the 6D Euclidean metric with the same weights for rotation and translation parts.
 This metric was selected based on preliminary experiments with both planners, as it resulted in the highest success rates.
@@ -895,8 +897,8 @@ From the available $|\L|=736$ low-energy conformations, 100 were selected using 
 
 As the tested ligand is a known inhibitor of the protein 4L2L~\cite{marques2017enzyme} we assume that the ligand can reach the active site.
 Due to large size of the ligand (33 atoms), low scale-down factors $\smin\in\{0.4,0.5,0.6\}$ were used and
-the active site was considered as rached if the distance to the geometric center of the ligand was less than 5~\AA.
-All paramters of the \RA\ were set as in the previous experiment, except $\Imax=100\cdot10^3$.
+the active site was considered as reached if the distance to the geometric center of the ligand was less than 5~\AA.
+All parameters of the \RA\ were set as in the previous experiment, except $\Imax=100\cdot10^3$.
 The proposed planner was able to find trajectories even for this large ligand inside the long tunnels, which is
 shown by the traversability rates (Tab.~\ref{tab::4l2l}).
 Example of the solution is depicted in Fig.~\ref{fig::inhibitor}.
@@ -948,7 +950,7 @@ The visualization of the computed trajectories can show
 %By visualizing all trajectories computed for different scales, we can observe 
 those parts of the tunnel where the ligand had to be scaled-down significantly (red parts of trajectories in Fig.~\ref{fig::dcp}), and parts where the ligand could be enlarged again (green parts in Fig.~\ref{fig::dcp}).
 
-According to the results of the motion planing, the DCP ligand needs to shrink down to approximately 75~\% of its size, but only at one part of the tunnel (Fig.~\ref{fig::dcp}, point B). 
+According to the results of the motion planning, the DCP ligand needs to shrink down to approximately 75~\% of its size, but only at one part of the tunnel (Fig.~\ref{fig::dcp}, point B). 
 Beyond this point, the ligand can move at larger scales again.
 As both the protein and ligand mutually influence each other, it is possible that even such a narrow part of the tunnel is traversable.
 This was observed in a separate MD simulation of the DCP ligand in the 4E46 protein, which revealed that DCP can pass the main tunnel~\cite{marques2017catalytic}. 
