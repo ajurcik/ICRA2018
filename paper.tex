@@ -119,7 +119,7 @@ Nowadays, tunnels are mostly computed using Voronoi diagrams which approximate t
 the traversability of the tunnels is determined based only on the radial bottlenecks.
 This can lead to imprecise results as the shape of the ligand is not considered.
 To address this problem, we define the computation of the transportation path of non-spherical ligands including their conformation changes (i.e., when the atoms of the ligand move relatively to each other) as a motion planning task in the high-dimensional configuration space.
-We propose a modification of the Rapidly Exploring Random Tree planner for trajectory computations of flexible ligands.
+We propose a modification of the Rapidly Exploring Random Tree planner for trajectory computation of flexible ligands.
 To cope with the narrow passage problem, the random samples are generated around a tunnel detected by a Voronoi-based approach.
 %which serves us for better localization of the searched space.
 The flexibility of the ligand is modeled using a fixed set of known conformations. 
@@ -177,7 +177,8 @@ The sampling-based planners randomly sample the configuration space of the robot
 Rapidly Exploring Random Tree (RRT)~\cite{lavalleRRT} is one of the most used sampling-based planners.
 Besides many applications in robotics, the sampling-based planners have been already used in biochemistry as well, 
 e.g., to study loop motions~\cite{cortes2004geometric}, to identify binding sites~\cite{bayazit2001ligand}, for exit
-pathway detection~\cite{cortes2010simulating,cortes2005path}, for tunnel detection~\cite{vonasek2017tunnel,vonasek2016application}, and especially for protein folding~\cite{raveh2009rapid,amato2002using}. %novinskaya2015improving
+pathway detection~\cite{cortes2010simulating,cortes2005path}, for tunnel detection~\cite{vonasek2017tunnel}, 
+        and especially for protein folding~\cite{raveh2009rapid,amato2002using}. %novinskaya2015improving
 
 %Sampling-based planners can cope with many-DOF systems and they have been successfully employed also beoynd robotics, e.g. to
 %identify binding sites~\cite{bayazit2001ligand} or to determine ligand exit pathway~\cite{cortes2010simulating}.
@@ -284,7 +285,7 @@ An automatic adaptation of this radius was proposed in the ADD-RRT~\cite{jaillet
 %Therefore, the authors of ADD-RRT~\cite{jailletADRRT} proposed to adapt the ball radius according to the success rate of the expansion.
 To attract the tree towards a given region, random samples have to be generated there only if the tree can expand to this region.
 In~\cite{kardossRRTKK}, the probability of sampling is increased in several waypoints close to narrow passages, but without specifying how to find these waypoints.
-The generalization of~\cite{kardossRRTKK} is the guided sampling, where the whole path is used to generate samples in the configuration space.
+The generalization of~\cite{kardossRRTKK} is the guided sampling, where a sequence of waypoints (a guiding path) is used to generate samples in the configuration space.
 The guiding path can be computed in the workspace~\cite{vonasek2009rrt}, or iteratively refined in the configuration space based on the solution of a relaxed version of the problem~\cite{bayazitIRC}.
 
 %~\cite{vonasek2009rrt,denny2016dynamic,denny2014marrt}.
@@ -346,7 +347,7 @@ Consequently, the volume of the configuration space to be searched is decreased,
 
 It has been observed, that the tunnels detected in protein conformations without ligands (provided by MD simulations without ligands or by
 protein conformation sampling) are rather narrow. 
-However, in protein dynamics with ligand, the tunnels can move, merge and adapt to the shape of the passing ligand and vice versa.
+However, MD simulations of proteins with ligands have shown that the tunnels can move, merge and adapt to the shape of the passing ligand and vice versa.
 %Therefore, it can be expected that the detected tunnels are rather narrow.
 %Due to the protein dynamics, the tunnels move and merge, and their bottleneck can change in each time step.
 %The tunnels can adapt their shape to the passing ligands and vice versa.
@@ -354,9 +355,8 @@ In consequence, even very narrow tunnels, being too small for the passage of a g
 Therefore, also the existing Voronoi-based methods enable the user to decrease the size of the approximating sphere which simulates the shrinking of the ligand size.
 In our solution, we simulate this by shrinking the atom radii of the ligand, which is used also by~\cite{cortes2010simulating,guieysse2008structure}.
 
-MD simulations of ligands passing through proteins further show that the ligands can be highly flexible.
-The possible conformations of a ligand are determined by the torsion and dihedral angles between its atoms. 
-The low-energy conformations are preferred.
+MD simulations of ligands passing through proteins show that the ligands can be highly flexible.
+All possible conformations of a ligand are determined by the torsion and dihedral angles between its atoms, but the low-energy conformations are preferred.
 %the ligand can contain several torsion and dihedral angles between its atoms which determine possible ligand conformations.
 Therefore, the ligand flexibility can be modeled using only a predefined set of low-energy conformations.
 By using the set of predefined conformations, it is not necessary to model the additional degrees of freedom, so 
@@ -633,8 +633,8 @@ The selected conformations are then used in the planning process.
 
 \section{Experimental Verification}
 
-The proposed algorithm was verified in two scenarios: on a sequence of frames of MD simulation and on a set of protein conformations provided 
-the conformation sampling approach.
+The proposed algorithm was verified in two scenarios: on a sequence of frames of MD simulation and on a set of protein conformations 
+provided by the conformation sampling approach.
 %by the tCONCOORD tool~\cite{seeliger2007geometry}.
 
 \subsection{Analysis of MD simulation}
@@ -676,7 +676,7 @@ The retraction step is realized by sampling the vicinity of the configuration $\
 A collision-free sample that maximally approaches $\qrand$ is selected and added to the tree, and the retraction continues from this sample.
 The retraction step is repeated 5 times.
 The \RB\ method can therefore expand the tree by at most 5 new nodes per ligand conformation, while \RA\ extends the tree only by one new node.
-The larger number of nodes in \RB\ method is not problematic, as the KD-trees were used for the nearest-neighbor search and the time to solve these queries is significantly smaller than the computing collision detection.
+The larger number of nodes in \RB\ method is not problematic, as the KD-trees were used for the nearest-neighbor search and the time to solve these queries is significantly smaller than the collision detection.
 The parameters of the methods were selected in such a way that the number of collision detection queries in each expansion step is the same.
 For each conformation and tested scale, the \RA\ method checks $m=100$ candidate configurations for collision, and \RB\ checks $5 \times 20$ configurations for collision.
 %collision-detection queries.
@@ -819,8 +819,8 @@ to the active site was approved by a separate MD simulation~\cite{marques2017cat
 %The traversability of the DCP ligand to active site was approved by a separate MD simulation~\cite{marques2017catalytic}.
 Based on the success rate, also other ligands (e.g., m037t with traversability rate 45~\% at $\smin$=0.8) seem to be promising.
 However, their binding was not yet approved by dedicated MD simulations.
-Most of the used 50 ligand conformations where used in the planning, which is shown in Tab.~\ref{tab::m040c}.
-
+The planning was realized with 50 conformations of the ligands, but not all of them were used, which is shown in Tab.~\ref{tab::m040c}.
+%The selection of 50 conformations was satisfactory.
 
 Besides scaling-down the ligand, also the atoms of the protein can be scaled, which is used, e.g., in~\cite{cortes2005path}, where
 %The tool~\cite{cortes2005path} uses 
@@ -845,7 +845,7 @@ The runtimes of \RB\ are higher than the runtimes of \RA\ and the standard devia
 \caption{\label{tab::m040c}
 \small
 Examples of elongated/packed conformation for m040 (1,5-Dichloropentane).
-The table shows the average number of conformations (out of 50) used in trajectories reaching the active site in the 4E46 protein.
+The table shows the average number of different ligand conformations (out of 50) used in trajectories reaching the active site in the 4E46 protein.
 }
 \centering
 {\footnotesize
@@ -872,7 +872,7 @@ site of A4 hydrolase (PDB ID 4L2L, 9666 atoms).
 The tCONCOORD tool~\cite{seeliger2007geometry} was used to generate 1000 conformations of the protein 4L2L.
 The initial PDB structure was minimized by GROMACS 4.0.7
 %\cite{hess2008gromacs} 
- using the input parameters recommended on the example page tCONCOORD~\cite{tconcoord}.
+ using the input parameters recommended on the example page of tCONCOORD~\cite{tconcoord}.
 The protein conformations were generated using the default settings for tCONCOORD in the PERT mode. % which only perturbs the starting configuration of atoms instead of complete randomization.
 The tunnels leading to the active site defined by residues 134 (Alanine) and 311 (Phenylalanine) were computed by CAVER 3.0, using the probe 0.9~\AA.
 All 1000 conformations contained at least 5 tunnels, more than 900 conformations contained 9 tunnels.
@@ -895,7 +895,7 @@ From the available $|\L|=736$ low-energy conformations, 100 were selected using 
 }
 \end{table}
 
-As the tested ligand is a known inhibitor of the protein 4L2L~\cite{marques2017enzyme} we assume that the ligand can reach the active site.
+As the tested ligand is a known inhibitor of the protein 4L2L~\cite{marques2017enzyme} we assumed that the ligand can reach the active site.
 Due to large size of the ligand (33 atoms), low scale-down factors $\smin\in\{0.4,0.5,0.6\}$ were used and
 the active site was considered as reached if the distance to the geometric center of the ligand was less than 5~\AA.
 All parameters of the \RA\ were set as in the previous experiment, except $\Imax=100\cdot10^3$.
