@@ -644,7 +644,7 @@ the conformation sampling approach.
 The task is to compute the ligand traversability towards the active site using two main tunnels in the Haloalkane dehalogenase protein (DhaAwt, PDB ID 4E46), which consists of 4650 atoms.
 The MD simulation was computed using AMBER~12 (details about the used MD simulations of DhaAwt/4E46 are described in~\cite{marques2017catalytic}).
 The tunnels were detected in 100 consecutive frames of MD simulation in the part where the protein was already stabilized.
-The tunnels for probe 0.9~\AA\ towards the active site defined by residues 38 (Asparagine), 102 (Histidine), and 103 (Aspartic Acid) were
+The tunnels for the probe 0.9~\AA\ towards the active site defined by residues 38 (Asparagine), 102 (Histidine), and 103 (Aspartic Acid) were
 computed using the CAVER 3.0~\cite{caver3} tool.
 In most of the frames, two tunnels were detected.
 The average bottleneck sizes of these tunnels were $1.48$~\AA\ and $1.2$~\AA\ for the main and side tunnel, respectively.
@@ -652,15 +652,15 @@ The average bottleneck sizes of these tunnels were $1.48$~\AA\ and $1.2$~\AA\ fo
 Models  of the ligands in Mol2 formats were converted to the param files~\cite{meiler2006rosettaligand}, containing the topology, rotatable bonds, atom types, and partial charges. 
 The pool of conformations $\L$ was created by the rotation of all rotatable bonds with 30$^\circ$ step using Rosetta3.
 The energy cut-off for individual conformations was set to 0.075. %(-rot_ensemble_ecutoff 0.075) 
-Four different scaling-down factors were used: $\S=\{0.5,0.6,0.7,0.8\}$.
 
+Four different scaling-down factors were used: $\S=\{0.5,0.6,0.7,0.8\}$.
 For each scale, $|\QI|=20$ collision-free initial configurations were found in the $\RI=2$~\AA\ radius around the first sphere of the tunnel (outside the protein).
 For each initial configuration, 10 trajectories were computed, which resulted
 in $100 \times 4 \times 20 \times 10 = 80,000$ trajectories per ligand.
 
 Two motion planners were compared: the proposed planner (described in Alg.~\ref{alg::main} and Alg.~\ref{alg::expand}), denoted as \RA\ in the rest of the paper, and the Retraction-based RRT~\cite{zhangRetraction}, denoted as \RB\ in the rest of the paper.
 The \RA\ method was launched with the following parameters:
-$\Imax=5,000$, $m=100$, $\gb=0.9$, $\dt=1.5$~\AA, $\rv=2$~\AA\ and $\varepsilon=0.05$~\AA.
+$\Imax=5000$, $m=100$, $\gb=0.9$, $\dt=1.5$~\AA, $\rv=2$~\AA\ and $\varepsilon=0.05$~\AA.
 Both methods utilize the same data structures and low-level routines (e.g., collision-detection) to enable fair comparison.
 %were implemented in the same software framework and they utilized the same data structures and routines for the collision detection and nearest-neighbor search.
 The nearest-neighbor search of both planners was based on the 6D Euclidean metric with the same weights for rotation and translation parts.
@@ -742,7 +742,7 @@ This distance is measured as the 3D distance between the geometric center of the
 The number of generated ligand conformations $|\L|$ depends on the number of rotatable bonds of the ligands and even though only
 the low-energy conformations are stored in $\L$, the set can still contain thousands of conformations.
 For fast motion planning we utilize a subset of the original set $\L$.
-The aim of this experiment was to verify the procedure for selection of the subset. 
+The aim of this experiment was to verify the proposed selection of ligand conformations from a large set $\L$ (Sec.~\ref{sec::strat}).
 
 Two selection strategies were tested:
 the strategy described in Sec.~\ref{sec::strat} (denoted `S') and the strategy that prefers smaller (packed) conformations (denoted `P').
@@ -753,7 +753,7 @@ m040 (1,5-Dichloropentane) with $|\L|=7560$ conformations.
 
 The traversability rates are shown in Tab.~\ref{tab::selection}, where the subscript of each ligand's 
 name shows the number of the selected conformations (5 or 50) and the used method (S or P).
-The number after the slash in the ligand's name denotes the number of atoms of the ligand.
+%The number after the slash in the ligand's name denotes the number of atoms of the ligand.
 In case of both tested ligands and 50 selected conformations, the `S' strategy leads to a higher traversability rate than the `P' strategy.
 For the DCP ligand, the higher traversability rate was achieved when 50 conformations were selected.
 This experiment shows that selecting 50 conformations using the `S' strategy (Sec.~\ref{sec::strat}) leads to better results
@@ -763,9 +763,8 @@ than using the smaller number of conformations or when preferring the packed con
 \centering
 \caption{\label{tab::selection}
     \small
-    The influence of the conformation selection method on the traversability rates in the first (main) tunnel.
+    The influence of the conformation selection method on the traversability rates in the first (main) tunnel of the 4E46 protein.
     The number after~`$/$' denotes the number of atoms.
-    The rate is shown in [\%].
 }
 \small
 \renewcommand{\tabcolsep}{4.3pt}
@@ -793,7 +792,7 @@ m037t (1,2-Dichloroethane), m038t (1,3-Dichloropropane), m056 (2-Chlorobutane), 
 \centering
 \caption{\label{tab::main}
     \small
-    Traversability rate [\%] over 100 frames for ligands with 50 conformations. 
+    Traversability rate over 100 frames for ligands with 50 conformations in the 4E46 protein.
     The number after '$/$' denotes the number of atoms.
 }
 \small
@@ -844,7 +843,7 @@ The runtimes of \RB\ are higher than the runtimes of \RA\ and the standard devia
 \caption{\label{tab::m040c}
 \small
 Examples of elongated/packed conformation for m040 (1,5-Dichloropentane).
-The table shows the average number of conformations (out of 50) used in trajectories reaching the active site.
+The table shows the average number of conformations (out of 50) used in trajectories reaching the active site in the 4E46 protein.
 }
 \centering
 {\footnotesize
@@ -869,11 +868,13 @@ site of A4 hydrolase (PDB ID 4L2L, 9666 atoms).
 %This ligand is a known inhibitor of the protein 4L2L.
 %Based on the location of inhibitor inside the protein we assume that the inhibitor is able 
 The tCONCOORD tool~\cite{seeliger2007geometry} was used to generate 1000 conformations of the protein 4L2L.
-The initial PDB structure was minimized by GROMACS 4.0.7~\cite{hess2008gromacs} using the input parameters recommended on the example page for tCONCOORD. 
+The initial PDB structure was minimized by GROMACS 4.0.7
+%\cite{hess2008gromacs} 
+ using the input parameters recommended on the example page tCONCOORD~\cite{tconcoord}.
 The protein conformations were generated using the default settings for tCONCOORD in the PERT mode. % which only perturbs the starting configuration of atoms instead of complete randomization.
 The tunnels leading to the active site defined by residues 134 (Alanine) and 311 (Phenylalanine) were computed by CAVER 3.0, using the probe 0.9~\AA.
 All 1000 conformations contained at least 5 tunnels, more than 900 conformations contained 9 tunnels.
-The ordering of the detected tunnels slightly differ in different conformations.
+The ordering of the detected tunnels slightly differs in different conformations.
 Therefore, the ligand traversability towards the active site was computed for the first three widest tunnels (with average bottlenecks 1.22~\AA, 1.20~\AA\, and 1.19~\AA\ with the average lengths 22.3~\AA, 25.3~\AA\, and 28.4~\AA, respectively).
 The conformations of the ligand were prepared in the same way as in the previous section.
 From the available $|\L|=736$ low-energy conformations, 100 were selected using the `S' strategy.
@@ -882,7 +883,7 @@ From the available $|\L|=736$ low-energy conformations, 100 were selected using 
 \centering
 \caption{\label{tab::4l2l}
     \small
-    Traversability rate [\%] in 1000 conformations of the protein 4L2L in the first three tunnels.
+    Traversability rate in 1000 conformations of the protein 4L2L in the first three tunnels.
 }
 \small
 \renewcommand{\tabcolsep}{2pt}
@@ -893,9 +894,12 @@ From the available $|\L|=736$ low-energy conformations, 100 were selected using 
 \end{table}
 
 As the tested ligand is a known inhibitor of the protein 4L2L~\cite{marques2017enzyme} we assume that the ligand can reach the active site.
-Due to large size of the ligand (33 atoms), low scale-down factors $\smin\in\{0.4,0.5,0.6\}$ were used.
-The traversability detected by the \RA\ method is show in Tab.~\ref{tab::4l2l} and the example
-of a final trajectory to the active site is depicted in Fig.~\ref{fig::inhibitor}.
+Due to large size of the ligand (33 atoms), low scale-down factors $\smin\in\{0.4,0.5,0.6\}$ were used and
+the active site was considered as rached if the distance to the geometric center of the ligand was less than 5~\AA.
+All paramters of the \RA\ were set as in the previous experiment, except $\Imax=100\cdot10^3$.
+The proposed planner was able to find trajectories even for this large ligand inside the long tunnels, which is
+shown by the traversability rates (Tab.~\ref{tab::4l2l}).
+Example of the solution is depicted in Fig.~\ref{fig::inhibitor}.
 
 %R1: https://www.ncbi.nlm.nih.gov/pubmed/17997973
 %R2: https://www.ncbi.nlm.nih.gov/pubmed/26620784
