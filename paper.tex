@@ -9,6 +9,7 @@
 \usepackage{flushend}
 \usepackage[bookmarks=false]{hyperref}
 \usepackage{setspace} % for setstretch in algorithm
+%\usepackage[all]{nowidow}
 \pdfminorversion=4
 
 \IEEEoverridecommandlockouts                              % This command is only
@@ -22,7 +23,10 @@
 
 \SetKwInput{KwData}{Global params.}
 
-\title{Assessing the Accessibility of Protein Tunnels using Motion Planning}
+\title{
+%Assessing the Accessibility of Protein Tunnels using Motion Planning % ICRA title
+Motion Planning for Assessing the Accessibility of Protein Tunnels  %iros title, we had to change it
+}
 
 \author{Vojt\v ech Von\' asek$^{1}$,
     Barbora Kozl\'\i kov\'a$^{2}$,
@@ -875,9 +879,10 @@ The initial PDB structure was minimized by GROMACS 4.0.7
  using the input parameters recommended on the example page of tCONCOORD~\cite{tconcoord}.
 The protein conformations were generated using the default settings for tCONCOORD in the PERT mode. % which only perturbs the starting configuration of atoms instead of complete randomization.
 The tunnels leading to the active site defined by residues 134 (Alanine) and 311 (Phenylalanine) were computed by CAVER 3.0, using the probe 0.9~\AA.
-All 1000 conformations contained at least 5 tunnels, more than 900 conformations contained 9 tunnels.
+All 1000 conformations contained at least 5 tunnels. % more than 900 conformations contained 9 tunnels.
 The ordering of the detected tunnels slightly differs in different conformations.
-Therefore, the ligand traversability towards the active site was computed for the first three widest tunnels (with average bottlenecks 1.22~\AA, 1.20~\AA\, and 1.19~\AA\ with the average lengths 22.3~\AA, 25.3~\AA\, and 28.4~\AA, respectively).
+Therefore, the first three widest tunnels were used (with average bottlenecks 1.22~\AA, 1.20~\AA\, and 1.19~\AA\ with the average lengths 22.3~\AA, 25.3~\AA\, and 28.4~\AA, respectively).
+20 starting configurations were found at the begining of each tunnel, and 10 trajectories were computed for each starting configuration.
 The conformations of the ligand were prepared in the same way as in the previous section.
 From the available $|\L|=736$ low-energy conformations, 100 were selected using the `S' strategy.
 
